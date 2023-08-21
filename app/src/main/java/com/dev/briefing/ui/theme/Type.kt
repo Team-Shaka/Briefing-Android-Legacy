@@ -2,33 +2,74 @@ package com.dev.briefing.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.dev.briefing.R
 
 // Set of Material typography styles to start with
+val ProductSans = FontFamily(
+    Font(R.font.productsansbold, FontWeight.Bold),
+    Font(R.font.productsansregular, FontWeight.Normal),
+)
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Bold,
+        color = MainPrimary,
+        fontSize = 30.sp,
+        lineHeight = 36.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+    titleMedium= TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Bold,
+        color = White,
+        fontSize = 25.sp,
+        lineHeight = 30.sp
+    ),
+    titleSmall= TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Bold,
+        color = MainPrimary,
+        fontSize = 17.sp,
+        lineHeight = 20.sp
+    ),
+    headlineLarge= TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Bold,
+        color = MainPrimary,
+        fontSize = 15.sp,
+        lineHeight = 18.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Normal,
+        color = MainPrimary3,
+        fontSize = 13.sp,
+        lineHeight = 22.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Normal,
+        color = MainPrimary3,
+        fontSize = 14.sp,
+        lineHeight = 16.sp
+    ),
+
+    labelMedium = TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Normal,
+        color = MainPrimary3,
         fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        lineHeight = 13.sp
+    ),
+    labelSmall= TextStyle(
+        fontFamily = ProductSans,
+        fontWeight = FontWeight.Bold,
+        color = MainPrimary3,
+        fontSize = 10.sp,
+        lineHeight = 12.sp
     )
-    */
+
 )
