@@ -9,33 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.ui.article.ArticleDetail
+import com.dev.briefing.ui.article.ArticleScreen
 import com.dev.briefing.ui.chat.ChatScreen
 import com.dev.briefing.ui.scrap.ScrapScreen
 import com.dev.briefing.ui.setting.SettingScreen
 
-@Composable
-fun HomeNavigationGraph(
-    navController: NavHostController) {
-    NavHost(
-        navController=navController,
-        route = Graph.ROOT,
-        startDestination = Graph.HOME,
-    ) {
-        homeNavGraph(navController = navController)
-    }
-}
 
-object Graph {
-    const val ROOT = "root_graph"
-    const val HOME = "home_graph"
-}
-sealed class HomeScreen(val route: String) {
-    object Home : HomeScreen(route = "HOME")
-    object Setting : HomeScreen(route = "SETTING")
-    object Scrap : HomeScreen(route = "SCRAP")
-//    object Detail : HomeScreen(route = "DETAIL")
-//    object Chat : HomeScreen(route = "CHAT")
-}
 
 fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
     navigation(
@@ -53,7 +32,12 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             )
         }
         composable(route = HomeScreen.Setting.route) {
-            SettingScreen(
+//            SettingScreen(
+//                onBackClick = {
+//                    navController.popBackStack()
+//                },
+//            )
+            ArticleScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
@@ -67,4 +51,11 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             )
         }
     }
+}
+
+sealed class HomeScreen(val route: String) {
+    object Home : HomeScreen(route = "HOME")
+    object Setting : HomeScreen(route = "SETTING")
+    object Scrap : HomeScreen(route = "SCRAP")
+
 }

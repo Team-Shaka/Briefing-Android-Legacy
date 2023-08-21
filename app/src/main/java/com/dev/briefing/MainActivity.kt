@@ -21,7 +21,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.dev.briefing.navigation.HomeNavigationGraph
+import com.dev.briefing.navigation.RootNavigationGraph
 import com.dev.briefing.ui.theme.BriefingTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeNavigationGraph(navController =rememberNavController())
+                    RootNavigationGraph(navController =rememberNavController())
                 }
             }
         }

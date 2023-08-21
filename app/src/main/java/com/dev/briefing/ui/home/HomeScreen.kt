@@ -163,7 +163,7 @@ fun ArticleList(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             //Korea - Global Switch 때체
-            Image(painter =painterResource(id = R.drawable.setting) , contentDescription = "fdfd")
+            Image(painter = painterResource(id = R.drawable.setting) , contentDescription = "fdfd")
             Text(
                 text = "Updated: 23.08.07 5AM",
                 style = MaterialTheme.typography.labelMedium
