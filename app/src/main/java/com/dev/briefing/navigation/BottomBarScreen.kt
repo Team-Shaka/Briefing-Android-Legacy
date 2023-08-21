@@ -1,10 +1,8 @@
-package com.dev.briefing.ui
+package com.dev.briefing.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomBarScreen(
@@ -19,9 +17,9 @@ sealed class BottomBarScreen(
     )
 
     object Chat : BottomBarScreen(
-        route = "PROFILE",
-        title = "PROFILE",
-        icon = Icons.Default.Check
+        route = "CHAT",
+        title = "CHAT",
+        icon = Icons.Default.Person
     )
 
 }

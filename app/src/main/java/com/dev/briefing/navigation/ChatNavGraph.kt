@@ -10,7 +10,7 @@ import com.dev.briefing.ui.chat.ChattingScreen
 
 fun NavGraphBuilder.chatNavGraph(navController: NavHostController) {
     navigation(
-        route = Graph.HOME,
+        route = Graph.CHAT,
         startDestination = ChatScreen.Chat.route
     ) {
         composable(route = ChatScreen.Chat.route) {
