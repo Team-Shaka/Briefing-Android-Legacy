@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -18,6 +19,7 @@ import com.dev.briefing.ui.BottomBarScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
+
 fun RootScreen(navController: NavHostController = rememberNavController()) {
     Scaffold(
 //        scaffoldState = rememberScaffoldState(),
@@ -78,7 +80,6 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
 //        }
 //    )
 //}
-
 @Composable
 fun RootNavigationGraph(
     navController: NavHostController
