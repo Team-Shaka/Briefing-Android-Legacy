@@ -1,4 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext{
+        glide_version = "4.14.2"
+        retrofit_version = "2.9.0"
+        okhttp_version = "4.9.0"
+        nav_version = "2.5.3"
+        compose_version = "1.3.1"
+    }
+}
+
 plugins {
     id 'com.android.application' version '8.0.2' apply false
     id 'com.android.library' version '8.0.2' apply false
