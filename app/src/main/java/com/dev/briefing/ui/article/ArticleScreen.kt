@@ -40,6 +40,7 @@ import com.dev.briefing.ui.theme.White
 fun ArticleScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
+    id:Int
 ) {
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
@@ -55,7 +56,7 @@ fun ArticleScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            header = "Briefing #1"
+            header = "Briefing #$id"
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {

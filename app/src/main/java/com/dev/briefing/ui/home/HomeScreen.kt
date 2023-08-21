@@ -31,10 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.dev.briefing.R
 import com.dev.briefing.data.News
+import com.dev.briefing.navigation.HomeScreen
+import com.dev.briefing.ui.article.ArticleScreen
 import com.dev.briefing.ui.theme.GradientEnd
 import com.dev.briefing.ui.theme.GradientStart
 import com.dev.briefing.ui.theme.MainPrimary
@@ -49,6 +52,8 @@ fun BriefingHome(
     modifier: Modifier = Modifier,
     onScrapClick:() -> Unit,
     onSettingClick:() -> Unit,
+    navController: NavController
+//    onDetailClick:(Int) -> Unit
 ) {
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
@@ -93,7 +98,10 @@ fun BriefingHome(
             style = MaterialTheme.typography.titleMedium,
         )
         Spacer(modifier = Modifier.height(29.dp))
-        ArticleList()
+        ArticleList(
+//            onDetailClick= onDetailClick
+            navController = navController
+        )
         }
 
     }
@@ -140,14 +148,16 @@ fun HomeHeader(
 
 @Composable
 fun ArticleList(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+//    onDetailClick: (Int)->Unit,
+    navController:NavController
 ){
     var newsList:List<News> = listOf(
         News(1,1,"잼버리","test1"),
-        News(1,1,"잼버리","test1"),
-        News(1,1,"잼버리","test1"),
-        News(1,1,"잼버리","test1"),
-        News(1,1,"잼버리","test1"),
+        News(2,1,"잼버리","test1"),
+        News(3,1,"잼버리","test1"),
+        News(4,1,"잼버리","test1"),
+        News(51,1,"잼버리","test1"),
         News(1,1,"잼버리","test1"),
     )
     Column(
@@ -171,11 +181,11 @@ fun ArticleList(
 
         }
         LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(13.dp)
-                ) {
+            verticalArrangement = Arrangement.spacedBy(13.dp)
+        ) {
             items(newsList){it ->
-                ArticleListTile(it,onClick = {
-                    //TODO:navigate to detail page
+                ArticleListTile(news = it, onItemClick = { id ->
+                    navController.navigate("${HomeScreen.Detail.route}/$id")
                 })
             }
         }
@@ -185,11 +195,13 @@ fun ArticleList(
 fun ArticleListTile(
     news: News = News(1,1,"잼버리","test1"),
     modifier: Modifier = Modifier,
-    onClick: (News) -> Unit
+    onItemClick: (Int) -> Unit
 ){
     Row(
         modifier.fillMaxWidth()
-            .clickable { onClick(news) }
+            .clickable {
+                onItemClick(news.id)
+            }
             .drawColoredShadow(
                 color = ShadowColor,
                 offsetX = 0.dp,
@@ -199,7 +211,7 @@ fun ArticleListTile(
                 borderRadius = 10.dp)
             .background(White,shape = RoundedCornerShape(40.dp))
 
-        .padding(vertical = 15.dp, horizontal = 13.dp),
+            .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Modifier
@@ -212,7 +224,7 @@ fun ArticleListTile(
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = news.subtitle,style = MaterialTheme.typography.labelSmall)
         }
-        Image(painter =painterResource(id = R.drawable.left_arrow) , contentDescription = "fdfd")
+        Image(painter = painterResource(id = R.drawable.left_arrow) , contentDescription = "fdfd")
     }
 }
 
