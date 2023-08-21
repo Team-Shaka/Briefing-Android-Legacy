@@ -64,7 +64,8 @@ fun ArticleDetail(
         Text(
             text = "강원도 새만금에서 열리는 '세계스카우트잼버리' 행사는 영국과 미국 단원의 조기 퇴영과 성범죄 발생 등으로 어려움을 겪고 있습니다. 폭염과 환자 발생으로 프로그램 중단되고, 주최지인 전북 참가자들도 퇴영 결정했습니다. 정부는 수습 총력전을 전개하며 행사 지원에 나서고 있으며, 서울시는 영국 단원들에게 활동 지원을 통해 대회 분위기를 끌어올릴 계획입니다. K팝 콘서트도 연기돼 전주월드컵경기장에서 개최될 예정이며, 국무총리는 대회 안전 관리를 강조하며 대회 정상화를 다짐하고 있습니다.",
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight(400)
+                fontWeight = FontWeight(400),
+
             )
         )
         Text(

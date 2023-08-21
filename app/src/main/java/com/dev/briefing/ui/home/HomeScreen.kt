@@ -24,12 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import com.dev.briefing.R
 import com.dev.briefing.data.News
 import com.dev.briefing.ui.theme.GradientEnd
@@ -41,15 +44,16 @@ import com.dev.briefing.ui.theme.utils.drawColoredShadow
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-@Preview
 @Composable
 fun BriefingHome(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScrapClick:() -> Unit,
+    onSettingClick:() -> Unit,
 ) {
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
-        startY = 50.0f,
-        endY = 100.0f
+        startY = 0.0f,
+        endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
     Column(
         modifier = Modifier
@@ -60,7 +64,10 @@ fun BriefingHome(
     ) {
         var horizontalscrollState = rememberScrollState()
         val timeList:MutableList<String> = mutableListOf("fdfd","fdfsf")
-        HomeHeader()
+        HomeHeader(
+            onScrapClick = onScrapClick,
+            onSettingClick = onSettingClick
+        )
         Spacer(modifier = Modifier.height(29.dp))
         LazyRow(
             modifier = modifier
@@ -92,13 +99,14 @@ fun BriefingHome(
     }
 
 
-@Preview
 @Composable
 fun HomeHeader(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScrapClick:() -> Unit,
+    onSettingClick:() -> Unit,
 ){
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 27.dp, vertical = 32.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -116,11 +124,15 @@ fun HomeHeader(
                     id = R.drawable.storage
                 ),
                 contentDescription = "저장 공간"
+                , modifier = Modifier
+                    .clickable(onClick = onScrapClick)
             )
             Spacer(modifier = Modifier.width(22.dp))
             Image(painter = painterResource(
                 id = R.drawable.setting),
-                contentDescription = "저장 공간")
+                contentDescription = "설정"
+                ,modifier = Modifier
+                    .clickable(onClick = onSettingClick))
         }
 
     }
@@ -128,15 +140,15 @@ fun HomeHeader(
 
 @Composable
 fun ArticleList(
-modifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ){
     var newsList:List<News> = listOf(
-        News(1,"잼버리","test1"),
-        News(2,"잼버리","test1"),
-        News(1,"잼버리","test1"),
-        News(2,"잼버리","test1"),
-        News(1,"잼버리","test1"),
-        News(2,"잼버리","test1"),
+        News(1,1,"잼버리","test1"),
+        News(1,1,"잼버리","test1"),
+        News(1,1,"잼버리","test1"),
+        News(1,1,"잼버리","test1"),
+        News(1,1,"잼버리","test1"),
+        News(1,1,"잼버리","test1"),
     )
     Column(
         modifier.background(White,shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
@@ -159,8 +171,8 @@ modifier: Modifier = Modifier
 
         }
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(13.dp)
-        ) {
+                verticalArrangement = Arrangement.spacedBy(13.dp)
+                ) {
             items(newsList){it ->
                 ArticleListTile(it,onClick = {
                     //TODO:navigate to detail page
@@ -171,7 +183,7 @@ modifier: Modifier = Modifier
 }
 @Composable
 fun ArticleListTile(
-    news: News = News(1,"잼버리","test1"),
+    news: News = News(1,1,"잼버리","test1"),
     modifier: Modifier = Modifier,
     onClick: (News) -> Unit
 ){
