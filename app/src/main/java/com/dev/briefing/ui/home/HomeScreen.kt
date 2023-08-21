@@ -1,5 +1,6 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.lazy.*
@@ -73,9 +74,12 @@ fun BriefingHome(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(29.dp))
         Text(
            "2023년 8월 7일",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = White
+            )
         )
         Text(
             text = "오늘의 키워드 브리핑",
@@ -128,11 +132,17 @@ modifier: Modifier = Modifier
 ){
     var newsList:List<News> = listOf(
         News(1,"잼버리","test1"),
-        News(2,"잼버리","test1")
+        News(2,"잼버리","test1"),
+        News(1,"잼버리","test1"),
+        News(2,"잼버리","test1"),
+        News(1,"잼버리","test1"),
+        News(2,"잼버리","test1"),
     )
     Column(
-        modifier.background(White)
+        modifier.background(White,shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
             .fillMaxHeight()
+            .padding(horizontal = 17.dp)
+
     ) {
         Row(
             modifier = modifier
@@ -143,7 +153,7 @@ modifier: Modifier = Modifier
             //Korea - Global Switch 때체
             Image(painter =painterResource(id = R.drawable.setting) , contentDescription = "fdfd")
             Text(
-                text = "R.drawable.setting",
+                text = "Updated: 23.08.07 5AM",
                 style = MaterialTheme.typography.labelMedium
             )
 
@@ -152,7 +162,9 @@ modifier: Modifier = Modifier
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
             items(newsList){it ->
-                ArticleListTile(it,modifier)
+                ArticleListTile(it,onClick = {
+                    //TODO:navigate to detail page
+                })
             }
         }
     }
@@ -160,20 +172,20 @@ modifier: Modifier = Modifier
 @Composable
 fun ArticleListTile(
     news: News = News(1,"잼버리","test1"),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (News) -> Unit
 ){
     Row(
         modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(40.dp))
-            .background(White)
-
+            .clickable { onClick(news) }
             .drawColoredShadow(
-            color = ShadowColor,
-            offsetX = 0.dp,
-            offsetY = 4.dp,
-            alpha = 0.1f,
-            shadowRadius = 4.dp,
-            borderRadius = 10.dp)
+                color = ShadowColor,
+                offsetX = 0.dp,
+                offsetY = 4.dp,
+                alpha = 0.1f,
+                shadowRadius = 4.dp,
+                borderRadius = 10.dp)
+            .background(White,shape = RoundedCornerShape(40.dp))
 
         .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween
