@@ -53,7 +53,11 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             )
         }
         composable(route = HomeScreen.Setting.route) {
-            SettingScreen()
+            SettingScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+            )
         }
         composable(route = HomeScreen.Scrap.route) {
             ScrapScreen(
