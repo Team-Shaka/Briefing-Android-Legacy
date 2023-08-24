@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import com.dev.briefing.data.NewsDetail
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.serialization.json.Json
+//import kotlinx.serialization.json.Json
 class PreferenceUtil(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("prefs_name", Context.MODE_PRIVATE)

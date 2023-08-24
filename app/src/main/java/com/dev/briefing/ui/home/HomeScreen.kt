@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -186,6 +187,7 @@ fun ArticleList(
             items(newsList){it ->
                 ArticleListTile(news = it, onItemClick = { id ->
                     navController.navigate("${HomeScreen.Detail.route}/$id")
+                    Log.d("2",id.toString())
                 })
             }
         }
@@ -200,6 +202,7 @@ fun ArticleListTile(
     Row(
         modifier.fillMaxWidth()
             .clickable {
+                Log.d("1",news.id.toString())
                 onItemClick(news.id)
             }
             .drawColoredShadow(

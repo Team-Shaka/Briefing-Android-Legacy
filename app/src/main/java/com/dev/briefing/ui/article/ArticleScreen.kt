@@ -1,5 +1,6 @@
 package com.dev.briefing.ui.article
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,6 +47,7 @@ fun ArticleScreen(
     onBackClick: () -> Unit = {},
     id:Int
 ) {
+    Log.d("3",id.toString())
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -104,7 +106,7 @@ fun DetailHeader(
                 .clickable(onClick = onBackClick)
         )
         Text(
-            text = "Briefing #1",
+            text = header,
             style = MaterialTheme.typography.titleMedium.copy(
                 color = White,
                 fontWeight = FontWeight(400)
