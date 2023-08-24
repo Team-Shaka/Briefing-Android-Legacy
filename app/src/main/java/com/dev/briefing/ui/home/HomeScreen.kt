@@ -19,7 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,14 +46,15 @@ import com.dev.briefing.ui.theme.MainPrimary
 import com.dev.briefing.ui.theme.ShadowColor
 import com.dev.briefing.ui.theme.White
 import com.dev.briefing.ui.theme.utils.drawColoredShadow
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun BriefingHome(
     modifier: Modifier = Modifier,
-    onScrapClick:() -> Unit,
-    onSettingClick:() -> Unit,
+    onScrapClick: () -> Unit,
+    onSettingClick: () -> Unit,
     navController: NavController
 //    onDetailClick:(Int) -> Unit
 ) {
@@ -69,7 +71,18 @@ fun BriefingHome(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         var horizontalscrollState = rememberScrollState()
-        val timeList:MutableList<String> = mutableListOf("fdfd","fdfsf")
+        var briefDate by remember { mutableStateOf(LocalDate.now()) }
+        var briefText = ""
+        briefText = if (briefDate == LocalDate.now()) {
+            "오늘"
+        } else {
+            "그날"
+        }
+        val timeList: MutableList<LocalDate> = mutableListOf(
+            LocalDate.now().minusDays(3),
+            LocalDate.now().minusDays(2),
+            LocalDate.now().minusDays(1),
+            LocalDate.now(),)
         HomeHeader(
             onScrapClick = onScrapClick,
             onSettingClick = onSettingClick
@@ -79,69 +92,76 @@ fun BriefingHome(
             modifier = modifier
                 .fillMaxWidth()
                 .scrollable(horizontalscrollState, Orientation.Horizontal),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(17.dp)
         ) {
             items(timeList) { time ->
                 Text(
-                    time, style =  MaterialTheme.typography.headlineLarge.copy(color = White)
+                    modifier = Modifier.clickable {
+                        briefDate = time
+                    },
+                    text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
+                    textDecoration = if (briefDate == time) TextDecoration.Underline else TextDecoration.None,
+                    style = MaterialTheme.typography.headlineLarge.copy(color = White)
                 )
             }
         }
         Spacer(modifier = Modifier.height(29.dp))
         Text(
-           "2023년 8월 7일",
+            "${briefDate.year}년 ${briefDate.month.value}월 ${briefDate.dayOfMonth}일",
             style = MaterialTheme.typography.headlineLarge.copy(
                 color = White
             )
         )
         Text(
-            text = "오늘의 키워드 브리핑",
+            text = "${briefText}의 키워드 브리핑",
             style = MaterialTheme.typography.titleMedium,
         )
         Spacer(modifier = Modifier.height(29.dp))
         ArticleList(
-//            onDetailClick= onDetailClick
             navController = navController
         )
-        }
-
     }
+
+}
 
 
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
-    onScrapClick:() -> Unit,
-    onSettingClick:() -> Unit,
-){
+    onScrapClick: () -> Unit,
+    onSettingClick: () -> Unit,
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 27.dp, vertical = 32.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
 
-    ){
-        Text(text =  stringResource(R.string.home_title),
+        ) {
+        Text(
+            text = stringResource(R.string.home_title),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontSize = 24.sp,
                 fontWeight = FontWeight(400)
-            ))
+            )
+        )
 
         Row {
             Image(
                 painter = painterResource(
                     id = R.drawable.storage
                 ),
-                contentDescription = "저장 공간"
-                , modifier = Modifier
+                contentDescription = "저장 공간", modifier = Modifier
                     .clickable(onClick = onScrapClick)
             )
             Spacer(modifier = Modifier.width(22.dp))
-            Image(painter = painterResource(
-                id = R.drawable.setting),
-                contentDescription = "설정"
-                ,modifier = Modifier
-                    .clickable(onClick = onSettingClick))
+            Image(
+                painter = painterResource(
+                    id = R.drawable.setting
+                ),
+                contentDescription = "설정", modifier = Modifier
+                    .clickable(onClick = onSettingClick)
+            )
         }
 
     }
@@ -151,18 +171,18 @@ fun HomeHeader(
 fun ArticleList(
     modifier: Modifier = Modifier,
 //    onDetailClick: (Int)->Unit,
-    navController:NavController
-){
-    var newsList:List<News> = listOf(
-        News(1,1,"잼버리","test1"),
-        News(2,1,"잼버리","test1"),
-        News(3,1,"잼버리","test1"),
-        News(4,1,"잼버리","test1"),
-        News(51,1,"잼버리","test1"),
-        News(1,1,"잼버리","test1"),
+    navController: NavController
+) {
+    var newsList: List<News> = listOf(
+        News(1, 1, "잼버리", "test1"),
+        News(2, 1, "잼버리", "test1"),
+        News(3, 1, "잼버리", "test1"),
+        News(4, 1, "잼버리", "test1"),
+        News(51, 1, "잼버리", "test1"),
+        News(1, 1, "잼버리", "test1"),
     )
     Column(
-        modifier.background(White,shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+        modifier.background(White, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
             .fillMaxHeight()
             .padding(horizontal = 17.dp)
 
@@ -174,7 +194,7 @@ fun ArticleList(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             //Korea - Global Switch 때체
-            Image(painter = painterResource(id = R.drawable.setting) , contentDescription = "fdfd")
+            Image(painter = painterResource(id = R.drawable.setting), contentDescription = "fdfd")
             Text(
                 text = "Updated: 23.08.07 5AM",
                 style = MaterialTheme.typography.labelMedium
@@ -184,25 +204,26 @@ fun ArticleList(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
-            items(newsList){it ->
+            items(newsList) { it ->
                 ArticleListTile(news = it, onItemClick = { id ->
                     navController.navigate("${HomeScreen.Detail.route}/$id")
-                    Log.d("2",id.toString())
+                    Log.d("2", id.toString())
                 })
             }
         }
     }
 }
+
 @Composable
 fun ArticleListTile(
-    news: News = News(1,1,"잼버리","test1"),
+    news: News = News(1, 1, "잼버리", "test1"),
     modifier: Modifier = Modifier,
     onItemClick: (Int) -> Unit
-){
+) {
     Row(
         modifier.fillMaxWidth()
             .clickable {
-                Log.d("1",news.id.toString())
+                Log.d("1", news.id.toString())
                 onItemClick(news.id)
             }
             .drawColoredShadow(
@@ -211,8 +232,9 @@ fun ArticleListTile(
                 offsetY = 4.dp,
                 alpha = 0.1f,
                 shadowRadius = 4.dp,
-                borderRadius = 10.dp)
-            .background(White,shape = RoundedCornerShape(40.dp))
+                borderRadius = 10.dp
+            )
+            .background(White, shape = RoundedCornerShape(40.dp))
 
             .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -223,11 +245,11 @@ fun ArticleListTile(
             .height(45.dp)
             .background(color = MainPrimary)
         Column() {
-            Text(text = news.title,style = MaterialTheme.typography.titleSmall)
+            Text(text = news.title, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = news.subtitle,style = MaterialTheme.typography.labelSmall)
+            Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
         }
-        Image(painter = painterResource(id = R.drawable.left_arrow) , contentDescription = "fdfd")
+        Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
     }
 }
 
