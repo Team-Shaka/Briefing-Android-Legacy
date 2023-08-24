@@ -23,18 +23,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
+import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.data.NewsLink
 import com.dev.briefing.ui.theme.GradientEnd
 import com.dev.briefing.ui.theme.GradientStart
 import com.dev.briefing.ui.theme.MainPrimary
 import com.dev.briefing.ui.theme.SubText2
 import com.dev.briefing.ui.theme.White
+import com.dev.briefing.util.SharedPreferenceHelper
+import java.time.LocalDate
 
 @Composable
 fun ArticleScreen(
@@ -77,7 +81,10 @@ fun DetailHeader(
     // 이미지 리소스를 불러옵니다.
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
-
+    val newItem =  NewsDetail(1, 1, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd")
+    val context = LocalContext.current
+    val currentItems = SharedPreferenceHelper.getItems(context)
+    val updatedItems = currentItems + newItem
     // 클릭 이벤트를 처리합니다.
     val image = if (isScrap) scrap else selectScrap
     val contentDescription = if (isScrap) "Unliked" else "Liked"
@@ -110,7 +117,8 @@ fun DetailHeader(
             modifier = Modifier.clickable(
                 onClick = {
                     isScrap = !isScrap
-                    //TODO: 스크랩 icon listener local db 연결
+                    SharedPreferenceHelper.saveItems(context, updatedItems)
+
                 }
             )
         )
