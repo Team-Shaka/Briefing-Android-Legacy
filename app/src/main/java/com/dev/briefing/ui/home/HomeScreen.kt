@@ -36,6 +36,7 @@ import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.ui.article.ArticleScreen
 import com.dev.briefing.ui.theme.*
 import com.dev.briefing.ui.theme.utils.drawColoredShadow
+import com.dev.briefing.util.UPDATE_DATE
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -60,25 +61,34 @@ fun BriefingHome(
             .background(brush = gradientBrush),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        //scroll
         var horizontalscrollState = rememberScrollState()
-        var briefDate by remember { mutableStateOf(LocalDate.now()) }
-        var briefText = ""
-        briefText = if (briefDate == LocalDate.now()) {
+
+        //time관련 변수
+        val timeList: MutableList<LocalDate> = mutableListOf()
+        var updateDate: LocalDate = UPDATE_DATE
+        val today: LocalDate = LocalDate.now()
+        //TODO: time add start 출시일 ~ end 오늘날
+        while (today.isAfter(updateDate)) {
+            timeList.add(updateDate)
+            Log.d("time", updateDate.format(DateTimeFormatter.ofPattern("yy.MM.dd")))
+            updateDate = updateDate.plusDays(1)
+        }
+        timeList.add(today)
+        Log.d("time", timeList.size.toString())
+
+        var briefDate by remember { mutableStateOf(today) }
+        var briefText = if (briefDate == today) {
             "오늘"
         } else {
             "그날"
         }
-        val timeList: MutableList<LocalDate> = mutableListOf(
-            LocalDate.now().minusDays(3),
-            LocalDate.now().minusDays(2),
-            LocalDate.now().minusDays(1),
-            LocalDate.now(),
-        )
+
         HomeHeader(
             onScrapClick = onScrapClick,
             onSettingClick = onSettingClick
         )
-//        Spacer(modifier = Modifier.height(29.dp))
+
         LazyRow(
             modifier = modifier
                 .fillMaxWidth()
@@ -96,6 +106,7 @@ fun BriefingHome(
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(29.dp))
         Text(
             "${briefDate.year}년 ${briefDate.month.value}월 ${briefDate.dayOfMonth}일",
@@ -107,7 +118,9 @@ fun BriefingHome(
             text = "${briefText}의 키워드 브리핑",
             style = MaterialTheme.typography.titleMedium,
         )
+
         Spacer(modifier = Modifier.height(29.dp))
+
         ArticleList(
             navController = navController
         )
@@ -232,45 +245,36 @@ fun ArticleListTile(
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(14.dp)
-        ) { Canvas(
-            modifier = Modifier.width(45.dp).height(45.dp)
         ) {
-            val radius = size.minDimension / 2f
-            val center = Offset(size.width / 2f, size.height / 2f)
             val backgroundColor = when (news.rank) {
                 1 -> MainPrimary
                 2 -> MainPrimary2
-                3-> MainPrimary3
-                else->White
+                3 -> MainPrimary3
+                else -> White
             }
-            drawCircle(
-                color = backgroundColor,
-                center = center,
-                radius = radius
-            )
-            drawIntoCanvas { canvas ->
-                val text = news.rank
-                val textBounds = canvas.nativeCanvas.clipBounds
+            Box(
+                modifier = Modifier
+                    .size(45.dp)
+                    .background(color = backgroundColor,shape = RoundedCornerShape(50.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
+                    color = if(backgroundColor==White) MainPrimary else White
+                ))
 
-                canvas.nativeCanvas.drawText(
-                    text.toString(),
-                    textBounds.centerX().toFloat(),
-                    textBounds.centerY().toFloat() + 19/ 2,
-                    Paint().apply {
-                        color = android.graphics.Color.WHITE
-                        textAlign = Paint.Align.CENTER
-                    }
-                )
             }
-        }
-
             Column() {
                 Text(text = news.title, style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
-            } }
+            }
+
+
+        }
+
 
         Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
     }
 }
+
 
