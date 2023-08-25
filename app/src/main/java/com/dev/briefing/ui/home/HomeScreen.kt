@@ -1,21 +1,11 @@
+import android.graphics.Paint
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,11 +13,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,11 +34,7 @@ import com.dev.briefing.R
 import com.dev.briefing.data.News
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.ui.article.ArticleScreen
-import com.dev.briefing.ui.theme.GradientEnd
-import com.dev.briefing.ui.theme.GradientStart
-import com.dev.briefing.ui.theme.MainPrimary
-import com.dev.briefing.ui.theme.ShadowColor
-import com.dev.briefing.ui.theme.White
+import com.dev.briefing.ui.theme.*
 import com.dev.briefing.ui.theme.utils.drawColoredShadow
 import java.time.LocalDate
 import java.time.LocalTime
@@ -82,12 +72,13 @@ fun BriefingHome(
             LocalDate.now().minusDays(3),
             LocalDate.now().minusDays(2),
             LocalDate.now().minusDays(1),
-            LocalDate.now(),)
+            LocalDate.now(),
+        )
         HomeHeader(
             onScrapClick = onScrapClick,
             onSettingClick = onSettingClick
         )
-        Spacer(modifier = Modifier.height(29.dp))
+//        Spacer(modifier = Modifier.height(29.dp))
         LazyRow(
             modifier = modifier
                 .fillMaxWidth()
@@ -175,14 +166,14 @@ fun ArticleList(
 ) {
     var newsList: List<News> = listOf(
         News(1, 1, "잼버리", "test1"),
-        News(2, 1, "잼버리", "test1"),
-        News(3, 1, "잼버리", "test1"),
-        News(4, 1, "잼버리", "test1"),
-        News(51, 1, "잼버리", "test1"),
-        News(1, 1, "잼버리", "test1"),
+        News(2, 2, "잼버리", "test1"),
+        News(3, 3, "잼버리", "test1"),
+        News(4, 4, "잼버리", "test1"),
+        News(51, 5, "잼버리", "test1"),
+        News(1, 6, "잼버리", "test1"),
     )
     Column(
-        modifier.background(White, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+        modifier.background(SubBackGround, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
             .fillMaxHeight()
             .padding(horizontal = 17.dp)
 
@@ -229,26 +220,56 @@ fun ArticleListTile(
             .drawColoredShadow(
                 color = ShadowColor,
                 offsetX = 0.dp,
-                offsetY = 4.dp,
+                offsetY = 2.dp,
                 alpha = 0.1f,
-                shadowRadius = 4.dp,
-                borderRadius = 10.dp
+//                shadowRadius = 4.dp,
+                borderRadius = 5.dp
             )
             .background(White, shape = RoundedCornerShape(40.dp))
 
             .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Modifier
-            .padding(1.dp)
-            .width(45.dp)
-            .height(45.dp)
-            .background(color = MainPrimary)
-        Column() {
-            Text(text = news.title, style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) { Canvas(
+            modifier = Modifier.width(45.dp).height(45.dp)
+        ) {
+            val radius = size.minDimension / 2f
+            val center = Offset(size.width / 2f, size.height / 2f)
+            val backgroundColor = when (news.rank) {
+                1 -> MainPrimary
+                2 -> MainPrimary2
+                3-> MainPrimary3
+                else->White
+            }
+            drawCircle(
+                color = backgroundColor,
+                center = center,
+                radius = radius
+            )
+            drawIntoCanvas { canvas ->
+                val text = news.rank
+                val textBounds = canvas.nativeCanvas.clipBounds
+
+                canvas.nativeCanvas.drawText(
+                    text.toString(),
+                    textBounds.centerX().toFloat(),
+                    textBounds.centerY().toFloat() + 19/ 2,
+                    Paint().apply {
+                        color = android.graphics.Color.WHITE
+                        textAlign = Paint.Align.CENTER
+                    }
+                )
+            }
         }
+
+            Column() {
+                Text(text = news.title, style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
+            } }
+
         Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
     }
 }
