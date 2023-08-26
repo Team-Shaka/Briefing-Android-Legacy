@@ -14,7 +14,7 @@ import retrofit2.Response
 
 fun getBriefingData(
     briefingDate: String = LocalDate.now().format(DateTimeFormatter.ISO_DATE),
-    type: String = "Korea",
+    type: String = "korea",
 ) :BriefingResponse{
     var briefingResponse:BriefingResponse = BriefingResponse(
         created_at = briefingDate,

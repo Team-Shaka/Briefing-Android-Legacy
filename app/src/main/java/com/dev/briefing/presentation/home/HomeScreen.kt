@@ -175,14 +175,14 @@ fun ArticleList(
     briefingResponse: BriefingResponse,
     navController: NavController
 ) {
-//    var newsList: List<News> = listOf(
-//        News(1, 1, "잼버리", "test1"),
-//        News(2, 2, "잼버리", "test1"),
-//        News(3, 3, "잼버리", "test1"),
-//        News(4, 4, "잼버리", "test1"),
-//        News(51, 5, "잼버리", "test1"),
-//        News(1, 6, "잼버리", "test1"),
-//    )
+    var tmpnewsList: List<BriefingPreview> = listOf(
+        BriefingPreview(1, 1, "잼버리", "test1"),
+        BriefingPreview(2, 2, "잼버리", "test2"),
+        BriefingPreview(3, 3, "잼버리", "test3"),
+        BriefingPreview(4, 4, "잼버리", "test4"),
+        BriefingPreview(5, 5, "잼버리", "test5"),
+
+    )
 
     Column(
         modifier.background(SubBackGround, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
@@ -204,26 +204,29 @@ fun ArticleList(
             )
 
         }
-        if(briefingResponse.briefings?.isNotEmpty() == true){
+//        if(briefingResponse.briefings?.isNotEmpty() == true){
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
-                items(briefingResponse.briefings) { it ->
+                items(
+//                    briefingResponse.briefings
+                    tmpnewsList
+                ) { it ->
                     ArticleListTile(news = it, onItemClick = { id ->
                         navController.navigate("${HomeScreen.Detail.route}/$id")
                         Log.d("2", id.toString())
                     })
                 }
             }
-        }else{
-            Text(
-                modifier = modifier.align(Alignment.CenterHorizontally),
-                text = "컨텐츠 준비중입니다",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = MainPrimary
-                ),
-            )
-        }
+//        }else{
+//            Text(
+//                modifier = modifier.align(Alignment.CenterHorizontally),
+//                text = "컨텐츠 준비중입니다",
+//                style = MaterialTheme.typography.titleMedium.copy(
+//                    color = MainPrimary
+//                ),
+//            )
+//        }
 
     }
 }
@@ -250,7 +253,8 @@ fun ArticleListTile(
             .background(White, shape = RoundedCornerShape(40.dp))
 
             .padding(vertical = 15.dp, horizontal = 13.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(14.dp)
@@ -272,12 +276,14 @@ fun ArticleListTile(
                 ))
 
             }
-            Column() {
+            Column(
+                modifier = modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(text = news.title, style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
             }
-
 
         }
 

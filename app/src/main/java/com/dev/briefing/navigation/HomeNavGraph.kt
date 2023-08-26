@@ -7,7 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.dev.briefing.presentation.article.ArticleScreen
+import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.scrap.ScrapScreen
 import com.dev.briefing.presentation.setting.SettingScreen
 
@@ -34,7 +34,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             route = HomeScreen.Detail.route+"/{id}")
             {backStackEntry ->
             var id: Int = backStackEntry.arguments?.getInt("id")?: 0
-            ArticleScreen(
+            ArticleDetailScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
