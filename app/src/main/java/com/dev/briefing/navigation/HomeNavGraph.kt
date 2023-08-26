@@ -1,20 +1,15 @@
 package com.dev.briefing.navigation
 
 import BriefingHome
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dev.briefing.ui.article.ArticleDetail
-import com.dev.briefing.ui.article.ArticleScreen
-import com.dev.briefing.ui.chat.ChatScreen
-import com.dev.briefing.ui.scrap.ScrapScreen
-import com.dev.briefing.ui.setting.SettingScreen
+import com.dev.briefing.presentation.article.ArticleScreen
+import com.dev.briefing.presentation.scrap.ScrapScreen
+import com.dev.briefing.presentation.setting.SettingScreen
 
 
 

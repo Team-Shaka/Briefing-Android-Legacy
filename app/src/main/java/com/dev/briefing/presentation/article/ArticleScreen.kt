@@ -1,17 +1,15 @@
-package com.dev.briefing.ui.article
+package com.dev.briefing.presentation.article
 
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -23,11 +21,11 @@ import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.data.NewsLink
-import com.dev.briefing.ui.theme.GradientEnd
-import com.dev.briefing.ui.theme.GradientStart
-import com.dev.briefing.ui.theme.MainPrimary
-import com.dev.briefing.ui.theme.SubText2
-import com.dev.briefing.ui.theme.White
+import com.dev.briefing.presentation.theme.GradientEnd
+import com.dev.briefing.presentation.theme.GradientStart
+import com.dev.briefing.presentation.theme.MainPrimary
+import com.dev.briefing.presentation.theme.SubText2
+import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.util.SharedPreferenceHelper
 import java.time.LocalDate
 

@@ -6,7 +6,7 @@ data class BriefingResponse(
     @SerializedName("created_at")
     val created_at: String,
     @SerializedName("briefings")
-    val result: List<BriefingPreview>?
+    val briefings: List<BriefingPreview>?
 )
 data class BriefingPreview(
     @SerializedName("id")
