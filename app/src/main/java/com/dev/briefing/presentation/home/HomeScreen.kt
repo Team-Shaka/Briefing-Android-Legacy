@@ -1,4 +1,3 @@
-import android.graphics.Paint
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
@@ -12,33 +11,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import com.dev.briefing.R
 import com.dev.briefing.data.News
+import com.dev.briefing.data.model.BriefingPreview
+import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.navigation.HomeScreen
-import com.dev.briefing.ui.article.ArticleScreen
-import com.dev.briefing.ui.theme.*
-import com.dev.briefing.ui.theme.utils.drawColoredShadow
+import com.dev.briefing.presentation.home.getBriefingData
+import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.presentation.theme.utils.drawColoredShadow
 import com.dev.briefing.util.UPDATE_DATE
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -61,6 +53,7 @@ fun BriefingHome(
             .background(brush = gradientBrush),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+
         //scroll
         var horizontalscrollState = rememberScrollState()
 
@@ -78,6 +71,10 @@ fun BriefingHome(
         Log.d("time", timeList.size.toString())
 
         var briefDate by remember { mutableStateOf(today) }
+        var response: BriefingResponse = getBriefingData(
+            briefingDate = briefDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            type = "Korea"
+        )
         var briefText = if (briefDate == today) {
             "오늘"
         } else {
@@ -122,7 +119,8 @@ fun BriefingHome(
         Spacer(modifier = Modifier.height(29.dp))
 
         ArticleList(
-            navController = navController
+            navController = navController,
+            briefingResponse = response
         )
     }
 
@@ -174,17 +172,18 @@ fun HomeHeader(
 @Composable
 fun ArticleList(
     modifier: Modifier = Modifier,
-//    onDetailClick: (Int)->Unit,
+    briefingResponse: BriefingResponse,
     navController: NavController
 ) {
-    var newsList: List<News> = listOf(
-        News(1, 1, "잼버리", "test1"),
-        News(2, 2, "잼버리", "test1"),
-        News(3, 3, "잼버리", "test1"),
-        News(4, 4, "잼버리", "test1"),
-        News(51, 5, "잼버리", "test1"),
-        News(1, 6, "잼버리", "test1"),
+    var tmpnewsList: List<BriefingPreview> = listOf(
+        BriefingPreview(1, 1, "잼버리", "test1"),
+        BriefingPreview(2, 2, "잼버리", "test2"),
+        BriefingPreview(3, 3, "잼버리", "test3"),
+        BriefingPreview(4, 4, "잼버리", "test4"),
+        BriefingPreview(5, 5, "잼버리", "test5"),
+
     )
+
     Column(
         modifier.background(SubBackGround, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
             .fillMaxHeight()
@@ -200,34 +199,47 @@ fun ArticleList(
             //Korea - Global Switch 때체
             Image(painter = painterResource(id = R.drawable.setting), contentDescription = "fdfd")
             Text(
-                text = "Updated: 23.08.07 5AM",
+                text = "Updated: ${briefingResponse.created_at} 5AM",
                 style = MaterialTheme.typography.labelMedium
             )
 
         }
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(13.dp)
-        ) {
-            items(newsList) { it ->
-                ArticleListTile(news = it, onItemClick = { id ->
-                    navController.navigate("${HomeScreen.Detail.route}/$id")
-                    Log.d("2", id.toString())
-                })
+//        if(briefingResponse.briefings?.isNotEmpty() == true){
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(13.dp)
+            ) {
+                items(
+//                    briefingResponse.briefings
+                    tmpnewsList
+                ) { it ->
+                    ArticleListTile(news = it, onItemClick = { id ->
+                        navController.navigate("${HomeScreen.Detail.route}/$id")
+                        Log.d("2", id.toString())
+                    })
+                }
             }
-        }
+//        }else{
+//            Text(
+//                modifier = modifier.align(Alignment.CenterHorizontally),
+//                text = "컨텐츠 준비중입니다",
+//                style = MaterialTheme.typography.titleMedium.copy(
+//                    color = MainPrimary
+//                ),
+//            )
+//        }
+
     }
 }
 
 @Composable
 fun ArticleListTile(
-    news: News = News(1, 1, "잼버리", "test1"),
+    news:  BriefingPreview,
     modifier: Modifier = Modifier,
     onItemClick: (Int) -> Unit
 ) {
     Row(
         modifier.fillMaxWidth()
             .clickable {
-                Log.d("1", news.id.toString())
                 onItemClick(news.id)
             }
             .drawColoredShadow(
@@ -241,7 +253,8 @@ fun ArticleListTile(
             .background(White, shape = RoundedCornerShape(40.dp))
 
             .padding(vertical = 15.dp, horizontal = 13.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(14.dp)
@@ -263,12 +276,14 @@ fun ArticleListTile(
                 ))
 
             }
-            Column() {
+            Column(
+                modifier = modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(text = news.title, style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
             }
-
 
         }
 

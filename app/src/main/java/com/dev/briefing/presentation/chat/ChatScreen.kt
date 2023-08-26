@@ -1,4 +1,4 @@
-package com.dev.briefing.ui.chat
+package com.dev.briefing.presentation.chat
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ChattingScreen (
+fun ChatScreen (
     modifier: Modifier = Modifier
 ){
     Text(

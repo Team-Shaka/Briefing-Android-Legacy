@@ -4,8 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.dev.briefing.ui.chat.ChatScreen
-import com.dev.briefing.ui.chat.ChattingScreen
+import com.dev.briefing.presentation.chat.ChatScreen
+import com.dev.briefing.presentation.chat.ChattingScreen
 
 
 fun NavGraphBuilder.chatNavGraph(navController: NavHostController) {

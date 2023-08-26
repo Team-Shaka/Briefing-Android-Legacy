@@ -1,21 +1,20 @@
-package com.dev.briefing.ui.article
+package com.dev.briefing.presentation.detail
 
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,21 +22,23 @@ import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.data.NewsLink
-import com.dev.briefing.ui.theme.GradientEnd
-import com.dev.briefing.ui.theme.GradientStart
-import com.dev.briefing.ui.theme.MainPrimary
-import com.dev.briefing.ui.theme.SubText2
-import com.dev.briefing.ui.theme.White
+import com.dev.briefing.data.model.Article
+import com.dev.briefing.data.model.BriefingDetailResponse
+import com.dev.briefing.presentation.theme.GradientEnd
+import com.dev.briefing.presentation.theme.GradientStart
+import com.dev.briefing.presentation.theme.MainPrimary
+import com.dev.briefing.presentation.theme.SubText2
+import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.util.SharedPreferenceHelper
 import java.time.LocalDate
 
 @Composable
-fun ArticleScreen(
+fun ArticleDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     id:Int
 ) {
-    Log.d("3",id.toString())
+    val articleResponse: BriefingDetailResponse = getArticleDetail(id)
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -52,12 +53,14 @@ fun ArticleScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            header = "Briefing #$id"
+            rank = articleResponse.id
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
             item {
-                ArticleDetail()
+                ArticleDetail(
+                    article = articleResponse
+                )
                 Spacer(modifier = Modifier.height(25.dp))
             }
         }
@@ -67,7 +70,7 @@ fun ArticleScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
-    header: String = ""
+    rank: Int = 0
 ) {
     var isScrap by remember { mutableStateOf(false) }
     // 이미지 리소스를 불러옵니다.
@@ -96,7 +99,7 @@ fun DetailHeader(
                 .clickable(onClick = onBackClick)
         )
         Text(
-            text = header,
+            text = "Briefing #${rank}",
             style = MaterialTheme.typography.titleMedium.copy(
                 color = White,
                 fontWeight = FontWeight(400)
@@ -118,14 +121,14 @@ fun DetailHeader(
     }
 }
 
-@Preview
 @Composable
 fun ArticleDetail(
     modifier: Modifier = Modifier,
+    article:BriefingDetailResponse
 ) {
-    var newsList: List<NewsLink> = listOf(
-        NewsLink("연합뉴스", "잼버리", "test1"),
-        NewsLink("연합뉴스", "잼버리", "test1"),
+    var tmpNewsList: List<Article> = listOf(
+        Article(1,"연합뉴스", "잼버리", "test1"),
+        Article(2,"연합뉴스", "잼버리", "test1"),
     )
     Column(
         modifier = modifier
@@ -142,7 +145,8 @@ fun ArticleDetail(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "23.08.07 Breifing #1",
+                //TODO: 날짜 api에서 제공
+                text = "23.08.07 Breifing #${article.rank}",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = SubText2,
                             fontWeight = FontWeight(400)
@@ -152,28 +156,28 @@ fun ArticleDetail(
             )
         }
         Text(
-            text = "잼버리 행사",
+            text = article.title,
             style = MaterialTheme.typography.titleLarge
         )
         Text(
-            text = "잼버리 행사 관련 논란 및 정부와의 갈등",
+            text = article.subtitle,
             style = MaterialTheme.typography.headlineLarge
         )
         Text(
-            text = "강원도 새만금에서 열리는 '세계스카우트잼버리' 행사는 영국과 미국 단원의 조기 퇴영과 성범죄 발생 등으로 어려움을 겪고 있습니다. 폭염과 환자 발생으로 프로그램 중단되고, 주최지인 전북 참가자들도 퇴영 결정했습니다. 정부는 수습 총력전을 전개하며 행사 지원에 나서고 있으며, 서울시는 영국 단원들에게 활동 지원을 통해 대회 분위기를 끌어올릴 계획입니다. K팝 콘서트도 연기돼 전주월드컵경기장에서 개최될 예정이며, 국무총리는 대회 안전 관리를 강조하며 대회 정상화를 다짐하고 있습니다.",
+            text =  article.content,
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight(400),
 
                 )
         )
         Text(
-            text = "관련 기사",
+            text = stringResource(R.string.detail_article_header),
             style = MaterialTheme.typography.headlineLarge
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
-            newsList.forEach { it ->
+            article.articles.forEach { it ->
                 ArticleLink(it)
             }
         }
@@ -184,7 +188,7 @@ fun ArticleDetail(
 
 @Composable
 fun ArticleLink(
-    newsLink: NewsLink,
+    newsLink: Article,
     modifier: Modifier = Modifier
 ) {
     Row(

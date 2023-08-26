@@ -1,4 +1,4 @@
-package com.dev.briefing.ui.theme.utils
+package com.dev.briefing.presentation.theme.utils
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
