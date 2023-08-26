@@ -14,7 +14,8 @@ import com.google.accompanist.web.rememberWebViewState
 
 @Composable
 fun ChattingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit
 ) {
     val webViewState =
         rememberWebViewState(
@@ -25,10 +26,14 @@ fun ChattingScreen(
     val webChromeClient = AccompanistWebChromeClient()
 
     Column {
-        CommonHeader(
-            onBackClick = {},
-          header = "채팅 기록"
-        )
+        Box(
+            modifier = Modifier.padding(horizontal = 30.dp)
+        ) {
+            CommonHeader(
+                onBackClick = onBackClick,
+                header = "채팅 기록"
+            )
+        }
         WebView(
             modifier = Modifier.fillMaxHeight(),
             state = webViewState,

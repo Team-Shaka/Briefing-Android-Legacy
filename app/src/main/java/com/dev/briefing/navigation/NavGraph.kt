@@ -48,8 +48,7 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
             )
         }
     ) {
-        val screenInsets = WindowInsets.navigationBars
-
+//        val screenInsets = WindowInsets.navigationBars
         Column (
             modifier = Modifier
                 .padding(bottom = 80.dp)
@@ -58,7 +57,6 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             RootNavigationGraph(navController = navController)
-
         }
     }
 }

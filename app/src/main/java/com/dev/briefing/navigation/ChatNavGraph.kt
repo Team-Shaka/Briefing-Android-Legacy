@@ -14,10 +14,18 @@ fun NavGraphBuilder.chatNavGraph(navController: NavHostController) {
         startDestination = ChatScreen.Chat.route
     ) {
         composable(route = ChatScreen.Chat.route) {
-            ChatScreen()
+            ChatScreen(
+                onScrapClick = {
+                    navController.navigate(ChatScreen.Chatting.route)
+                }
+            )
         }
         composable(route = ChatScreen.Chatting.route) {
-            ChattingScreen()
+            ChattingScreen(
+                onBackClick={
+                    navController.popBackStack()
+                }
+            )
         }
 
     }

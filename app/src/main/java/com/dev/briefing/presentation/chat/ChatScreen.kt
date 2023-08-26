@@ -28,7 +28,8 @@ import com.google.accompanist.web.rememberWebViewState
 
 @Composable
 fun ChatScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScrapClick:()->Unit={}
 ) {
     val webViewState =
         rememberWebViewState(
@@ -37,12 +38,11 @@ fun ChatScreen(
         )
     val webViewClient = AccompanistWebViewClient()
     val webChromeClient = AccompanistWebChromeClient()
-//    Text(
-//        text = "Updated: 23.0ho8.07 5AM",
-//        style = MaterialTheme.typography.labelMedium
-//    )
+
     Column {
-        ChatHeader()
+        ChatHeader(
+            onScrapClick = onScrapClick
+        )
         WebView(
             state = webViewState,
             client = webViewClient,
@@ -57,7 +57,6 @@ fun ChatScreen(
                 }
             }
         )
-        Spacer(modifier = Modifier.height(200.dp))
 
     }
 
