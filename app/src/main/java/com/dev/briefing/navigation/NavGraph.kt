@@ -29,11 +29,13 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
         bottomBar = {
             BottomNavigationBar(
                 selectedItemPosition = when (currentRoute) {
+                    //TODO: 상세페이지 분기처리가 필요
                     HomeScreen.Home.route -> 0
                     ChatScreen.Chat.route -> 1
                     else -> 0
                 }, { selectedItemPosition ->
                     when (selectedItemPosition) {
+                        //TODO: popStack 추가
                         0 -> navController.navigate(HomeScreen.Home.route)
                         1 -> navController.navigate(ChatScreen.Chat.route)
                     }
