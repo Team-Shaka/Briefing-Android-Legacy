@@ -38,7 +38,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             arguments = listOf( navArgument("id") { type = NavType.IntType }),
             route = HomeScreen.Detail.route+"/{id}")
             {backStackEntry ->
-            var id: Int = backStackEntry.arguments?.getInt("key")?: 0
+            var id: Int = backStackEntry.arguments?.getInt("id")?: 0
             ArticleScreen(
                 onBackClick = {
                     navController.popBackStack()
