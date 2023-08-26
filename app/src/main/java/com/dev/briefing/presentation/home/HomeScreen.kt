@@ -47,7 +47,7 @@ fun BriefingHome(
         endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .background(brush = gradientBrush),

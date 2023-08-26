@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.BorderColor
 import com.dev.briefing.presentation.theme.MainPrimary
@@ -187,6 +188,7 @@ fun CommonHeader(
             text = header,
             style = MaterialTheme.typography.titleMedium.copy(
                 color = MainPrimary,
+                fontSize = 24.sp,
                 fontWeight = FontWeight(400)
             )
         )

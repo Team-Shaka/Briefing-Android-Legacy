@@ -2,11 +2,13 @@ package com.dev.briefing.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -46,7 +48,16 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
             )
         }
     ) {
-        RootNavigationGraph(navController = navController)
+//        val screenInsets = WindowInsets.navigationBars
+        Column (
+            modifier = Modifier
+                .padding(bottom = 80.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            RootNavigationGraph(navController = navController)
+        }
     }
 }
 
