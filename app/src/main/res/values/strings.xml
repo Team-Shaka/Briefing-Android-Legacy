@@ -13,4 +13,7 @@
     <string name="setting_logout">로그아웃</string>
     <string name="setting_signout">회원탈퇴</string>
     <string name="detail_article_header">관련 기사</string>
+    <string name="notification_channel_id">your_channel_id</string>
+    <string name="notification_channel_name">Your Channel Name</string>
+    <string name="notification_channel_description">Your Channel Description</string>
 </resources>
