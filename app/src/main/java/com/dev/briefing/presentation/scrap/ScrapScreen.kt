@@ -1,6 +1,7 @@
 package com.dev.briefing.presentation.scrap
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.data.NewsDetail
+import com.dev.briefing.navigation.HomeScreen
+import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.setting.CommonHeader
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
@@ -36,8 +40,8 @@ fun ScrapScreen(
 ) {
     val context = LocalContext.current
     val viewModel: ScrapViewModel = ScrapViewModel()
-    val newsList = viewModel.getScrapData(context)
-    val dateList: List<String> = newsList.keys.toList()
+    var newsList = viewModel.getScrapData(context)
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -59,7 +63,7 @@ fun ScrapScreen(
 //            }
             items(newsList.entries.toList()) { entry ->
                 // entry는 Map.Entry<String, List<Int>> 타입입니다.
-                ArticleSection(localDate= entry.key, tmpNewsList= entry.value)
+                ArticleSection(localDate = entry.key, tmpNewsList = entry.value)
             }
         }
     }
@@ -70,9 +74,9 @@ fun ScrapScreen(
 fun ArticleSection(
     modifier: Modifier = Modifier,
     localDate: String,
-    tmpNewsList:List<NewsDetail>
+    tmpNewsList: List<NewsDetail>
 ) {
-    val newsList= tmpNewsList.sortedBy { it.rank }
+    val newsList = tmpNewsList.sortedBy { it.rank }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -103,13 +107,21 @@ fun ArticleSection(
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
-    news: NewsDetail
+    news: NewsDetail,
 ) {
     Row(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 11.dp),
-        verticalAlignment = Alignment.Top,
+            .padding(horizontal = 20.dp, vertical = 11.dp)
+            //TODO: navigate to DetailScreen
+//            .clickable(
+//                onClick = {
+//                     ArticleDetailScreen(
+//                        id = news.id
+//                    )
+//                }
+//            ),
+        ,verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
