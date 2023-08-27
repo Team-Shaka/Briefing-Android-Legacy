@@ -1,5 +1,8 @@
 package com.dev.briefing.presentation.detail
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.dev.briefing.R
 import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.Article
@@ -34,6 +38,8 @@ fun ArticleDetailScreen(
     onBackClick: () -> Unit = {},
     id: Int
 ) {
+    val context = LocalContext.current
+
     val articleResponse: BriefingDetailResponse = getArticleDetail(id)
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
@@ -49,13 +55,15 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            briefing = articleResponse
+            briefing = articleResponse,
+            context = context
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
             item {
                 ArticleDetail(
-                    article = articleResponse
+                    article = articleResponse,
+                    context = context
                 )
                 Spacer(modifier = Modifier.height(25.dp))
             }
@@ -66,9 +74,9 @@ fun ArticleDetailScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
-    briefing: BriefingDetailResponse
+    briefing: BriefingDetailResponse,
+    context: Context
 ) {
-    val context = LocalContext.current
     val existingMap = SharedPreferenceHelper.loadDateIdMap(context)
     val existingIdList = existingMap[briefing.date]?.toMutableList() ?: mutableListOf()
     var isScrap by remember { mutableStateOf(briefing.id in existingIdList) }
@@ -132,7 +140,8 @@ fun DetailHeader(
 @Composable
 fun ArticleDetail(
     modifier: Modifier = Modifier,
-    article: BriefingDetailResponse
+    article: BriefingDetailResponse,
+    context: Context
 ) {
     var tmpNewsList: List<Article> = listOf(
         Article(1, "연합뉴스", "잼버리", "test1"),
@@ -186,7 +195,8 @@ fun ArticleDetail(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
             article.articles.forEach { it ->
-                ArticleLink(it)
+                ArticleLink(newsLink= it,
+                    context= context)
             }
         }
         Spacer(modifier = Modifier.height(25.dp))
@@ -197,14 +207,19 @@ fun ArticleDetail(
 @Composable
 fun ArticleLink(
     newsLink: Article,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context: Context
 ) {
     Row(
         modifier
             .fillMaxWidth()
             .background(White, shape = RoundedCornerShape(40.dp))
             .border(1.dp, MainPrimary, shape = RoundedCornerShape(10.dp))
-            .padding(vertical = 9.dp, horizontal = 13.dp),
+            .padding(vertical = 9.dp, horizontal = 13.dp)
+            .clickable {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsLink.url))
+                ContextCompat.startActivity(context, intent, null)
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

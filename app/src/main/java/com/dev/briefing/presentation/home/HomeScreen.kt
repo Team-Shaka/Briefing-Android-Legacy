@@ -196,10 +196,9 @@ fun ArticleList(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = 11.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.End
         ) {
             //Korea - Global Switch 때체
-            Image(painter = painterResource(id = R.drawable.setting), contentDescription = "fdfd")
             Text(
                 text = "Updated: ${briefingResponse.created_at} 5AM",
                 style = MaterialTheme.typography.labelMedium
