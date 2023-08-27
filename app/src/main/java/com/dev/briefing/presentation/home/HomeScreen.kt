@@ -4,6 +4,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.GenericShape
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -15,27 +16,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+
 import androidx.navigation.NavController
 import com.dev.briefing.R
-import com.dev.briefing.data.News
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.util.MOCK_DATE
 import com.dev.briefing.util.SERVER_TAG
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
 
@@ -89,20 +88,26 @@ fun BriefingHome(
             modifier = modifier
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(17.dp)
+            horizontalArrangement = Arrangement.Center,
+            contentPadding = PaddingValues(horizontal = 21.dp),
         ) {
             items(homeViewModel.timeList) { time ->
-                val clickAble = time != LocalDate.of(2022,11,22)
+                val clickAble = time != MOCK_DATE
                 val color = if(!clickAble) Color.Transparent else White
-
-                Text(
-                    modifier = Modifier.clickable(clickAble) {
+                Box(
+                    modifier = Modifier
+                        .border(2.dp, if(homeViewModel.briefDate.value==time) White else Color.Transparent,shape = getBottomLineShape(4))
+                        .padding(bottom = 5.dp)
+                ){
+                    Text(
+                        modifier = Modifier.clickable(clickAble) {
                             homeViewModel.changeBriefDate(time)
-                    },
-                    text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
-                    textDecoration = if (homeViewModel.briefDate.value == time) TextDecoration.Underline else TextDecoration.None,
-                    style = MaterialTheme.typography.headlineLarge.copy(color = color)
-                )
+                        },
+                        text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
+                        style = MaterialTheme.typography.headlineLarge.copy(color = color)
+                    )
+                }
+
             }
         }
 
@@ -128,7 +133,18 @@ fun BriefingHome(
 
 }
 
-
+private fun getBottomLineShape(bottomLineThickness: Int) : Shape {
+    return GenericShape { size, _ ->
+        // 1) Bottom-left corner
+        moveTo(0f, size.height)
+        // 2) Bottom-right corner
+        lineTo(size.width, size.height)
+        // 3) Top-right corner
+        lineTo(size.width, size.height - bottomLineThickness)
+        // 4) Top-left corner
+        lineTo(0f, size.height - bottomLineThickness)
+    }
+}
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
@@ -190,7 +206,7 @@ fun ArticleList(
         ) {
             //Korea - Global Switch 때체
             Text(
-                text = "Updated: ${briefingResponse.created_at} 5AM",
+                text = "Updated: ${briefingResponse.created_at}",
                 style = MaterialTheme.typography.labelMedium
             )
 
