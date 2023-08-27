@@ -7,6 +7,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import java.util.*
 
-class SettingViewModel:ViewModel() {
+class SettingViewModel():ViewModel() {
 
 }

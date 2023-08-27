@@ -9,10 +9,10 @@ import retrofit2.http.Query
 
 interface BriefingApi {
     @GET("/briefings")
-    fun getBriefingKeyword(
+    suspend fun getBriefingKeyword(
         @Query("date")brefingsDate:String,
         @Query("type")type:String,
-    ): Call<BriefingResponse>
+    ): BriefingResponse
 
     @GET("/briefings/{id}")
     fun getBriefingDetail(
