@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dev.briefing.R
@@ -237,19 +238,25 @@ fun ArticleLink(
             .fillMaxWidth()
             .background(White, shape = RoundedCornerShape(40.dp))
             .border(1.dp, MainPrimary, shape = RoundedCornerShape(10.dp))
-            .padding(vertical = 9.dp, horizontal = 13.dp)
             .clickable {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsLink.url))
                 ContextCompat.startActivity(context, intent, null)
-            },
+            }
+            .padding(vertical = 9.dp, horizontal = 13.dp)
+        ,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Column() {
-            Text(text = newsLink.press, style = MaterialTheme.typography.titleSmall)
+        Column(
+            modifier = Modifier.widthIn(max = 193.dp)
+        ) {
+            Text(text = newsLink.press, style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight(700),
+                color = MainPrimary
+            ))
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = newsLink.title, style = MaterialTheme.typography.labelSmall)
+            Text(text = newsLink.title, style = MaterialTheme.typography.labelSmall,overflow = TextOverflow.Ellipsis)
         }
         Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
     }

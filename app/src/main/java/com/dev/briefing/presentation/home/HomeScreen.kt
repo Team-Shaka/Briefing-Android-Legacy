@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,7 @@ import com.dev.briefing.util.SERVER_TAG
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
+
 @Composable
 fun BriefingHome(
     modifier: Modifier = Modifier,
@@ -54,12 +56,14 @@ fun BriefingHome(
     )
 
     val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
-    val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(initial = BriefingResponse(
-        created_at= "2023-08-27",
-        briefings= listOf(BriefingPreview(1, 1, "잼버리", "test1"))
-    ))
+    val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(
+        initial = BriefingResponse(
+            created_at = "2023-08-27",
+            briefings = listOf(BriefingPreview(1, 1, "잼버리", "test1"))
+        )
+    )
 //    val briefingResponseFlow by remember { mutableStateOf( homeViewModel.serverTestResponse) }
-    Log.d(SERVER_TAG,"화면에 ${briefingResponseState.value.briefings}")
+    Log.d(SERVER_TAG, "화면에 ${briefingResponseState.value.briefings}")
 
     Column(
         modifier = modifier
@@ -68,7 +72,6 @@ fun BriefingHome(
             .background(brush = gradientBrush),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
 
 
         HomeHeader(
@@ -183,8 +186,8 @@ fun ArticleList(
             )
 
         }
-        Log.d(SERVER_TAG,briefingResponse.briefings?.size.toString())
-        if(briefingResponse.briefings?.isEmpty() == true){
+        Log.d(SERVER_TAG, briefingResponse.briefings?.size.toString())
+        if (briefingResponse.briefings?.isEmpty() == true) {
             Text(
                 modifier = modifier.align(Alignment.CenterHorizontally),
                 text = "컨텐츠 준비중입니다",
@@ -192,17 +195,13 @@ fun ArticleList(
                     color = MainPrimary
                 ),
             )
-        }else{
+        } else {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
                 items(
-                    briefingResponse.briefings?:listOf(
+                    briefingResponse.briefings ?: listOf(
                         BriefingPreview(1, 1, "잼버리", "test1"),
-                        BriefingPreview(2, 2, "잼버리", "test2"),
-                        BriefingPreview(3, 3, "잼버리", "test3"),
-                        BriefingPreview(4, 4, "잼버리", "test4"),
-                        BriefingPreview(5, 5, "잼버리", "test5"),
                     )
                 ) { it ->
                     ArticleListTile(news = it, onItemClick = { id ->
@@ -219,7 +218,7 @@ fun ArticleList(
 
 @Composable
 fun ArticleListTile(
-    news:  BriefingPreview,
+    news: BriefingPreview,
     modifier: Modifier = Modifier,
     onItemClick: (Int) -> Unit
 ) {
@@ -246,27 +245,38 @@ fun ArticleListTile(
             Box(
                 modifier = Modifier
                     .size(45.dp)
-                    .background(color = backgroundColor,shape = RoundedCornerShape(50.dp)),
+                    .background(color = backgroundColor, shape = RoundedCornerShape(50.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
-                    color = if(backgroundColor==White) MainPrimary else White
-                ))
+                Text(
+                    text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
+                        color = if (backgroundColor == White) MainPrimary else White
+                    )
+                )
 
             }
             Column(
-                modifier = modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier = modifier.fillMaxHeight().widthIn(max = 185.dp),
+                verticalArrangement = Arrangement.Center,
+
             ) {
                 Text(text = news.title, style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
+                Text(
+                    text = news.subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
         }
 
 
-        Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
+        Image(
+            modifier = Modifier.width(27.dp)
+                .height(27.dp),
+            painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd"
+        )
     }
 }
 
