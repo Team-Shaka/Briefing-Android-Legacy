@@ -21,6 +21,8 @@ data class BriefingPreview(
 data class BriefingDetailResponse(
     @SerializedName("id")
     val id: Int,
+    @SerializedName("date")
+    val date: String,
     @SerializedName("rank")
     val rank: Int,
     @SerializedName("title")

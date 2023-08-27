@@ -1,5 +1,6 @@
 package com.dev.briefing.presentation.detail
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +27,7 @@ import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.White
+import com.dev.briefing.util.SCRAP_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import java.time.LocalDate
 
@@ -50,7 +52,7 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            rank = articleResponse.id
+            briefing = articleResponse
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
@@ -67,16 +69,18 @@ fun ArticleDetailScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
-    rank: Int = 0
+    briefing: BriefingDetailResponse
 ) {
-    var isScrap by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val existingMap = SharedPreferenceHelper.loadMap(context)
+    val existingIdList = existingMap[briefing.date]?.toMutableList() ?: mutableListOf()
+    var isScrap by remember { mutableStateOf(briefing.id in existingIdList) }
     // 이미지 리소스를 불러옵니다.
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
-    val newItem =  NewsDetail(1, 1, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd")
-    val context = LocalContext.current
-    val currentItems = SharedPreferenceHelper.getScrap(context)
-    val updatedItems = currentItems + newItem
+//    val newItem =  NewsDetail(1, 1, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd")
+
+
     // 클릭 이벤트를 처리합니다.
     val image = if (isScrap) selectScrap else scrap
     val contentDescription = if (isScrap) "Unliked" else "Liked"
@@ -96,7 +100,7 @@ fun DetailHeader(
                 .clickable(onClick = onBackClick)
         )
         Text(
-            text = "Briefing #${rank}",
+            text = "Briefing #${briefing.rank}",
             style = MaterialTheme.typography.titleMedium.copy(
                 color = White,
                 fontWeight = FontWeight(400)
@@ -108,8 +112,15 @@ fun DetailHeader(
             contentDescription = contentDescription,
             modifier = Modifier.clickable(
                 onClick = {
+                    if(!isScrap){
+                        //Scrap을 한다
+                        SharedPreferenceHelper.addIntToKey(context,briefing.date, briefing.id)
+                    }else{
+                        //TODO:Scrap을 취소한다
+                        SharedPreferenceHelper.removeIntFromKey(context,briefing.date,briefing.id)
+                    }
                     isScrap = !isScrap
-                    SharedPreferenceHelper.saveScrap(context, updatedItems)
+
 
                 }
             )

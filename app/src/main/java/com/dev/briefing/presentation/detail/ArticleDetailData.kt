@@ -19,7 +19,7 @@ fun getArticleDetail(
 ): BriefingDetailResponse {
     var articleDetail: BriefingDetailResponse = BriefingDetailResponse(
         id = id, rank = 1, title = "test",
-        subtitle = "llblblb", content = "fdsfsdddddddddddddddddd", listOf(
+        subtitle = "llblblb", date ="2023.08.29",content = "fdsfsdddddddddddddddddd", articles= listOf(
             Article(
                 id = 1,
                 press = "fdfs",
