@@ -29,8 +29,8 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
 
     //time관련 변수
     val timeList: MutableList<LocalDate> = mutableListOf()
-    var updateDate: LocalDate = UPDATE_DATE
     val today: LocalDate = LocalDate.now()
+    var updateDate = today.minusWeeks(1).plusDays(1)
 
     //TODO: time add start 출시일 ~ end 오늘날
 
@@ -52,6 +52,8 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
             updateDate = updateDate.plusDays(1)
         }
         timeList.add(today)
+        timeList.add(LocalDate.of(2022,11,22))
+        timeList.add(LocalDate.of(2022,11,22))
 
     }
 

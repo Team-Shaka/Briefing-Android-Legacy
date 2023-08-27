@@ -47,8 +47,7 @@ fun BriefingHome(
     navController: NavController,
 //    onDetailClick:(Int) -> Unit
 ) {
-    //scroll
-    var horizontalscrollState = rememberScrollState()
+
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -73,30 +72,40 @@ fun BriefingHome(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
+        //scroll
+        var horizontalscrollState = rememberScrollState()
+
 
         HomeHeader(
             onScrapClick = onScrapClick,
             onSettingClick = onSettingClick
         )
 
+//
         LazyRow(
             modifier = modifier
-                .fillMaxWidth()
-                .scrollable(horizontalscrollState, Orientation.Horizontal),
+                .scrollable(horizontalscrollState, Orientation.Horizontal)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(17.dp)
         ) {
             items(homeViewModel.timeList) { time ->
+                val clickAble = time != LocalDate.of(2022,11,22)
+                val color = if(!clickAble) Color.Transparent else White
+
                 Text(
-                    modifier = Modifier.clickable {
-                        homeViewModel.changeBriefDate(time)
+                    modifier = Modifier.clickable(clickAble) {
+                            homeViewModel.changeBriefDate(time)
                     },
                     text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
                     textDecoration = if (homeViewModel.briefDate.value == time) TextDecoration.Underline else TextDecoration.None,
-                    style = MaterialTheme.typography.headlineLarge.copy(color = White)
+                    style = MaterialTheme.typography.headlineLarge.copy(color = color)
                 )
             }
         }
-
+        LaunchedEffect(Unit) {
+            horizontalscrollState.scrollTo(horizontalscrollState.maxValue)
+            Log.d("되니","되니")
+        }
         Spacer(modifier = Modifier.height(29.dp))
         Text(
             "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.monthValue}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
