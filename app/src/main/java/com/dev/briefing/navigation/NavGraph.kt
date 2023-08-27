@@ -30,8 +30,8 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
             BottomNavigationBar(
                 selectedItemPosition = when (currentRoute) {
                     //TODO: 상세페이지 분기처리가 필요
-                    HomeScreen.Home.route -> 0
-                    ChatScreen.Chat.route -> 1
+                    HomeScreen.Home.route,HomeScreen.Setting.route,HomeScreen.Scrap.route-> 0
+                    ChatScreen.Chat.route, ChatScreen.Chatting.route -> 1
                     else -> 0
                 }, { selectedItemPosition ->
                     when (selectedItemPosition) {

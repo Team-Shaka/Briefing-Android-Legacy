@@ -80,7 +80,10 @@ fun BriefingHome(
             onScrapClick = onScrapClick,
             onSettingClick = onSettingClick
         )
-
+        LaunchedEffect(Unit) {
+            horizontalscrollState.animateScrollTo(Int.MAX_VALUE)
+            Log.d("되니","되니")
+        }
 //
         LazyRow(
             modifier = modifier
@@ -102,10 +105,7 @@ fun BriefingHome(
                 )
             }
         }
-        LaunchedEffect(Unit) {
-            horizontalscrollState.scrollTo(horizontalscrollState.maxValue)
-            Log.d("되니","되니")
-        }
+
         Spacer(modifier = Modifier.height(29.dp))
         Text(
             "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.monthValue}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
