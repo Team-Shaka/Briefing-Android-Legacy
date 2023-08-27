@@ -96,7 +96,7 @@ fun BriefingHome(
 
         Spacer(modifier = Modifier.height(29.dp))
         Text(
-            "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.month}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
+            "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.monthValue}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
             style = MaterialTheme.typography.headlineLarge.copy(
                 color = White
             )
@@ -184,16 +184,25 @@ fun ArticleList(
 
         }
         Log.d(SERVER_TAG,briefingResponse.briefings?.size.toString())
+        if(briefingResponse.briefings?.isEmpty() == true){
+            Text(
+                modifier = modifier.align(Alignment.CenterHorizontally),
+                text = "컨텐츠 준비중입니다",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MainPrimary
+                ),
+            )
+        }else{
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
                 items(
                     briefingResponse.briefings?:listOf(
-        BriefingPreview(1, 1, "잼버리", "test1"),
-        BriefingPreview(2, 2, "잼버리", "test2"),
-        BriefingPreview(3, 3, "잼버리", "test3"),
-        BriefingPreview(4, 4, "잼버리", "test4"),
-        BriefingPreview(5, 5, "잼버리", "test5"),
+                        BriefingPreview(1, 1, "잼버리", "test1"),
+                        BriefingPreview(2, 2, "잼버리", "test2"),
+                        BriefingPreview(3, 3, "잼버리", "test3"),
+                        BriefingPreview(4, 4, "잼버리", "test4"),
+                        BriefingPreview(5, 5, "잼버리", "test5"),
                     )
                 ) { it ->
                     ArticleListTile(news = it, onItemClick = { id ->
@@ -202,15 +211,8 @@ fun ArticleList(
                     })
                 }
             }
-//        }else{
-//            Text(
-//                modifier = modifier.align(Alignment.CenterHorizontally),
-//                text = "컨텐츠 준비중입니다",
-//                style = MaterialTheme.typography.titleMedium.copy(
-//                    color = MainPrimary
-//                ),
-//            )
-//        }
+        }
+
 
     }
 }

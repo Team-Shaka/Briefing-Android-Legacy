@@ -39,8 +39,6 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
     // 외부로 불변성을 유지하기 위해 공개하는 LiveData
     val briefDate: LiveData<LocalDate> = _briefDate
 
-    private val _response = MutableLiveData<BriefingResponse>()
-    val response: LiveData<BriefingResponse> = _response
     var briefText = if (briefDate.value == today) {
         "오늘"
     } else {
@@ -77,6 +75,7 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
     }
     fun changeBriefDate(date: LocalDate){
         _briefDate.value = date
+        getBriefingDataApi(date)
     }
 
 
