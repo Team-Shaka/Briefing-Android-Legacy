@@ -26,10 +26,11 @@ object SharedPreferenceHelper {
     }
     fun addIntToKey(context: Context,key: String, intToAdd: Int) {
         val existingMap = loadDateIdMap(context)
-        val newList = existingMap[key]?.toMutableList() ?: mutableListOf()
+        var newList = existingMap[key]?.toMutableList() ?: mutableListOf()
         //id값 추가, 없으면 빈 리스트에 id 값 추가
         newList.add(intToAdd)
-        existingMap[key] = newList
+        var tmpList = newList.distinct()
+        existingMap[key] = tmpList
         saveDateIdMap(context,existingMap)
     }
     fun addArticleDetail(context: Context,key: Int, value: NewsContent) {

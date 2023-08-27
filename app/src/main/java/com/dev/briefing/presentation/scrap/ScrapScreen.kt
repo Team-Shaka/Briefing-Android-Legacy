@@ -1,5 +1,6 @@
 package com.dev.briefing.presentation.scrap
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.navigation.HomeScreen
@@ -31,6 +33,7 @@ import java.time.format.DateTimeFormatter
 fun ScrapScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    navController: NavController
 ) {
     val context = LocalContext.current
     val viewModel: ScrapViewModel = ScrapViewModel()
@@ -55,7 +58,7 @@ fun ScrapScreen(
 
             items(newsList.entries.toList()) { entry ->
                 // entry는 Map.Entry<String, List<Int>> 타입입니다.
-                ArticleSection(localDate = entry.key, tmpNewsList = entry.value)
+                ArticleSection(localDate = entry.key, tmpNewsList = entry.value, navController = navController)
             }
         }
     }
@@ -66,7 +69,8 @@ fun ScrapScreen(
 fun ArticleSection(
     modifier: Modifier = Modifier,
     localDate: String,
-    tmpNewsList: List<NewsDetail>
+    tmpNewsList: List<NewsDetail>,
+    navController: NavController
 ) {
     val newsList = tmpNewsList.sortedBy { it.rank }
     Column(
@@ -89,7 +93,10 @@ fun ArticleSection(
 
         ) {
             newsList.forEach { news ->
-                ArticleHeader(news = news)
+                ArticleHeader(news = news, onItemClick = { id ->
+                    navController.navigate("${HomeScreen.Detail.route}/$id")
+                    Log.d("2", id.toString())
+                })
             }
         }
     }
@@ -100,29 +107,26 @@ fun ArticleSection(
 fun ArticleHeader(
     modifier: Modifier = Modifier,
     news: NewsDetail,
+    onItemClick: (Int) -> Unit
 ) {
     Row(
         modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 11.dp)
             //TODO: navigate to DetailScreen
-//            .clickable(
-//                onClick = {
-//                     ArticleDetailScreen(
-//                        id = news.id
-//                    )
-//                }
-//            ),
-        ,verticalAlignment = Alignment.Top,
+            .clickable {
+                onItemClick(news.id)
+            },
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
-            modifier =  Modifier.widthIn(max = 161.dp),
+            modifier = Modifier.widthIn(max = 161.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             Text(text = news.title, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall,overflow = TextOverflow.Ellipsis)
+            Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall, overflow = TextOverflow.Ellipsis)
         }
         Text(
             text = "${news.date} #" + news.rank, style = MaterialTheme.typography.bodyMedium.copy(
