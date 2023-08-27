@@ -188,8 +188,7 @@ fun SettingScreen(
                 icon = R.drawable.setting_caution,
                 menu = R.string.setting_caution,
                 onClick = {
-                    //TODO: URL 변경
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/briefing-private/%ED%99%88"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://onve.notion.site/Briefing-e1cb17e2e7c54d3b9a7036b29ee9b11a?pvs=4"))
                     startActivity(context, intent, null)
                 }
             )

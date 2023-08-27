@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -22,32 +23,44 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.NavController
 import com.dev.briefing.R
 import com.dev.briefing.data.News
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.navigation.HomeScreen
-import com.dev.briefing.presentation.home.getBriefingData
+import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
-import com.dev.briefing.presentation.theme.utils.drawColoredShadow
-import com.dev.briefing.util.UPDATE_DATE
+import com.dev.briefing.util.SERVER_TAG
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
+import org.koin.androidx.compose.getViewModel
 @Composable
 fun BriefingHome(
     modifier: Modifier = Modifier,
     onScrapClick: () -> Unit,
     onSettingClick: () -> Unit,
-    navController: NavController
+    navController: NavController,
 //    onDetailClick:(Int) -> Unit
 ) {
+    //scroll
+    var horizontalscrollState = rememberScrollState()
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
         endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
+
+    val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
+    val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(initial = BriefingResponse(
+        created_at= "2023-08-27",
+        briefings= listOf(BriefingPreview(1, 1, "잼버리", "test1"))
+    ))
+//    val briefingResponseFlow by remember { mutableStateOf( homeViewModel.serverTestResponse) }
+    Log.d(SERVER_TAG,"화면에 ${briefingResponseState.value.briefings}")
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -56,32 +69,7 @@ fun BriefingHome(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        //scroll
-        var horizontalscrollState = rememberScrollState()
 
-        //time관련 변수
-        val timeList: MutableList<LocalDate> = mutableListOf()
-        var updateDate: LocalDate = UPDATE_DATE
-        val today: LocalDate = LocalDate.now()
-        //TODO: time add start 출시일 ~ end 오늘날
-        while (today.isAfter(updateDate)) {
-            timeList.add(updateDate)
-            Log.d("time", updateDate.format(DateTimeFormatter.ofPattern("yy.MM.dd")))
-            updateDate = updateDate.plusDays(1)
-        }
-        timeList.add(today)
-        Log.d("time", timeList.size.toString())
-
-        var briefDate by remember { mutableStateOf(today) }
-        var response: BriefingResponse = getBriefingData(
-            briefingDate = briefDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-            type = "Korea"
-        )
-        var briefText = if (briefDate == today) {
-            "오늘"
-        } else {
-            "그날"
-        }
 
         HomeHeader(
             onScrapClick = onScrapClick,
@@ -94,13 +82,13 @@ fun BriefingHome(
                 .scrollable(horizontalscrollState, Orientation.Horizontal),
             horizontalArrangement = Arrangement.spacedBy(17.dp)
         ) {
-            items(timeList) { time ->
+            items(homeViewModel.timeList) { time ->
                 Text(
                     modifier = Modifier.clickable {
-                        briefDate = time
+                        homeViewModel.changeBriefDate(time)
                     },
                     text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
-                    textDecoration = if (briefDate == time) TextDecoration.Underline else TextDecoration.None,
+                    textDecoration = if (homeViewModel.briefDate.value == time) TextDecoration.Underline else TextDecoration.None,
                     style = MaterialTheme.typography.headlineLarge.copy(color = White)
                 )
             }
@@ -108,13 +96,13 @@ fun BriefingHome(
 
         Spacer(modifier = Modifier.height(29.dp))
         Text(
-            "${briefDate.year}년 ${briefDate.month.value}월 ${briefDate.dayOfMonth}일",
+            "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.monthValue}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
             style = MaterialTheme.typography.headlineLarge.copy(
                 color = White
             )
         )
         Text(
-            text = "${briefText}의 키워드 브리핑",
+            text = "${homeViewModel.briefText}의 키워드 브리핑",
             style = MaterialTheme.typography.titleMedium,
         )
 
@@ -122,7 +110,7 @@ fun BriefingHome(
 
         ArticleList(
             navController = navController,
-            briefingResponse = response
+            briefingResponse = briefingResponseState.value
         )
     }
 
@@ -177,20 +165,10 @@ fun ArticleList(
     briefingResponse: BriefingResponse,
     navController: NavController
 ) {
-    var tmpnewsList: List<BriefingPreview> = listOf(
-        BriefingPreview(1, 1, "잼버리", "test1"),
-        BriefingPreview(2, 2, "잼버리", "test2"),
-        BriefingPreview(3, 3, "잼버리", "test3"),
-        BriefingPreview(4, 4, "잼버리", "test4"),
-        BriefingPreview(5, 5, "잼버리", "test5"),
-
-    )
-
     Column(
         modifier.background(SubBackGround, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
             .fillMaxHeight()
             .padding(horizontal = 17.dp)
-
     ) {
         Row(
             modifier = modifier
@@ -205,13 +183,27 @@ fun ArticleList(
             )
 
         }
-//        if(briefingResponse.briefings?.isNotEmpty() == true){
+        Log.d(SERVER_TAG,briefingResponse.briefings?.size.toString())
+        if(briefingResponse.briefings?.isEmpty() == true){
+            Text(
+                modifier = modifier.align(Alignment.CenterHorizontally),
+                text = "컨텐츠 준비중입니다",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MainPrimary
+                ),
+            )
+        }else{
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
                 items(
-//                    briefingResponse.briefings
-                    tmpnewsList
+                    briefingResponse.briefings?:listOf(
+                        BriefingPreview(1, 1, "잼버리", "test1"),
+                        BriefingPreview(2, 2, "잼버리", "test2"),
+                        BriefingPreview(3, 3, "잼버리", "test3"),
+                        BriefingPreview(4, 4, "잼버리", "test4"),
+                        BriefingPreview(5, 5, "잼버리", "test5"),
+                    )
                 ) { it ->
                     ArticleListTile(news = it, onItemClick = { id ->
                         navController.navigate("${HomeScreen.Detail.route}/$id")
@@ -219,15 +211,8 @@ fun ArticleList(
                     })
                 }
             }
-//        }else{
-//            Text(
-//                modifier = modifier.align(Alignment.CenterHorizontally),
-//                text = "컨텐츠 준비중입니다",
-//                style = MaterialTheme.typography.titleMedium.copy(
-//                    color = MainPrimary
-//                ),
-//            )
-//        }
+        }
+
 
     }
 }

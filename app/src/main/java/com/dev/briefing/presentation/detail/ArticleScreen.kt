@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -25,12 +26,17 @@ import com.dev.briefing.R
 import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.Article
 import com.dev.briefing.data.model.BriefingDetailResponse
+import com.dev.briefing.data.model.BriefingPreview
+import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.util.SharedPreferenceHelper
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ArticleDetailScreen(
@@ -39,8 +45,22 @@ fun ArticleDetailScreen(
     id: Int
 ) {
     val context = LocalContext.current
+    val articleDetailViewModel: ArticleDetailViewModel = getViewModel {
+        parametersOf(id)
+    }
+    val articleResponse = articleDetailViewModel.detailPage.observeAsState(
+        initial = BriefingDetailResponse(
+            id = 3,
+            rank = 3,
+            title = "제목3",
+            subtitle = "부제목3",
+            content = "내용3",
+            date = "2023-08-27",
+            articles = listOf(
+                Article(id = 1, press = "fdsf", title = "fddsdf", "ulr")
+            )
+        ))
 
-    val articleResponse: BriefingDetailResponse = getArticleDetail(id)
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -55,14 +75,14 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            briefing = articleResponse,
+            briefing = articleResponse.value,
             context = context
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
             item {
                 ArticleDetail(
-                    article = articleResponse,
+                    article = articleResponse.value,
                     context = context
                 )
                 Spacer(modifier = Modifier.height(25.dp))
@@ -127,7 +147,7 @@ fun DetailHeader(
                     } else {
                         //TODO:Scrap을 취소한다
                         SharedPreferenceHelper.removeIntFromKey(context, briefing.date, briefing.id)
-                        SharedPreferenceHelper.removeDetilFromId(context,briefing.id)
+                        SharedPreferenceHelper.removeDetilFromId(context, briefing.id)
                     }
                     isScrap = !isScrap
                 }
@@ -195,8 +215,10 @@ fun ArticleDetail(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
             article.articles.forEach { it ->
-                ArticleLink(newsLink= it,
-                    context= context)
+                ArticleLink(
+                    newsLink = it,
+                    context = context
+                )
             }
         }
         Spacer(modifier = Modifier.height(25.dp))
