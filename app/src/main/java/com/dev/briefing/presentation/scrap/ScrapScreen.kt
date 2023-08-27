@@ -1,6 +1,7 @@
 package com.dev.briefing.presentation.scrap
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,9 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.data.NewsDetail
+import com.dev.briefing.navigation.HomeScreen
+import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.setting.CommonHeader
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
@@ -32,10 +38,10 @@ fun ScrapScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
 ) {
-    var dateList: List<LocalDate> = listOf(
-        LocalDate.of(2023, 8, 22),
-        LocalDate.of(2023, 8, 25),
-    )
+    val context = LocalContext.current
+    val viewModel: ScrapViewModel = ScrapViewModel()
+    var newsList = viewModel.getScrapData(context)
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -52,8 +58,12 @@ fun ScrapScreen(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(35.dp)
         ) {
-            items(dateList) { it ->
-                ArticleSection(localDate = it)
+//            items(dateList) { it ->
+//                ArticleSection(localDate = it,)
+//            }
+            items(newsList.entries.toList()) { entry ->
+                // entry는 Map.Entry<String, List<Int>> 타입입니다.
+                ArticleSection(localDate = entry.key, tmpNewsList = entry.value)
             }
         }
     }
@@ -63,12 +73,10 @@ fun ScrapScreen(
 @Composable
 fun ArticleSection(
     modifier: Modifier = Modifier,
-    localDate: LocalDate = LocalDate.of(2023, 8, 22),
+    localDate: String,
+    tmpNewsList: List<NewsDetail>
 ) {
-    var newsList: List<NewsDetail> = listOf(
-        NewsDetail(1, 1, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd"),
-        NewsDetail(1, 2, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd"),
-    )
+    val newsList = tmpNewsList.sortedBy { it.rank }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -76,7 +84,7 @@ fun ArticleSection(
     ) {
         Text(
             modifier = Modifier.padding(start = 10.dp),
-            text = LocalDate.of(2023, 8, 22).format(DateTimeFormatter.ofPattern("yy.MM.dd")),
+            text = localDate,
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(6.dp))
@@ -99,13 +107,21 @@ fun ArticleSection(
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
-    news: NewsDetail
+    news: NewsDetail,
 ) {
     Row(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 11.dp),
-        verticalAlignment = Alignment.Top,
+            .padding(horizontal = 20.dp, vertical = 11.dp)
+            //TODO: navigate to DetailScreen
+//            .clickable(
+//                onClick = {
+//                     ArticleDetailScreen(
+//                        id = news.id
+//                    )
+//                }
+//            ),
+        ,verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
@@ -116,7 +132,7 @@ fun ArticleHeader(
             Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall)
         }
         Text(
-            text = "23.08.07 #" + news.rank, style = MaterialTheme.typography.bodyMedium.copy(
+            text = "${news.subtitle} #" + news.rank, style = MaterialTheme.typography.bodyMedium.copy(
                 color = MainPrimary3,
                 lineHeight = 15.sp
             )
