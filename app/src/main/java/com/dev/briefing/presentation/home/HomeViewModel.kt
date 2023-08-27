@@ -91,6 +91,7 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
         }
         if(timeList.size!=7)timeList.add(UPDATE_DATE)
         timeList = timeList.toSet().toMutableList()
+        timeList.sort()
         //UI를 위한  조건에 벗어나는 날짜 2개 더함
         //TODO: 하드코딩 제거
         when(timeList.size){

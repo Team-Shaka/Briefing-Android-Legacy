@@ -87,9 +87,9 @@ fun BriefingHome(
         LazyRow(
             modifier = modifier
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            contentPadding = PaddingValues(horizontal = 21.dp),
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(21.dp),
         ) {
             items(homeViewModel.timeList) { time ->
                 val clickAble = time != MOCK_DATE
