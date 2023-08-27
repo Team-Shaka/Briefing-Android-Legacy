@@ -74,6 +74,7 @@ fun RootNavigationGraph(
     ) {
         homeNavGraph(navController = navController)
         chatNavGraph(navController = navController)
+
     }
 }
 

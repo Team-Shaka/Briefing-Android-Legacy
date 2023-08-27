@@ -91,5 +91,5 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     //ViewModel with Compose
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-alpha01"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.0.0-alpha01"
 }

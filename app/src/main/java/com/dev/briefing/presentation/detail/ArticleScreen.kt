@@ -1,6 +1,5 @@
 package com.dev.briefing.presentation.detail
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,11 +16,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.data.NewsDetail
-import com.dev.briefing.data.NewsLink
 import com.dev.briefing.data.model.Article
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.presentation.theme.GradientEnd
@@ -78,10 +75,10 @@ fun DetailHeader(
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
     val newItem =  NewsDetail(1, 1, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd")
     val context = LocalContext.current
-    val currentItems = SharedPreferenceHelper.getItems(context)
+    val currentItems = SharedPreferenceHelper.getScrap(context)
     val updatedItems = currentItems + newItem
     // 클릭 이벤트를 처리합니다.
-    val image = if (isScrap) scrap else selectScrap
+    val image = if (isScrap) selectScrap else scrap
     val contentDescription = if (isScrap) "Unliked" else "Liked"
     Row(
         modifier = Modifier
@@ -112,7 +109,7 @@ fun DetailHeader(
             modifier = Modifier.clickable(
                 onClick = {
                     isScrap = !isScrap
-                    SharedPreferenceHelper.saveItems(context, updatedItems)
+                    SharedPreferenceHelper.saveScrap(context, updatedItems)
 
                 }
             )
