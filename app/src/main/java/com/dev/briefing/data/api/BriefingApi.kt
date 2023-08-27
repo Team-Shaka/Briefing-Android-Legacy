@@ -15,7 +15,7 @@ interface BriefingApi {
     ): BriefingResponse
 
     @GET("/briefings/{id}")
-    fun getBriefingDetail(
+    suspend fun getBriefingDetail(
         @Path("id")id:Int,
-    ): Call<BriefingDetailResponse>
+    ): BriefingDetailResponse
 }

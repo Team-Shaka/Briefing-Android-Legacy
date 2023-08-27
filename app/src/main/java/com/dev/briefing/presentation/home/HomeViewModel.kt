@@ -26,6 +26,7 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
         get() = _serverTestResponse
 
 
+
     //time관련 변수
     val timeList: MutableList<LocalDate> = mutableListOf()
     var updateDate: LocalDate = UPDATE_DATE
@@ -74,7 +75,6 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
         }
 
     }
-
     fun changeBriefDate(date: LocalDate){
         _briefDate.value = date
     }
