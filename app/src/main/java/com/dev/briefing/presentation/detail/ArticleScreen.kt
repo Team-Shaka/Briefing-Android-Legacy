@@ -1,6 +1,5 @@
 package com.dev.briefing.presentation.detail
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
-import com.dev.briefing.data.NewsDetail
+import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.Article
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.presentation.theme.GradientEnd
@@ -27,15 +26,13 @@ import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.White
-import com.dev.briefing.util.SCRAP_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
-import java.time.LocalDate
 
 @Composable
 fun ArticleDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    id:Int
+    id: Int
 ) {
     val articleResponse: BriefingDetailResponse = getArticleDetail(id)
     val gradientBrush = Brush.verticalGradient(
@@ -72,7 +69,7 @@ fun DetailHeader(
     briefing: BriefingDetailResponse
 ) {
     val context = LocalContext.current
-    val existingMap = SharedPreferenceHelper.loadMap(context)
+    val existingMap = SharedPreferenceHelper.loadDateIdMap(context)
     val existingIdList = existingMap[briefing.date]?.toMutableList() ?: mutableListOf()
     var isScrap by remember { mutableStateOf(briefing.id in existingIdList) }
     // 이미지 리소스를 불러옵니다.
@@ -112,16 +109,19 @@ fun DetailHeader(
             contentDescription = contentDescription,
             modifier = Modifier.clickable(
                 onClick = {
-                    if(!isScrap){
+                    if (!isScrap) {
                         //Scrap을 한다
-                        SharedPreferenceHelper.addIntToKey(context,briefing.date, briefing.id)
-                    }else{
+                        SharedPreferenceHelper.addIntToKey(context, briefing.date, briefing.id)
+                        SharedPreferenceHelper.addArticleDetail(
+                            context, briefing.id,
+                            NewsContent(rank = briefing.rank, title = briefing.title, subtitle = briefing.subtitle)
+                        )
+                    } else {
                         //TODO:Scrap을 취소한다
-                        SharedPreferenceHelper.removeIntFromKey(context,briefing.date,briefing.id)
+                        SharedPreferenceHelper.removeIntFromKey(context, briefing.date, briefing.id)
+                        SharedPreferenceHelper.removeDetilFromId(context,briefing.id)
                     }
                     isScrap = !isScrap
-
-
                 }
             )
         )
@@ -132,11 +132,11 @@ fun DetailHeader(
 @Composable
 fun ArticleDetail(
     modifier: Modifier = Modifier,
-    article:BriefingDetailResponse
+    article: BriefingDetailResponse
 ) {
     var tmpNewsList: List<Article> = listOf(
-        Article(1,"연합뉴스", "잼버리", "test1"),
-        Article(2,"연합뉴스", "잼버리", "test1"),
+        Article(1, "연합뉴스", "잼버리", "test1"),
+        Article(2, "연합뉴스", "잼버리", "test1"),
     )
     Column(
         modifier = modifier
@@ -157,7 +157,7 @@ fun ArticleDetail(
                 text = "23.08.07 Breifing #${article.rank}",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = SubText2,
-                            fontWeight = FontWeight(400)
+                    fontWeight = FontWeight(400)
 
                 ),
                 textAlign = TextAlign.End
@@ -172,7 +172,7 @@ fun ArticleDetail(
             style = MaterialTheme.typography.headlineLarge
         )
         Text(
-            text =  article.content,
+            text = article.content,
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight(400),
 

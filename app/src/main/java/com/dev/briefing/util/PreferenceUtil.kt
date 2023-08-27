@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.dev.briefing.data.Alarm
 import com.dev.briefing.data.NewsContent
-import com.dev.briefing.data.NewsDetail
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -26,28 +25,53 @@ object SharedPreferenceHelper {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
     fun addIntToKey(context: Context,key: String, intToAdd: Int) {
-        val existingMap = loadMap(context)
+        val existingMap = loadDateIdMap(context)
         val newList = existingMap[key]?.toMutableList() ?: mutableListOf()
         //id값 추가, 없으면 빈 리스트에 id 값 추가
         newList.add(intToAdd)
         existingMap[key] = newList
-        saveMap(context,existingMap)
+        saveDateIdMap(context,existingMap)
+    }
+    fun addArticleDetail(context: Context,key: Int, value: NewsContent) {
+        val existingMap = loadIdDetailMap(context)
+        //id값 추가, 없으면 빈 리스트에 id 값 추가
+        existingMap[key] = value
+        saveIdDetailMap(context,existingMap)
     }
     fun removeIntFromKey(context: Context,key: String, valueToRemove: Int) {
-        val existingMap = loadMap(context)
+        val existingMap = loadDateIdMap(context)
         val existingList = existingMap[key]?.toMutableList() ?: mutableListOf()
         existingList.remove(valueToRemove)
         existingMap[key] = existingList
-        saveMap(context,existingMap)
+        saveDateIdMap(context,existingMap)
     }
-    private fun saveMap(context: Context,data: Map<String, List<Int>>) {
+    fun removeDetilFromId(context: Context,id: Int) {
+        var existingMap = loadIdDetailMap(context)
+        existingMap.remove(id)
+        saveIdDetailMap(context,existingMap)
+    }
+    private fun saveDateIdMap(context: Context, data: Map<String, List<Int>>) {
         val json = Gson().toJson(data)
-        getSharedPreferences(context).edit().putString("SCRAP_ID_NEWS", json).apply()
+        getSharedPreferences(context).edit().putString(SCRAP_DATE_ID, json).apply()
     }
-    fun loadMap(context: Context): MutableMap<String, List<Int>> {
-        val json = getSharedPreferences(context).getString("SCRAP_ID_NEWS", null)
+    private fun saveIdDetailMap(context: Context, data: Map<Int, NewsContent>) {
+        val json = Gson().toJson(data)
+        getSharedPreferences(context).edit().putString(SCRAP_ID_NEWS, json).apply()
+    }
+    fun loadDateIdMap(context: Context): MutableMap<String, List<Int>> {
+        val json = getSharedPreferences(context).getString(SCRAP_DATE_ID, null)
         return if (json != null) {
             val type = object : TypeToken<MutableMap<String, List<Int>>>() {}.type
+            Gson().fromJson(json, type)
+
+        } else {
+            mutableMapOf()
+        }
+    }
+    fun loadIdDetailMap(context: Context): MutableMap<Int, NewsContent> {
+        val json = getSharedPreferences(context).getString(SCRAP_ID_NEWS, null)
+        return if (json != null) {
+            val type = object : TypeToken<MutableMap<Int, NewsContent>>() {}.type
             Gson().fromJson(json, type)
 
         } else {
