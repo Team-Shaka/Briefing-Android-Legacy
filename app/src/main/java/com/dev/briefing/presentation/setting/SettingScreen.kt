@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.DrawableRes
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
 import com.dev.briefing.data.Alarm
@@ -138,19 +140,33 @@ fun SettingScreen(
             menuWithArrow(
                 icon = R.drawable.setting_version,
                 menu = R.string.setting_version,
+                time = "1.0.0",
+                isArrow = false
             )
             menuWithArrow(
                 icon = R.drawable.setting_clock,
                 menu = R.string.setting_feedback,
+                onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/HQXmEBkQ6wyW9jiw7"))
+                startActivity(context, intent, null)
+            }
             )
             menuWithArrow(
                 icon = R.drawable.setting_version_note,
                 menu = R.string.setting_version_note,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://onve.notion.site/Briefing-8af692ff041c4fc6931b2fc897411e6d?pvs=4"))
+                    startActivity(context, intent, null)
+                }
             )
             Spacer(modifier = Modifier.height(50.dp))
             menuWithArrow(
                 icon = R.drawable.setting_policy,
                 menu = R.string.setting_policy,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88"))
+                    startActivity(context, intent, null)
+                }
             )
             Divider(
                 color = BorderColor,
@@ -159,6 +175,10 @@ fun SettingScreen(
             menuWithArrow(
                 icon = R.drawable.setting_policy,
                 menu = R.string.setting_policy_private,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/briefing-private/%ED%99%88"))
+                    startActivity(context, intent, null)
+                }
             )
             Divider(
                 color = BorderColor,
@@ -167,6 +187,11 @@ fun SettingScreen(
             menuWithArrow(
                 icon = R.drawable.setting_caution,
                 menu = R.string.setting_caution,
+                onClick = {
+                    //TODO: URL 변경
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/briefing-private/%ED%99%88"))
+                    startActivity(context, intent, null)
+                }
             )
             Spacer(modifier = Modifier.height(50.dp))
 
