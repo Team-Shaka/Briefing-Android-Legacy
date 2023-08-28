@@ -7,6 +7,8 @@ import com.dev.briefing.data.Alarm
 import com.dev.briefing.data.NewsContent
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 //import kotlinx.serialization.json.Json
 class PreferenceUtil(context: Context) {
@@ -25,14 +27,18 @@ object SharedPreferenceHelper {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
     fun addIntToKey(context: Context,key: String, intToAdd: Int) {
-        val existingMap = loadDateIdMap(context)
+        var existingMap = loadDateIdMap(context)
         var newList = existingMap[key]?.toMutableList() ?: mutableListOf()
         //id값 추가, 없으면 빈 리스트에 id 값 추가
         newList.add(intToAdd)
         var tmpList = newList.distinct()
         existingMap[key] = tmpList
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        var tmpPairs = existingMap.entries.sortedByDescending{ LocalDate.parse(it.key, formatter) }.associate { it.key to it.value.sorted() }
+        existingMap = tmpPairs.toMutableMap()
         saveDateIdMap(context,existingMap)
     }
+
     fun addArticleDetail(context: Context,key: Int, value: NewsContent) {
         val existingMap = loadIdDetailMap(context)
         //id값 추가, 없으면 빈 리스트에 id 값 추가
