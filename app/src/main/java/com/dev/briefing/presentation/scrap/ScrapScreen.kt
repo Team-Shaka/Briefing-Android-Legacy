@@ -50,7 +50,7 @@ fun ScrapScreen(
         CommonHeader(header = "스크랩북", onBackClick = onBackClick)
 
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(35.dp)
@@ -61,6 +61,8 @@ fun ScrapScreen(
                 ArticleSection(localDate = entry.key, tmpNewsList = entry.value, navController = navController)
             }
         }
+        Spacer(modifier = Modifier.height(20.dp))
+
     }
 
 }

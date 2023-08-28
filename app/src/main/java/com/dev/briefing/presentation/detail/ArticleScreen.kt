@@ -3,6 +3,8 @@ package com.dev.briefing.presentation.detail
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -61,7 +63,8 @@ fun ArticleDetailScreen(
                 Article(id = 1, press = "fdsf", title = "fddsdf", "ulr")
             )
         ))
-
+    articleDetailViewModel.getScrapStatus(context)
+    val isScrap = articleDetailViewModel.isScrap.observeAsState(false)
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -76,8 +79,10 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
+            onScrapClick = {articleDetailViewModel.setScrapStatus(context)},
             briefing = articleResponse.value,
-            context = context
+            context = context,
+            isScrap = isScrap.value
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
@@ -95,21 +100,17 @@ fun ArticleDetailScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
+    onScrapClick:(Context)->Unit,
     briefing: BriefingDetailResponse,
-    context: Context
+    context: Context,
+    isScrap:Boolean
 ) {
-    val existingMap = SharedPreferenceHelper.loadDateIdMap(context)
-    val existingIdList = existingMap[briefing.date]?.toMutableList() ?: mutableListOf()
-    var isScrap by remember { mutableStateOf(briefing.id in existingIdList) }
-    // 이미지 리소스를 불러옵니다.
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
-//    val newItem =  NewsDetail(1, 1, "잼버리", LocalDate.of(2023, 8, 22), "fdsfd")
 
-
-    // 클릭 이벤트를 처리합니다.
     val image = if (isScrap) selectScrap else scrap
     val contentDescription = if (isScrap) "Unliked" else "Liked"
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,19 +139,7 @@ fun DetailHeader(
             contentDescription = contentDescription,
             modifier = Modifier.clickable(
                 onClick = {
-                    if (!isScrap) {
-                        //Scrap을 한다
-                        SharedPreferenceHelper.addIntToKey(context, briefing.date, briefing.id)
-                        SharedPreferenceHelper.addArticleDetail(
-                            context, briefing.id,
-                            NewsContent(rank = briefing.rank, title = briefing.title, subtitle = briefing.subtitle)
-                        )
-                    } else {
-                        //TODO:Scrap을 취소한다
-                        SharedPreferenceHelper.removeIntFromKey(context, briefing.date, briefing.id)
-                        SharedPreferenceHelper.removeDetilFromId(context, briefing.id)
-                    }
-                    isScrap = !isScrap
+                   onScrapClick(context)
                 }
             )
         )
