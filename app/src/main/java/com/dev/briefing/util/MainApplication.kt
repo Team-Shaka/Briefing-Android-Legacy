@@ -1,6 +1,9 @@
 package com.dev.briefing.util
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import com.dev.briefing.BuildConfig
 import com.dev.briefing.di.dataSourceModule
 import com.dev.briefing.di.networkModule
 import com.dev.briefing.di.repositoryModule
@@ -14,6 +17,7 @@ class MainApplication: Application() {
         startKoin {
             modules(networkModule, viewModelModule, repositoryModule, dataSourceModule)
         }
+
 
     }
 }
