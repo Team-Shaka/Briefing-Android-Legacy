@@ -1,9 +1,6 @@
 package com.dev.briefing.presentation.setting
 
-import android.app.AlarmManager
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -21,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -67,9 +65,10 @@ fun SettingScreen(
                 )
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay) // Set initial hour to 9 (9 AM)
                 calendar.set(Calendar.MINUTE, minute)
+                Log.d(ALARM_TAG,calendar.get(Calendar.HOUR_OF_DAY).toString()+"시" +calendar.get(Calendar.MINUTE).toString())
 
             } else {
-                Toast.makeText(context, "오전 5시부터 오후 12시까지만 설정가능합니다", Toast.LENGTH_LONG)
+                Toast.makeText(context, "오전 5시부터 오후 12시까지만 설정가능합니다", Toast.LENGTH_LONG).show()
             }
 
         },
@@ -77,43 +76,22 @@ fun SettingScreen(
         calendar[Calendar.MINUTE],
         false
     )
-    Log.d(ALARM_TAG,calendar.get(Calendar.HOUR_OF_DAY).toString()+"시" +calendar.get(Calendar.MINUTE).toString())
-    val alarmTimeInMillis = calendar.timeInMillis
 
+//    val alarmTimeInMillis = calendar.timeInMillis
+    val alarmTimeInMillis by remember { mutableStateOf(calendar.timeInMillis+5000) }
+//    val alarmTimeInMillis by remember { mutableStateOf(System.currentTimeMillis()+5000) }
+    Log.d(ALARM_TAG,("현재시간"+System.currentTimeMillis()).toString())
     LaunchedEffect(key1 = alarmTimeInMillis) {
-        //get Notificaton Manager
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        Log.d(ALARM_TAG,"설정한 시간"+(calendar.timeInMillis).toString())
 
-        // AlarmReceiver를 수신할 Intent를 생성하고, 이를 PendingIntent로 래핑합니다.
-        // PendingIntent는 앞으로 발생할 이벤트를 대리자
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        Log.d(ALARM_TAG,"0 알람매니저 생성 + AlarmReceiver 진입")
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         }
-
-        //get Alarm Manager
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        //RTC_WAKEUP은 실제 시간으로 알람을 설정하되, 장치가 슬립 상태일 때도 깨우도록 합니다.
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTimeInMillis, alarmIntent)
+        Log.d(ALARM_TAG,"끝 알람 매니저 등록 완료")
 
-        val notificationId = System.currentTimeMillis().toInt()
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Alarm")
-            .setContentText("Alarm is set for ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(alarmTimeInMillis))}")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-        Log.d(ALARM_TAG,"알람 채널 id${notification.channelId}이고 알람${notification.visibility}이다")
-        notificationManager.notify(notificationId, notification)
-
-        val activeNotifications = notificationManager.activeNotifications
-
-        for (notification in activeNotifications) {
-            val notificationId = notification.id
-            val notificationTag = notification.tag
-            val notificationKey = notification.key
-            Log.d(ALARM_TAG,"알람 채널 id${notificationId}이고 알람${notificationTag}이다 ${notificationKey}")
-        }
     }
     LazyColumn(
 
@@ -209,22 +187,11 @@ fun SettingScreen(
 }
 @Composable
 fun setAlarmTime(alarmTime: Long,context: Context){
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
         PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, alarmIntent)
-
-    val notificationId = 0
-    val notification = NotificationCompat.Builder(context, "channelId")
-        .setContentTitle("Alarm")
-        .setContentText("Alarm is set for ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(alarmTime))}")
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .build()
-
-    notificationManager.notify(notificationId, notification)
 }
 fun convertHour(
     hour: Int,
@@ -315,12 +282,14 @@ fun menuWithArrow(
 @Composable
 fun CommonHeader(
     onBackClick: () -> Unit,
-    header: String = ""
+    header: String = "",
+    color: Color = SubBackGround
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 60.dp),
+            .background(color= color)
+            .padding(top = 60.dp, bottom = 20.dp ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     )
