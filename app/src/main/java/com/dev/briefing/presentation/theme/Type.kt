@@ -1,4 +1,4 @@
-package com.dev.briefing.ui.theme
+package com.dev.briefing.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

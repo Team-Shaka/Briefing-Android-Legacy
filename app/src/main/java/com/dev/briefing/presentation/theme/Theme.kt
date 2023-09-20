@@ -1,4 +1,4 @@
-package com.dev.briefing.ui.theme
+package com.dev.briefing.presentation.theme
 
 import android.app.Activity
 import android.os.Build
