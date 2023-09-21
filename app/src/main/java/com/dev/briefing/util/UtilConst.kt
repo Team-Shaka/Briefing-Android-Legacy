@@ -7,3 +7,5 @@ val MOCK_DATE:LocalDate = LocalDate.of(2000,11,22)
 val SERVER_TAG = "server"
 val ALARM_TAG = "알람"
 val SCRAP_TAG = "scrap"
+const val NOTIFICATION_REQUEST_CODE:Int = 100
+const val ALARM_CODE:Int = 99
