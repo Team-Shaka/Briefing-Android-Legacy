@@ -86,10 +86,6 @@ fun SettingScreen(
                     calendar.get(Calendar.HOUR_OF_DAY).toString() + "시" + calendar.get(Calendar.MINUTE).toString()
                 )
                 alarmTimeInMillis = calendar.timeInMillis
-                Log.d(
-                    ALARM_TAG,
-                    alarmTimeInMillis.toString()
-                )
 
 
             } else {
@@ -106,16 +102,28 @@ fun SettingScreen(
     LaunchedEffect(key1 = alarmTimeInMillis) {
 
         Log.d(ALARM_TAG, "설정한 시간" + (calendar.timeInMillis).toString())
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager:AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//            val aT = alarmManager.nextAlarmClock.triggerTime
 
         Log.d(ALARM_TAG, "0 알람매니저 생성 + AlarmReceiver 진입")
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, ALARM_CODE, intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, ALARM_CODE, intent, PendingIntent.FLAG_MUTABLE )
         }
+        if (alarmManager != null) {
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis()+5000,
+                AlarmManager.INTERVAL_DAY,
+                alarmIntent
+            )
+            Log.d(ALARM_TAG,"알람 시스템 등록")
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, alarmIntent)
+//            val alarmTime = android.text.format.DateFormat.format("HH:mm:ss", aT).toString()
+//            Log.d(ALARM_TAG,alarmTime)
+        }else{
+
+        }
         Log.d(ALARM_TAG, "끝 알람 매니저 등록 완료")
-        alarmManager.nextAlarmClock
 
     }
     LazyColumn(

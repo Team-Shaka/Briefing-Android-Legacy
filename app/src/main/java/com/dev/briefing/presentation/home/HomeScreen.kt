@@ -37,6 +37,7 @@ import com.dev.briefing.util.MOCK_DATE
 import com.dev.briefing.util.SERVER_TAG
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
+import java.time.LocalDate
 
 @Composable
 fun BriefingHome(
@@ -56,8 +57,8 @@ fun BriefingHome(
     val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
     val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(
         initial = BriefingResponse(
-            created_at = "2023-08-27",
-            briefings = listOf(BriefingPreview(1, 1, "잼버리", "test1"))
+            created_at = LocalDate.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd")),
+            briefings = listOf()
         )
     )
 //    val briefingResponseFlow by remember { mutableStateOf( homeViewModel.serverTestResponse) }
@@ -92,15 +93,14 @@ fun BriefingHome(
             horizontalArrangement = Arrangement.spacedBy(21.dp),
         ) {
             items(homeViewModel.timeList) { time ->
-                val clickAble = time != MOCK_DATE
-                val color = if(!clickAble) Color.Transparent else White
+                val color = White
                 Box(
                     modifier = Modifier
                         .border(2.dp, if(homeViewModel.briefDate.value==time) White else Color.Transparent,shape = getBottomLineShape(4))
                         .padding(bottom = 5.dp)
                 ){
                     Text(
-                        modifier = Modifier.clickable(clickAble) {
+                        modifier = Modifier.clickable{
                             homeViewModel.changeBriefDate(time)
                         },
                         text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),

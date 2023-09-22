@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     fun requestNotificationPermission(){
-        val permissions:Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+        val permissions:Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.SET_ALARM,Manifest.permission.SCHEDULE_EXACT_ALARM)
         ActivityCompat.requestPermissions(this, permissions, NOTIFICATION_REQUEST_CODE);
     }
 }

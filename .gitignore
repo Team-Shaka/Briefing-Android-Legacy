@@ -9,5 +9,6 @@
 .cxx
 local.properties
 keystore.jks
+key.properties
 private_key.pepk
 app/release/

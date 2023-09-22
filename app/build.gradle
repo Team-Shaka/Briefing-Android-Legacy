@@ -4,9 +4,11 @@ plugins {
 }
 
 android {
+
     namespace 'com.dev.briefing'
     compileSdk 33
-
+    Properties keyProperties = new Properties()
+    keyProperties.load(project.rootProject.file("key.properties").newDataInputStream())
     defaultConfig {
         applicationId "com.dev.briefing"
         minSdk 28
@@ -21,8 +23,17 @@ android {
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
         buildConfigField "String", "BASE_URL", "\"${properties.getProperty("BASE_URL")}\""
+        buildConfigField "String", "DEV_BASE_URL", "\"${properties.getProperty("DEV_BASE_URL")}\""
         buildConfigField "String", "WEB_URL", "\"${properties.getProperty("WEB_URL")}\""
         buildConfigField "String", "NOTIFICATION_CHANNEL_ID", "\"NOTIFICATION_CHANNEL_ID\""
+    }
+    signingConfigs{
+        config{
+            keyAlias keyProperties['keyAlias']
+            keyPassword keyProperties['keyAlias']
+            storeFile file(keyProperties['storeFile'])
+            storePassword keyProperties['storePassword']
+        }
     }
     buildFeatures {
         buildConfig = true
@@ -74,6 +85,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-webview:0.24.13-rc"
     //Notification
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
+    implementation 'androidx.work:work-runtime-ktx:2.7.0'
     //Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
