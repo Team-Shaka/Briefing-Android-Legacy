@@ -4,11 +4,13 @@
 /.idea/
 .DS_Store
 /build
+app/build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
 keystore.jks
 key.properties
+app/google-services.json
 private_key.pepk
 app/release/
