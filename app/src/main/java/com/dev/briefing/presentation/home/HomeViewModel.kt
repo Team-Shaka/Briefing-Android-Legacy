@@ -52,10 +52,10 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
                     type = "Korea")
                 if(response.briefings != null) {
                     _serverTestResponse.value = response
-                } else {
                 }
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG,e.toString())
+
             }
 
             Log.d(SERVER_TAG,"끝!")
