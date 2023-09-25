@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,34 +81,35 @@ fun BriefingHome(
             onScrapClick = onScrapClick,
             onSettingClick = onSettingClick
         )
-        LaunchedEffect(Unit) {
-            horizontalscrollState.animateScrollTo(Int.MAX_VALUE)
-            Log.d("되니","되니")
-        }
-//
+
         LazyRow(
             modifier = modifier
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-            horizontalArrangement = Arrangement.spacedBy(21.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(homeViewModel.timeList) { time ->
-                val color = White
-                Box(
+                Column(
                     modifier = Modifier
-                        .border(2.dp, if(homeViewModel.briefDate.value==time) White else Color.Transparent,shape = getBottomLineShape(4))
-                        .padding(bottom = 5.dp)
-                ){
-                    Text(
-                        modifier = Modifier.clickable{
+                        .background(color = if(homeViewModel.briefDate.value==time)White else Color.Transparent, shape = RoundedCornerShape(5.dp))
+                        .padding(vertical = 6.dp, horizontal = 10.dp)
+                        .clickable {
                             homeViewModel.changeBriefDate(time)
                         },
-                        text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
-                        style = MaterialTheme.typography.headlineLarge.copy(color = color)
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    //TODO: 요일 앞문자만 대문자로 수정하기
+                    Text(
+                        text = time.dayOfWeek.name.substring(0, 3),
+                        style = Typography.bodyMedium.copy(color = if(homeViewModel.briefDate.value==time) MainPrimary else White )
+                    )
+                    Text(
+                        text = time.dayOfMonth.toString(),
+                        style = Typography.titleMedium.copy(color = if(homeViewModel.briefDate.value==time) MainPrimary else White)
                     )
                 }
-
             }
         }
 
@@ -118,11 +120,6 @@ fun BriefingHome(
                 color = White
             )
         )
-        Text(
-            text = "${homeViewModel.briefText}의 키워드 브리핑",
-            style = MaterialTheme.typography.titleMedium,
-        )
-
         Spacer(modifier = Modifier.height(29.dp))
 
         ArticleList(
@@ -133,7 +130,7 @@ fun BriefingHome(
 
 }
 
-private fun getBottomLineShape(bottomLineThickness: Int) : Shape {
+private fun getBottomLineShape(bottomLineThickness: Int): Shape {
     return GenericShape { size, _ ->
         // 1) Bottom-left corner
         moveTo(0f, size.height)
@@ -145,6 +142,7 @@ private fun getBottomLineShape(bottomLineThickness: Int) : Shape {
         lineTo(0f, size.height - bottomLineThickness)
     }
 }
+
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
@@ -194,7 +192,11 @@ fun ArticleList(
     navController: NavController
 ) {
     Column(
-        modifier.background(SubBackGround, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+        modifier
+            .background(
+                SubBackGround,
+                shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
+            )
             .fillMaxHeight()
             .padding(horizontal = 17.dp)
     ) {
@@ -248,7 +250,12 @@ fun ArticleListTile(
     onItemClick: (Int) -> Unit
 ) {
     Row(
-        Modifier.shadow(elevation = 20.dp, spotColor = Color(0x1A000000), ambientColor = Color(0x1A000000))
+        Modifier
+            .shadow(
+                elevation = 20.dp,
+                spotColor = Color(0x1A000000),
+                ambientColor = Color(0x1A000000)
+            )
             .fillMaxWidth()
             .clickable {
                 onItemClick(news.id)
@@ -281,10 +288,12 @@ fun ArticleListTile(
 
             }
             Column(
-                modifier = modifier.fillMaxHeight().widthIn(max = 185.dp),
+                modifier = modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 185.dp),
                 verticalArrangement = Arrangement.Center,
 
-            ) {
+                ) {
                 Text(text = news.title, style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -298,7 +307,8 @@ fun ArticleListTile(
 
 
         Image(
-            modifier = Modifier.width(27.dp)
+            modifier = Modifier
+                .width(27.dp)
                 .height(27.dp),
             painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd"
         )

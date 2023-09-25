@@ -26,28 +26,28 @@ fun RootScreen(navController: NavHostController = rememberNavController()) {
     val currentRoute = navBackStackEntry?.destination?.route ?: HomeScreen.Home.route
     Scaffold(
 //        scaffoldState = rememberScaffoldState(),
-        bottomBar = {
-            BottomNavigationBar(
-                selectedItemPosition = when (currentRoute) {
-                    HomeScreen.Home.route,HomeScreen.Setting.route,HomeScreen.Scrap.route-> 0
-                    ChatScreen.Chat.route, ChatScreen.Chatting.route -> 1
-                    else -> 0
-                }, { selectedItemPosition ->
-                    when (selectedItemPosition) {
-                        //TODO: popStack 추가
-                        0 -> navController.navigate(HomeScreen.Home.route)
-                        1 -> navController.navigate(ChatScreen.Chat.route)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MainPrimary),
-                listOf(
-                    BottomNavigationItem.Home,
-                    BottomNavigationItem.Chat
-                )
-            )
-        }
+//        bottomBar = {
+//            BottomNavigationBar(
+//                selectedItemPosition = when (currentRoute) {
+//                    HomeScreen.Home.route,HomeScreen.Setting.route,HomeScreen.Scrap.route-> 0
+//                    ChatScreen.Chat.route, ChatScreen.Chatting.route -> 1
+//                    else -> 0
+//                }, { selectedItemPosition ->
+//                    when (selectedItemPosition) {
+//                        //TODO: popStack 추가
+//                        0 -> navController.navigate(HomeScreen.Home.route)
+//                        1 -> navController.navigate(ChatScreen.Chat.route)
+//                    }
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .background(MainPrimary),
+//                listOf(
+//                    BottomNavigationItem.Home,
+//                    BottomNavigationItem.Chat
+//                )
+//            )
+//        }
     ) {
 //        val screenInsets = WindowInsets.navigationBars
         Column (
@@ -72,7 +72,7 @@ fun RootNavigationGraph(
         startDestination = Graph.HOME,
     ) {
         homeNavGraph(navController = navController)
-        chatNavGraph(navController = navController)
+//        chatNavGraph(navController = navController)
 
     }
 }
