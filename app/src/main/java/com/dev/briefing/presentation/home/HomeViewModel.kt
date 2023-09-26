@@ -64,7 +64,8 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
     //click 이벤트가 발생하면 호출되는 함수
     fun changeBriefDate(date: LocalDate){
         _briefDate.value = date
-        getBriefingDataApi(date)
+        Log.d("날짜",_briefDate.value.toString())
+//        getBriefingDataApi(date)
     }
     fun setDateList(){
         var updateDate:LocalDate = today.minusDays(1)

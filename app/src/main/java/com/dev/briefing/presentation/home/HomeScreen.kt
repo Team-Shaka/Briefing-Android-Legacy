@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -34,7 +35,7 @@ import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
-import com.dev.briefing.util.MOCK_DATE
+import com.dev.briefing.presentation.theme.utils.alertWidget
 import com.dev.briefing.util.SERVER_TAG
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
@@ -92,7 +93,10 @@ fun BriefingHome(
             items(homeViewModel.timeList) { time ->
                 Column(
                     modifier = Modifier
-                        .background(color = if(homeViewModel.briefDate.value==time)White else Color.Transparent, shape = RoundedCornerShape(5.dp))
+                        .background(
+                            color = if (homeViewModel.briefDate.value == time) White else Color.Transparent,
+                            shape = RoundedCornerShape(5.dp)
+                        )
                         .padding(vertical = 6.dp, horizontal = 10.dp)
                         .clickable {
                             homeViewModel.changeBriefDate(time)
@@ -103,29 +107,30 @@ fun BriefingHome(
                     //TODO: 요일 앞문자만 대문자로 수정하기
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if(homeViewModel.briefDate.value==time) MainPrimary else White )
+                        style = Typography.bodyMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if(homeViewModel.briefDate.value==time) MainPrimary else White)
+                        style = Typography.titleMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
                     )
                 }
             }
         }
+        Spacer(modifier = Modifier.height(13.dp))
 
-        Spacer(modifier = Modifier.height(29.dp))
-        Text(
-            "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.monthValue}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                color = White
+        homeViewModel.briefDate.value?.let {
+            ArticleList(
+                navController = navController,
+                briefingResponse = briefingResponseState.value,
+                briefDate = it
             )
-        )
-        Spacer(modifier = Modifier.height(29.dp))
-
-        ArticleList(
-            navController = navController,
-            briefingResponse = briefingResponseState.value
-        )
+        } ?: run {
+            ArticleList(
+                navController = navController,
+                briefingResponse = briefingResponseState.value,
+                briefDate = LocalDate.now()
+            )
+        }
     }
 
 }
@@ -189,6 +194,7 @@ fun HomeHeader(
 fun ArticleList(
     modifier: Modifier = Modifier,
     briefingResponse: BriefingResponse,
+    briefDate: LocalDate,
     navController: NavController
 ) {
     Column(
@@ -198,31 +204,22 @@ fun ArticleList(
                 shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
             )
             .fillMaxHeight()
-            .padding(horizontal = 17.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 17.dp, vertical = 19.dp)
     ) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 11.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            //Korea - Global Switch 때체
+        if (briefingResponse.briefings?.isEmpty() == true) {
+            alertWidget()
+        }
+        else {
+            Text(
+                text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
+                style = Typography.titleMedium.copy(color = MainPrimary)
+            )
             Text(
                 text = "Updated: ${briefingResponse.created_at}",
                 style = MaterialTheme.typography.labelMedium
             )
-
-        }
-        Log.d(SERVER_TAG, briefingResponse.briefings?.size.toString())
-        if (briefingResponse.briefings?.isEmpty() == true) {
-            Text(
-                modifier = modifier.align(Alignment.CenterHorizontally),
-                text = "컨텐츠 준비중입니다",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = MainPrimary
-                ),
-            )
-        } else {
+            Spacer(modifier = Modifier.height(13.dp))
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {

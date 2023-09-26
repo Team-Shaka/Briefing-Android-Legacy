@@ -17,4 +17,6 @@
     <string name="notification_channel_id">your_channel_id</string>
     <string name="notification_channel_name">Your Channel Name</string>
     <string name="notification_channel_description">Your Channel Description</string>
+    <string name="login_app_description">Your Keyword Newskeeper.</string>
+    <string name="login_skip">나중에 하기</string>
 </resources>
