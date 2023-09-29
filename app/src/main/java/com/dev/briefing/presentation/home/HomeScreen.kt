@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -35,6 +34,7 @@ import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.presentation.theme.utils.alertWidget
 import com.dev.briefing.util.SERVER_TAG
 import java.time.format.DateTimeFormatter
@@ -44,7 +44,6 @@ import java.time.LocalDate
 @Composable
 fun BriefingHome(
     modifier: Modifier = Modifier,
-    onScrapClick: () -> Unit,
     onSettingClick: () -> Unit,
     navController: NavController,
 //    onDetailClick:(Int) -> Unit
@@ -55,6 +54,7 @@ fun BriefingHome(
         startY = 0.0f,
         endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
+    val openAlertDialog = remember { mutableStateOf(false) }
 
     val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
     val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(
@@ -77,9 +77,27 @@ fun BriefingHome(
         //scroll
         var horizontalscrollState = rememberScrollState()
 
+        if(openAlertDialog.value){
+            CommonDialog(
+                onDismissRequest = { openAlertDialog.value = false },
+                onConfirmation = {
+                    //TODO: navigate login scree
+//                    navController.navigate()
+                    openAlertDialog.value = false
+                },
+                dialogTitle = stringResource(R.string.dialog_login_title) ,
+                dialogText = stringResource(R.string.dialog_login_text)
+            )
+        }
 
         HomeHeader(
-            onScrapClick = onScrapClick,
+            onScrapClick = {
+                if(openAlertDialog.value == false){
+                    openAlertDialog.value = true
+                }else{
+                    navController.navigate(HomeScreen.Scrap.route)
+                }
+                           },
             onSettingClick = onSettingClick
         )
 
@@ -151,7 +169,7 @@ private fun getBottomLineShape(bottomLineThickness: Int): Shape {
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
-    onScrapClick: () -> Unit,
+    onScrapClick:  () -> Unit,
     onSettingClick: () -> Unit,
 ) {
     Row(
