@@ -8,5 +8,4 @@ import androidx.lifecycle.ViewModel
 import java.util.*
 
 class SettingViewModel():ViewModel() {
-
 }

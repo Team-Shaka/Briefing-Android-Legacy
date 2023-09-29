@@ -24,12 +24,13 @@
     <string name="dialog_login_confirm">로그인</string>
     <string name="dialog_basic_dismiss">취소</string>
     <string name="dialog_logout_title">로그아웃</string>
-    <string name="dialog_logout_text">정말 로그아웃 하시겠습니까?\\n 일부 기능 이용이 제한됩니다.</string>
+    <string name="dialog_logout_confirm">로그아웃</string>
+    <string name="dialog_logout_text">정말 로그아웃 하시겠습니까?\n 일부 기능 이용이 제한됩니다.</string>
     <string name="dialog_exit_title">회원 탈퇴</string>
-    <string name="dialog_exit_text">정말 회원탈퇴 하시겠습니까?\\n 해당 계정은 사용이 불가해집니다.</string>
+    <string name="dialog_exit_text">정말 회원탈퇴 하시겠습니까?\n 해당 계정은 사용이 불가해집니다.</string>
     <string name="dialog_exit_confirm">회원 탈퇴</string>
     <string name="dialog_signout_confirm">로그아웃</string>
     <string name="dialog_alarm_title">알람시간</string>
-    <string name="dialog_alarm_text">현재 알림 기능이 꺼져있습니다. \\n 설정 > 알림에 들어가 확인해주세요.</string>
+    <string name="dialog_alarm_text">현재 알림 기능이 꺼져있습니다. \n 설정 > 알림에 들어가 확인해주세요.</string>
     <string name="dialog_basic_confirm">확인</string>
 </resources>

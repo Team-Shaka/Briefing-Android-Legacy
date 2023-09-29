@@ -77,7 +77,7 @@ fun BriefingHome(
         //scroll
         var horizontalscrollState = rememberScrollState()
 
-        if(openAlertDialog.value){
+        if (openAlertDialog.value) {
             CommonDialog(
                 onDismissRequest = { openAlertDialog.value = false },
                 onConfirmation = {
@@ -85,19 +85,21 @@ fun BriefingHome(
 //                    navController.navigate()
                     openAlertDialog.value = false
                 },
-                dialogTitle = stringResource(R.string.dialog_login_title) ,
-                dialogText = stringResource(R.string.dialog_login_text)
+                dialogTitle = stringResource(R.string.dialog_login_title),
+                dialogText = stringResource(R.string.dialog_login_text),
+                dialogId = R.string.dialog_login_confirm,
+                confirmColor = MainPrimary4
             )
         }
 
         HomeHeader(
             onScrapClick = {
-                if(openAlertDialog.value == false){
+                if (openAlertDialog.value == false) {
                     openAlertDialog.value = true
-                }else{
+                } else {
                     navController.navigate(HomeScreen.Scrap.route)
                 }
-                           },
+            },
             onSettingClick = onSettingClick
         )
 
@@ -169,7 +171,7 @@ private fun getBottomLineShape(bottomLineThickness: Int): Shape {
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
-    onScrapClick:  () -> Unit,
+    onScrapClick: () -> Unit,
     onSettingClick: () -> Unit,
 ) {
     Row(
@@ -227,8 +229,7 @@ fun ArticleList(
     ) {
         if (briefingResponse.briefings?.isEmpty() == true) {
             alertWidget()
-        }
-        else {
+        } else {
             Text(
                 text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
                 style = Typography.titleMedium.copy(color = MainPrimary)
