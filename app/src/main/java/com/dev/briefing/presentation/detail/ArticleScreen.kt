@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.dev.briefing.R
 import com.dev.briefing.data.NewsContent
@@ -36,11 +37,13 @@ import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
+import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.time.LocalDate
+
 @Composable
 fun ArticleDetailScreen(
     modifier: Modifier = Modifier,
@@ -62,7 +65,8 @@ fun ArticleDetailScreen(
             articles = listOf(
                 Article(id = 1, press = "fdsf", title = "fddsdf", "ulr")
             )
-        ))
+        )
+    )
     articleDetailViewModel.getScrapStatus(context)
     val isScrap = articleDetailViewModel.isScrap.observeAsState(false)
     val gradientBrush = Brush.verticalGradient(
@@ -79,7 +83,7 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            onScrapClick = {articleDetailViewModel.setScrapStatus(context)},
+            onScrapClick = { articleDetailViewModel.setScrapStatus(context) },
             briefing = articleResponse.value,
             context = context,
             isScrap = isScrap.value
@@ -100,10 +104,10 @@ fun ArticleDetailScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
-    onScrapClick:(Context)->Unit,
+    onScrapClick: (Context) -> Unit,
     briefing: BriefingDetailResponse,
     context: Context,
-    isScrap:Boolean
+    isScrap: Boolean
 ) {
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
@@ -139,7 +143,7 @@ fun DetailHeader(
             contentDescription = contentDescription,
             modifier = Modifier.clickable(
                 onClick = {
-                   onScrapClick(context)
+                    onScrapClick(context)
                 }
             )
         )
@@ -184,22 +188,22 @@ fun ArticleDetail(
         }
         Text(
             text = article.title,
-            style = MaterialTheme.typography.titleLarge
+            style = Typography.titleLarge
         )
         Text(
             text = article.subtitle,
-            style = MaterialTheme.typography.headlineLarge
+            style = Typography.headlineLarge
         )
         Text(
             text = article.content,
-            style = MaterialTheme.typography.bodyMedium.copy(
+            style = Typography.bodyMedium.copy(
                 fontWeight = FontWeight(400),
-
-                )
+                color = MainPrimary
+            )
         )
         Text(
             text = stringResource(R.string.detail_article_header),
-            style = MaterialTheme.typography.headlineLarge
+            style = Typography.headlineLarge
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(13.dp)
@@ -231,8 +235,7 @@ fun ArticleLink(
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsLink.url))
                 ContextCompat.startActivity(context, intent, null)
             }
-            .padding(vertical = 9.dp, horizontal = 13.dp)
-        ,
+            .padding(vertical = 9.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -240,13 +243,67 @@ fun ArticleLink(
         Column(
             modifier = Modifier.widthIn(max = 193.dp)
         ) {
-            Text(text = newsLink.press, style = MaterialTheme.typography.bodyMedium.copy(
+            Text(
+                text = newsLink.press, style = Typography.bodyMedium.copy(
+                    fontWeight = FontWeight(700),
+                    color = MainPrimary
+                )
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = newsLink.title,
+                style = Typography.labelSmall,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
+    }
+}
+
+/**
+ * [ChatScreen]으로 이동하는 버튼
+ */
+@Composable
+fun BriefChatLink(
+    newsLink: Article,
+    modifier: Modifier = Modifier,
+    context: Context
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .background(White, shape = RoundedCornerShape(40.dp))
+            .border(1.dp, MainPrimary, shape = RoundedCornerShape(10.dp))
+            .clickable {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsLink.url))
+                ContextCompat.startActivity(context, intent, null)
+            }
+            .padding(vertical = 9.dp, horizontal = 13.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.chat_selelcted),
+            contentDescription = "fdfd"
+        )
+        Spacer(modifier = Modifier.width(9.dp))
+        Text(
+            text = stringResource(R.string.detail_brief_text), style = Typography.bodyMedium.copy(
                 fontWeight = FontWeight(700),
                 color = MainPrimary
-            ))
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = newsLink.title, style = MaterialTheme.typography.labelSmall,overflow = TextOverflow.Ellipsis)
-        }
+            )
+        )
+        Text(
+            text = stringResource(R.string.detail_brief_label),
+            style = Typography.labelSmall.copy(
+                color = MainPrimary,
+                fontSize = 7.sp,
+                lineHeight = 8.sp
+            ),
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Start
+        )
+
         Image(painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd")
     }
 }

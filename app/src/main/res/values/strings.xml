@@ -34,4 +34,6 @@
     <string name="dialog_alarm_text">현재 알림 기능이 꺼져있습니다. \n 설정 > 알림에 들어가 확인해주세요.</string>
     <string name="dialog_basic_confirm">확인</string>
     <string name="scrap_default">아직 스크랩한 브리핑 카드가 없습니다.\n스크랩을 진행해주세요.</string>
+    <string name="detail_brief_label">BETA</string>
+    <string name="detail_brief_text">Brief에게 물어보기</string>
 </resources>
