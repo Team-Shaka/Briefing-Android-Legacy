@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
+import com.dev.briefing.BuildConfig.GOOGLE_API_KEY
 import com.dev.briefing.R
 import com.dev.briefing.presentation.home.HomeActivity
 import com.dev.briefing.presentation.theme.MainPrimary
@@ -35,9 +36,12 @@ import com.dev.briefing.presentation.theme.MainPrimary5
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 @Composable
 fun SignInScreen(
+    googelSignIn:() -> Unit = {}
 ) {
     val context = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -60,7 +64,7 @@ fun SignInScreen(
             .fillMaxWidth()
             .fillMaxHeight()
             .background(color = MainPrimary)
-            .padding(horizontal = 36.dp, vertical = 77.dp),
+            .padding(horizontal = 36.dp, vertical = 60.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -91,7 +95,7 @@ fun SignInScreen(
         Spacer(modifier = Modifier.weight(2f))
         GoogleLoginButton(
             onClick = {
-                //TODO: add google signin logic
+                googelSignIn()
                 //startActivity(context, Intent(context, HomeActivity::class.java), null)
             }
         )
