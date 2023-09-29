@@ -16,6 +16,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -33,6 +35,7 @@ import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.presentation.home.HomeViewModel
+import com.dev.briefing.presentation.theme.ErrorColor
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
@@ -62,6 +65,9 @@ fun ArticleDetailScreen(
             subtitle = "부제목3",
             content = "내용3",
             date = "2023-08-27",
+            isScrap = false,
+            isBriefOpen = false,
+            isWarning = false,
             articles = listOf(
                 Article(id = 1, press = "fdsf", title = "fddsdf", "ulr")
             )
@@ -132,7 +138,7 @@ fun DetailHeader(
         )
         Text(
             text = "Briefing #${briefing.rank}",
-            style = MaterialTheme.typography.titleMedium.copy(
+            style = Typography.titleMedium.copy(
                 color = White,
                 fontWeight = FontWeight(400)
             )
@@ -186,10 +192,20 @@ fun ArticleDetail(
                 textAlign = TextAlign.End
             )
         }
-        Text(
-            text = article.title,
-            style = Typography.titleLarge
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = article.title,
+                style = Typography.titleLarge
+            )
+            if(article.isWarning){
+                Image(painter = painterResource(id = R.drawable.home_alert), colorFilter = ColorFilter.tint(
+                    MainPrimary), contentDescription = "fdfd")
+            }
+
+        }
         Text(
             text = article.subtitle,
             style = Typography.headlineLarge
@@ -205,6 +221,9 @@ fun ArticleDetail(
             text = stringResource(R.string.detail_article_header),
             style = Typography.headlineLarge
         )
+        if(article.isBriefOpen){
+            BriefChatLink()
+        }
         Column(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
@@ -263,11 +282,10 @@ fun ArticleLink(
 /**
  * [ChatScreen]으로 이동하는 버튼
  */
+@Preview
 @Composable
 fun BriefChatLink(
-    newsLink: Article,
     modifier: Modifier = Modifier,
-    context: Context
 ) {
     Row(
         modifier
@@ -275,8 +293,7 @@ fun BriefChatLink(
             .background(White, shape = RoundedCornerShape(40.dp))
             .border(1.dp, MainPrimary, shape = RoundedCornerShape(10.dp))
             .clickable {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsLink.url))
-                ContextCompat.startActivity(context, intent, null)
+                //TODO: add ChatScreen navigate
             }
             .padding(vertical = 9.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
