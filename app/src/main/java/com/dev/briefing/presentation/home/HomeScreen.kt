@@ -85,8 +85,8 @@ fun BriefingHome(
 //                    navController.navigate()
                     openAlertDialog.value = false
                 },
-                dialogTitle = stringResource(R.string.dialog_login_title),
-                dialogText = stringResource(R.string.dialog_login_text),
+                dialogTitle = R.string.dialog_login_title,
+                dialogText = R.string.dialog_login_text,
                 dialogId = R.string.dialog_login_confirm,
                 confirmColor = MainPrimary4
             )

@@ -141,8 +141,8 @@ fun SettingScreen(
                 //TODO: add exit logic
                 openExitDialog.value = false
             },
-            dialogTitle = stringResource(R.string.dialog_exit_title),
-            dialogText = stringResource(R.string.dialog_exit_text),
+            dialogTitle = R.string.dialog_exit_title,
+            dialogText = R.string.dialog_exit_text,
             dialogId = R.string.dialog_exit_confirm
         )
 
@@ -154,8 +154,8 @@ fun SettingScreen(
                 //TODO: add logout logic
                 openLogOutDialog.value = false
             },
-            dialogTitle = stringResource(R.string.dialog_logout_title),
-            dialogText = stringResource(R.string.dialog_logout_text),
+            dialogTitle = R.string.dialog_logout_title,
+            dialogText = R.string.dialog_logout_text,
             dialogId = R.string.dialog_logout_confirm
         )
 

@@ -98,10 +98,11 @@ fun alertWidget() {
 fun CommonDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
+    dialogTitle: Int,
+    dialogText: Int,
     dialogId: Int,
     confirmColor: Color = DialogButtonExit,
+    dismissText:Int = R.string.dialog_basic_dismiss,
     modifier: Modifier = Modifier
 ) {
     Dialog(
@@ -115,11 +116,11 @@ fun CommonDialog(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = dialogTitle,
+                text = stringResource(dialogTitle),
                 style = Typography.titleMedium.copy(fontSize = 20.sp, color = Black)
             )
             Text(
-                text = dialogText,
+                text = stringResource(dialogText),
                 style = Typography.headlineLarge.copy(
                     color = Black,
                     fontWeight = FontWeight.Normal
@@ -138,7 +139,7 @@ fun CommonDialog(
                         .padding(vertical = 15.dp)
                         .clickable(onClick = onDismissRequest),
                     text = stringResource(
-                        R.string.dialog_basic_dismiss,
+                        dismissText,
                     ),
                     style = Typography.headlineLarge.copy(color = Black),
                     textAlign = TextAlign.Center
