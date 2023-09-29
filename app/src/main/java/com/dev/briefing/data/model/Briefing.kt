@@ -31,6 +31,12 @@ data class BriefingDetailResponse(
     val subtitle: String,
     @SerializedName("content")
     val content: String,
+    @SerializedName("isScrap")
+    val isScrap: Boolean,
+    @SerializedName("isBriefOpen")
+    val isBriefOpen: Boolean,
+    @SerializedName("isWarning")
+    val isWarning: Boolean,
     @SerializedName("articles")
     val articles: List<Article>,
 )

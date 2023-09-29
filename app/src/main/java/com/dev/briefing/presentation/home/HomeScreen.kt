@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,7 +34,8 @@ import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
-import com.dev.briefing.util.MOCK_DATE
+import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.presentation.theme.utils.alertWidget
 import com.dev.briefing.util.SERVER_TAG
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
@@ -42,7 +44,6 @@ import java.time.LocalDate
 @Composable
 fun BriefingHome(
     modifier: Modifier = Modifier,
-    onScrapClick: () -> Unit,
     onSettingClick: () -> Unit,
     navController: NavController,
 //    onDetailClick:(Int) -> Unit
@@ -53,6 +54,7 @@ fun BriefingHome(
         startY = 0.0f,
         endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
+    val openAlertDialog = remember { mutableStateOf(false) }
 
     val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
     val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(
@@ -75,65 +77,85 @@ fun BriefingHome(
         //scroll
         var horizontalscrollState = rememberScrollState()
 
+        if (openAlertDialog.value) {
+            CommonDialog(
+                onDismissRequest = { openAlertDialog.value = false },
+                onConfirmation = {
+                    //TODO: navigate login scree
+//                    navController.navigate()
+                    openAlertDialog.value = false
+                },
+                dialogTitle = stringResource(R.string.dialog_login_title),
+                dialogText = stringResource(R.string.dialog_login_text),
+                dialogId = R.string.dialog_login_confirm,
+                confirmColor = MainPrimary4
+            )
+        }
 
         HomeHeader(
-            onScrapClick = onScrapClick,
+            onScrapClick = {
+                if (openAlertDialog.value == false) {
+                    openAlertDialog.value = true
+                } else {
+                    navController.navigate(HomeScreen.Scrap.route)
+                }
+            },
             onSettingClick = onSettingClick
         )
-        LaunchedEffect(Unit) {
-            horizontalscrollState.animateScrollTo(Int.MAX_VALUE)
-            Log.d("되니","되니")
-        }
-//
+
         LazyRow(
             modifier = modifier
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-            horizontalArrangement = Arrangement.spacedBy(21.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(homeViewModel.timeList) { time ->
-                val color = White
-                Box(
+                Column(
                     modifier = Modifier
-                        .border(2.dp, if(homeViewModel.briefDate.value==time) White else Color.Transparent,shape = getBottomLineShape(4))
-                        .padding(bottom = 5.dp)
-                ){
-                    Text(
-                        modifier = Modifier.clickable{
+                        .background(
+                            color = if (homeViewModel.briefDate.value == time) White else Color.Transparent,
+                            shape = RoundedCornerShape(5.dp)
+                        )
+                        .padding(vertical = 6.dp, horizontal = 10.dp)
+                        .clickable {
                             homeViewModel.changeBriefDate(time)
                         },
-                        text = time.format(DateTimeFormatter.ofPattern("yy.MM.dd")),
-                        style = MaterialTheme.typography.headlineLarge.copy(color = color)
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    //TODO: 요일 앞문자만 대문자로 수정하기
+                    Text(
+                        text = time.dayOfWeek.name.substring(0, 3),
+                        style = Typography.bodyMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
+                    )
+                    Text(
+                        text = time.dayOfMonth.toString(),
+                        style = Typography.titleMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
                     )
                 }
-
             }
         }
+        Spacer(modifier = Modifier.height(13.dp))
 
-        Spacer(modifier = Modifier.height(29.dp))
-        Text(
-            "${homeViewModel.briefDate.value?.year}년 ${homeViewModel.briefDate.value?.monthValue}월 ${homeViewModel.briefDate.value?.dayOfMonth}일",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                color = White
+        homeViewModel.briefDate.value?.let {
+            ArticleList(
+                navController = navController,
+                briefingResponse = briefingResponseState.value,
+                briefDate = it
             )
-        )
-        Text(
-            text = "${homeViewModel.briefText}의 키워드 브리핑",
-            style = MaterialTheme.typography.titleMedium,
-        )
-
-        Spacer(modifier = Modifier.height(29.dp))
-
-        ArticleList(
-            navController = navController,
-            briefingResponse = briefingResponseState.value
-        )
+        } ?: run {
+            ArticleList(
+                navController = navController,
+                briefingResponse = briefingResponseState.value,
+                briefDate = LocalDate.now()
+            )
+        }
     }
 
 }
 
-private fun getBottomLineShape(bottomLineThickness: Int) : Shape {
+private fun getBottomLineShape(bottomLineThickness: Int): Shape {
     return GenericShape { size, _ ->
         // 1) Bottom-left corner
         moveTo(0f, size.height)
@@ -145,6 +167,7 @@ private fun getBottomLineShape(bottomLineThickness: Int) : Shape {
         lineTo(0f, size.height - bottomLineThickness)
     }
 }
+
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
@@ -191,36 +214,31 @@ fun HomeHeader(
 fun ArticleList(
     modifier: Modifier = Modifier,
     briefingResponse: BriefingResponse,
+    briefDate: LocalDate,
     navController: NavController
 ) {
     Column(
-        modifier.background(SubBackGround, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+        modifier
+            .background(
+                SubBackGround,
+                shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
+            )
             .fillMaxHeight()
-            .padding(horizontal = 17.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 17.dp, vertical = 19.dp)
     ) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 11.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            //Korea - Global Switch 때체
+        if (briefingResponse.briefings?.isEmpty() == true) {
+            alertWidget()
+        } else {
+            Text(
+                text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
+                style = Typography.titleMedium.copy(color = MainPrimary)
+            )
             Text(
                 text = "Updated: ${briefingResponse.created_at}",
                 style = MaterialTheme.typography.labelMedium
             )
-
-        }
-        Log.d(SERVER_TAG, briefingResponse.briefings?.size.toString())
-        if (briefingResponse.briefings?.isEmpty() == true) {
-            Text(
-                modifier = modifier.align(Alignment.CenterHorizontally),
-                text = "컨텐츠 준비중입니다",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = MainPrimary
-                ),
-            )
-        } else {
+            Spacer(modifier = Modifier.height(13.dp))
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
@@ -248,7 +266,12 @@ fun ArticleListTile(
     onItemClick: (Int) -> Unit
 ) {
     Row(
-        Modifier.shadow(elevation = 20.dp, spotColor = Color(0x1A000000), ambientColor = Color(0x1A000000))
+        Modifier
+            .shadow(
+                elevation = 20.dp,
+                spotColor = Color(0x1A000000),
+                ambientColor = Color(0x1A000000)
+            )
             .fillMaxWidth()
             .clickable {
                 onItemClick(news.id)
@@ -281,10 +304,12 @@ fun ArticleListTile(
 
             }
             Column(
-                modifier = modifier.fillMaxHeight().widthIn(max = 185.dp),
+                modifier = modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 185.dp),
                 verticalArrangement = Arrangement.Center,
 
-            ) {
+                ) {
                 Text(text = news.title, style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -298,7 +323,8 @@ fun ArticleListTile(
 
 
         Image(
-            modifier = Modifier.width(27.dp)
+            modifier = Modifier
+                .width(27.dp)
                 .height(27.dp),
             painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd"
         )

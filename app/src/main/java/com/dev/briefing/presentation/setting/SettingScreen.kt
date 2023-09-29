@@ -30,11 +30,14 @@ import androidx.core.content.ContextCompat.startActivity
 import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
 import com.dev.briefing.data.Alarm
+import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.setting.alarm.AlarmReceiver
 import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_CODE
 import com.dev.briefing.util.ALARM_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
+import org.koin.androidx.compose.getViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,7 +47,9 @@ fun SettingScreen(
     onBackClick: () -> Unit,
 ) {
     val context = LocalContext.current
-
+//    val viewModel: SettingViewModel = getViewModel<SettingViewModel>()
+    val openLogOutDialog = remember { mutableStateOf(false) }
+    val openExitDialog = remember { mutableStateOf(false) }
     //alarm 시간 가져오기
     var alarmTime: Alarm = SharedPreferenceHelper.getAlarm(context)
     var alarmHour = alarmTime.hour
@@ -83,7 +88,8 @@ fun SettingScreen(
 
                 Log.d(
                     ALARM_TAG,
-                    calendar.get(Calendar.HOUR_OF_DAY).toString() + "시" + calendar.get(Calendar.MINUTE).toString()
+                    calendar.get(Calendar.HOUR_OF_DAY)
+                        .toString() + "시" + calendar.get(Calendar.MINUTE).toString()
                 )
                 alarmTimeInMillis = calendar.timeInMillis
 
@@ -102,28 +108,57 @@ fun SettingScreen(
     LaunchedEffect(key1 = alarmTimeInMillis) {
 
         Log.d(ALARM_TAG, "설정한 시간" + (calendar.timeInMillis).toString())
-        val alarmManager:AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager: AlarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 //            val aT = alarmManager.nextAlarmClock.triggerTime
 
         Log.d(ALARM_TAG, "0 알람매니저 생성 + AlarmReceiver 진입")
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, ALARM_CODE, intent, PendingIntent.FLAG_MUTABLE )
+            PendingIntent.getBroadcast(context, ALARM_CODE, intent, PendingIntent.FLAG_MUTABLE)
         }
         if (alarmManager != null) {
             alarmManager.setRepeating(
                 AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis()+5000,
+                System.currentTimeMillis() + 5000,
                 AlarmManager.INTERVAL_DAY,
                 alarmIntent
             )
-            Log.d(ALARM_TAG,"알람 시스템 등록")
+            Log.d(ALARM_TAG, "알람 시스템 등록")
 
 //            val alarmTime = android.text.format.DateFormat.format("HH:mm:ss", aT).toString()
 //            Log.d(ALARM_TAG,alarmTime)
-        }else{
+        } else {
 
         }
         Log.d(ALARM_TAG, "끝 알람 매니저 등록 완료")
+
+    }
+    if (openExitDialog.value) {
+        Log.d(ALARM_TAG, openExitDialog.value.toString())
+        CommonDialog(
+            onDismissRequest = { openExitDialog.value = false },
+            onConfirmation = {
+                //TODO: add exit logic
+                openExitDialog.value = false
+            },
+            dialogTitle = stringResource(R.string.dialog_exit_title),
+            dialogText = stringResource(R.string.dialog_exit_text),
+            dialogId = R.string.dialog_exit_confirm
+        )
+
+    }
+    if (openLogOutDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openLogOutDialog.value = false },
+            onConfirmation = {
+                //TODO: add logout logic
+                openLogOutDialog.value = false
+            },
+            dialogTitle = stringResource(R.string.dialog_logout_title),
+            dialogText = stringResource(R.string.dialog_logout_text),
+            dialogId = R.string.dialog_logout_confirm
+        )
+
 
     }
     LazyColumn(
@@ -157,7 +192,8 @@ fun SettingScreen(
                 icon = R.drawable.setting_clock,
                 menu = R.string.setting_feedback,
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/HQXmEBkQ6wyW9jiw7"))
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/HQXmEBkQ6wyW9jiw7"))
                     startActivity(context, intent, null)
                 }
             )
@@ -178,7 +214,10 @@ fun SettingScreen(
                 menu = R.string.setting_policy,
                 onClick = {
                     val intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88"))
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88")
+                        )
                     startActivity(context, intent, null)
                 }
             )
@@ -214,12 +253,18 @@ fun SettingScreen(
             )
             Spacer(modifier = Modifier.height(50.dp))
 
-            menuWithText(R.string.setting_logout)
+            menuWithText(R.string.setting_logout, onClick = {
+                Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
+                openLogOutDialog.value = true
+            })
             Divider(
                 color = BorderColor,
                 thickness = 1.dp
             )
-            menuWithText(R.string.setting_signout)
+            menuWithText(R.string.setting_signout, onClick = {
+                Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
+                openExitDialog.value = true
+            }, color = DialogExit)
             Spacer(modifier = Modifier.height(100.dp))
 
         }
@@ -253,13 +298,16 @@ fun convertHour(
 @Composable
 fun menuWithText(
     @StringRes menu: Int = R.string.navigation_chat,
+    onClick: () -> Unit = {},
+    color: Color = MainPrimary2,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(color = White, shape = RoundedCornerShape(5.dp))
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp)
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -267,7 +315,7 @@ fun menuWithText(
             text = stringResource(id = menu),
             style = MaterialTheme.typography.titleSmall.copy(
                 fontWeight = FontWeight(400),
-                color = SubText2
+                color = color
             )
         )
     }
