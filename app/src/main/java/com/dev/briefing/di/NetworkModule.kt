@@ -2,6 +2,7 @@ package com.dev.briefing.di
 
 
 import com.dev.briefing.BuildConfig
+import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.api.BriefingApi
 import com.dev.briefing.data.network.NetworkInterceptor
 import com.google.gson.GsonBuilder
@@ -35,6 +36,9 @@ val networkModule = module {
 
     single<BriefingApi> {
         get<Retrofit>().create(BriefingApi::class.java)
+    }
+    single<AuthApi> {
+        get<Retrofit>().create(AuthApi::class.java)
     }
 
 
