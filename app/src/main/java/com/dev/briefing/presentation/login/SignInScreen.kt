@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import com.dev.briefing.R
 import com.dev.briefing.presentation.home.HomeActivity
+import com.dev.briefing.presentation.home.HomeViewModel
+import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.login.mGoogleSignInClient
 import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.MainPrimary2
@@ -49,6 +51,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun SignInScreen(
@@ -126,6 +129,11 @@ fun SignInScreen(
 fun GoogleLoginButton(
     onClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
+    val singinViewModel: SignInViewModel= getViewModel<SignInViewModel>()
+    var idToken:String = ""
+    var serverResult:Boolean = false
     //4. startActivityForResult를 통해 구글 로그인 창을 띄움
     val googleCallBack =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -137,10 +145,17 @@ fun GoogleLoginButton(
                 if (result.data != null) {
                     val task: Task<GoogleSignInAccount> =
                         GoogleSignIn.getSignedInAccountFromIntent(intent)
-                    handleSignInResult(task)
+                    idToken = handleSignInResult(task)?.let { it } ?: ""
+                    idToken?.let { serverResult = singinViewModel.getLoginCode(it) }
+                    if(serverResult){
+                        startActivity(context, Intent(context, HomeActivity::class.java), null)
+                    }else{
+                        Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,7 +181,7 @@ fun GoogleLoginButton(
 }
 
 //5. 사용자 정보 가져오기
-fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+fun handleSignInResult(completedTask: Task<GoogleSignInAccount>):String? {
     try {
         Log.d("Google", completedTask.isSuccessful.toString())
         val account = completedTask.getResult(ApiException::class.java)
@@ -177,10 +192,12 @@ fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
             //TODO: add API 연결 코드
             Log.d("Google", it)
         } ?: Log.d("Google", "구글 로그인 에러")
+        return account.idToken.toString()
     } catch (e: ApiException) {
         // The ApiException status code indicates the detailed failure reason.
         // Please refer to the GoogleSignInStatusCodes class reference for more information.
         Log.d("Google", "google 로그인에 실패하였습니다. 다시시도해주세요${e}")
 
     }
+    return null
 }
