@@ -5,7 +5,7 @@ import com.dev.briefing.data.model.GoogleRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface LoginApi {
+interface AuthApi {
     @POST("/member/auth/google")
     suspend fun getLoginToken(
         @Body identityToken : GoogleRequest,
