@@ -27,7 +27,6 @@ android {
 //        buildConfigField "String", "DEV_BASE_URL", "\"${properties.getProperty("DEV_BASE_URL")}\""
         buildConfigField "String", "WEB_URL", "\"${properties.getProperty("WEB_URL")}\""
         buildConfigField "String", "NOTIFICATION_CHANNEL_ID", "\"NOTIFICATION_CHANNEL_ID\""
-        buildConfigField "String", "GOOGLE_API_KEY", "\"${properties.getProperty("GOOGLE_API_KEY")}\""
     }
     signingConfigs{
         config{
@@ -117,6 +116,7 @@ dependencies {
     //firebase
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    //google cloud oauth api
     implementation 'com.google.gms:google-services:4.4.0'
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
 }
