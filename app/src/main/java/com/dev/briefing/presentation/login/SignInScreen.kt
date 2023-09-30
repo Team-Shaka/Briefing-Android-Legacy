@@ -33,8 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
-import com.dev.briefing.BuildConfig
-import com.dev.briefing.BuildConfig.GOOGLE_API_KEY
 import com.dev.briefing.R
 import com.dev.briefing.presentation.home.HomeActivity
 import com.dev.briefing.presentation.login.mGoogleSignInClient
@@ -131,11 +129,9 @@ fun GoogleLoginButton(
     //4. startActivityForResult를 통해 구글 로그인 창을 띄움
     val googleCallBack =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            Log.d("Google", result.resultCode.toString())
             // Intent 타입으로 받은 data를 GoogleSignInResult로 바꿔준다.
             var rs = result.data?.let { GoogleSignInApi.getSignInResultFromIntent(it) }
             Log.e("RESULT", rs?.status.toString())
-            Log.e("RESULT", result.data.toString())
             if (result.resultCode == ComponentActivity.RESULT_OK) {
                 val intent = result.data
                 if (result.data != null) {
@@ -175,16 +171,12 @@ fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         Log.d("Google", completedTask.isSuccessful.toString())
         val account = completedTask.getResult(ApiException::class.java)
 
-        Log.d("Google", account.account.toString())
-        Log.d("Google", account.displayName.toString())
+        Log.d("Google", account.serverAuthCode.toString())
         Log.d("Google", account.idToken.toString())
-        Log.d("Google", account.id.toString())
         account.idToken?.let {
+            //TODO: add API 연결 코드
             Log.d("Google", it)
         } ?: Log.d("Google", "구글 로그인 에러")
-
-        // Signed in successfully, show authenticated UI.
-//            updateUI(account)
     } catch (e: ApiException) {
         // The ApiException status code indicates the detailed failure reason.
         // Please refer to the GoogleSignInStatusCodes class reference for more information.
