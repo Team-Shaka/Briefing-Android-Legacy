@@ -3,10 +3,12 @@ package com.dev.briefing.presentation.scrap
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.dev.briefing.data.NewsDetail
+import com.dev.briefing.data.respository.AuthRepository
+import com.dev.briefing.data.respository.ScrapRepository
 import com.dev.briefing.util.SharedPreferenceHelper
 import java.time.format.DateTimeFormatter
 
-class ScrapViewModel : ViewModel() {
+class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
     //1.  List<date=String>를 반환
     //2.  String - List<NewsDetail>를 반환
     fun getScrapData(context: Context):MutableMap<String, List<NewsDetail>> {

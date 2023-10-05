@@ -26,8 +26,10 @@ import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.R
+import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ScrapScreen(
@@ -36,7 +38,7 @@ fun ScrapScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val viewModel: ScrapViewModel = ScrapViewModel()
+    val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
     var newsList = viewModel.getScrapData(context)
 
     Column(
