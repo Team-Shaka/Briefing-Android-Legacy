@@ -73,8 +73,6 @@ fun ArticleDetailScreen(
             )
         )
     )
-    articleDetailViewModel.getScrapStatus(context)
-    val isScrap = articleDetailViewModel.isScrap.observeAsState(false)
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -89,10 +87,12 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            onScrapClick = { articleDetailViewModel.setScrapStatus(context) },
+            onScrapClick = {
+            //TODO: scrap click api
+            },
             briefing = articleResponse.value,
             context = context,
-            isScrap = isScrap.value
+            isScrap = articleResponse.value.isScrap
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
