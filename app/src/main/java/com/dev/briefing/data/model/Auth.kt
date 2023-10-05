@@ -13,7 +13,7 @@ data class CommonResponse(
 )
 data class GoogleSocialResponse(
     @SerializedName("memberId")
-    val memberId: String,
+    val memberId: Int,
     @SerializedName("accessToken")
     val accessToken: String,
     @SerializedName("refreshToken")

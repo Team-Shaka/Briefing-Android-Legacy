@@ -22,8 +22,8 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
     private val _statusMsg: MutableLiveData<String> = MutableLiveData<String>("server failed")
     val statusMsg: LiveData<String>
         get() = _statusMsg
+    var result = false
     fun getLoginCode(idToken: String):Boolean {
-        var result = false
         viewModelScope.launch {
             try {
                 val response = repository.getLoginToken(
@@ -31,9 +31,13 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
                         identityToken = idToken
                     )
                 )
+                Log.d(SERVER_TAG, "통신 끝")
+
                 _accessToken.value = response.result.accessToken
                 _statusMsg.value = response.message
                 result = true
+                Log.d(SERVER_TAG, response.toString())
+                Log.d(SERVER_TAG, "메소드 끝")
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
                 _statusMsg.value = e.toString()

@@ -19,11 +19,8 @@ import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.util.RC_SIGN_IN
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 var mGoogleSignInClient: GoogleSignInClient? = null
 class SignInActivity : ComponentActivity() {
     @Override
@@ -43,10 +40,11 @@ class SignInActivity : ComponentActivity() {
     private fun googelSignIn() : GoogleSignInClient{
         //1. 앱에 필요한 사용자 데이터를 요청하도록 로그인 옵션을 설정해줌
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))//id token 요청
+            .requestIdToken(BuildConfig.GOOGLE_CLIENT_ID)//id token 요청
             .requestEmail()//email 요청
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+        Log.d("Google",mGoogleSignInClient.toString())
         return mGoogleSignInClient!!
     }
 

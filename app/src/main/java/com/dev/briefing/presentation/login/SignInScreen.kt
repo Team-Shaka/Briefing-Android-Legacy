@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,7 +49,6 @@ import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.google.android.gms.auth.api.Auth.GoogleSignInApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import org.koin.androidx.compose.getViewModel
@@ -131,10 +131,11 @@ fun GoogleLoginButton(
 ) {
     val context = LocalContext.current
 
-    val singinViewModel: SignInViewModel= getViewModel<SignInViewModel>()
-    var idToken:String = ""
-    var serverResult:Boolean = false
-    //4. startActivityForResult를 통해 구글 로그인 창을 띄움
+    val singinViewModel: SignInViewModel = getViewModel<SignInViewModel>()
+    var idToken: String = ""
+    var serverResult: Boolean = false
+
+    //4. startActivityForResult callback 함수를 통해 구글 로그인 창을 띄움
     val googleCallBack =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             // Intent 타입으로 받은 data를 GoogleSignInResult로 바꿔준다.
@@ -146,16 +147,25 @@ fun GoogleLoginButton(
                     val task: Task<GoogleSignInAccount> =
                         GoogleSignIn.getSignedInAccountFromIntent(intent)
                     idToken = handleSignInResult(task)?.let { it } ?: ""
-                    idToken?.let { serverResult = singinViewModel.getLoginCode(it) }
-                    if(serverResult){
-                        startActivity(context, Intent(context, HomeActivity::class.java), null)
-                    }else{
-                        Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+                    idToken?.let {
+                        serverResult = singinViewModel.getLoginCode(it)
+                        Log.d("Google", it)
                     }
+                } else {
+                    Toast.makeText(context, "구글 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                Toast.makeText(context, "구글 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
             }
         }
-
+    LaunchedEffect(key1 = singinViewModel.accessToken) {
+        Log.d("Google", serverResult.toString())
+        if (singinViewModel.accessToken != null) {
+            startActivity(context, Intent(context, HomeActivity::class.java), null)
+        } else {
+            Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+        }
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -181,23 +191,18 @@ fun GoogleLoginButton(
 }
 
 //5. 사용자 정보 가져오기
-fun handleSignInResult(completedTask: Task<GoogleSignInAccount>):String? {
+fun handleSignInResult(completedTask: Task<GoogleSignInAccount>): String? {
     try {
         Log.d("Google", completedTask.isSuccessful.toString())
         val account = completedTask.getResult(ApiException::class.java)
-
-        Log.d("Google", account.serverAuthCode.toString())
-        Log.d("Google", account.idToken.toString())
+        //idToken을 반환시 Log 출력
         account.idToken?.let {
             //TODO: add API 연결 코드
             Log.d("Google", it)
         } ?: Log.d("Google", "구글 로그인 에러")
         return account.idToken.toString()
     } catch (e: ApiException) {
-        // The ApiException status code indicates the detailed failure reason.
-        // Please refer to the GoogleSignInStatusCodes class reference for more information.
         Log.d("Google", "google 로그인에 실패하였습니다. 다시시도해주세요${e}")
-
     }
     return null
 }
