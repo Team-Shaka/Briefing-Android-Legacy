@@ -33,6 +33,9 @@
     <string name="dialog_alarm_title">알람시간</string>
     <string name="dialog_alarm_text">현재 알림 기능이 꺼져있습니다. \n 설정 > 알림에 들어가 확인해주세요.</string>
     <string name="dialog_basic_confirm">확인</string>
+    <string name="dialog_login_skip_title">일부 기능 제한</string>
+    <string name="dialog_login_skip_text">로그인 및 회원가입 미진행시 일부 기능에 제한이 생길 수 있습니다.</string>
+    <string name="dialog_login_skip_confirm">로그인</string>
     <string name="scrap_default">아직 스크랩한 브리핑 카드가 없습니다.\n스크랩을 진행해주세요.</string>
     <string name="detail_brief_label">BETA</string>
     <string name="detail_brief_text">Brief에게 물어보기</string>

@@ -1,7 +1,8 @@
-package com.dev.briefing
+package com.dev.briefing.presentation.home
 
 import android.os.Bundle
 import android.Manifest
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,12 +17,13 @@ import com.dev.briefing.navigation.RootScreen
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.util.NOTIFICATION_REQUEST_CODE
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 
-class MainActivity : ComponentActivity() {
+class HomeActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("HomeActivity", "onCreate: ")
+
         requestNotificationPermission()
         setContent {
             BriefingTheme {
