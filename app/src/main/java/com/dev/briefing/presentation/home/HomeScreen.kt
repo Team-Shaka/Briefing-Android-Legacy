@@ -303,14 +303,14 @@ fun ArticleListTile(
                 Text(
                     text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
                         color = if (backgroundColor == White) MainPrimary else White
-                    )
+                    ), overflow = TextOverflow.Ellipsis, maxLines = 1
                 )
 
             }
             Column(
                 modifier = modifier
                     .fillMaxHeight()
-                    .widthIn(max = 185.dp),
+                    .widthIn(max = 220.dp),
                 verticalArrangement = Arrangement.Center,
 
                 ) {
@@ -319,6 +319,7 @@ fun ArticleListTile(
                 Text(
                     text = news.subtitle,
                     style = MaterialTheme.typography.labelSmall,
+                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
