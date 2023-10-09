@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.UPDATE_DATE
@@ -13,9 +15,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
+class HomeViewModel(private val repository: BriefingRepository) : ViewModel() {
 
-    private val _serverTestResponse: MutableLiveData<BriefingResponse> = MutableLiveData<BriefingResponse>()
+    private val _serverTestResponse: MutableLiveData<BriefingResponse> =
+        MutableLiveData<BriefingResponse>()
     val serverTestResponse: LiveData<BriefingResponse>
         get() = _serverTestResponse
 
@@ -26,6 +29,7 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
 
     // 변경 가능한 LiveData를 선언
     private var _briefDate = MutableLiveData<LocalDate>()
+
     // 외부로 불변성을 유지하기 위해 공개하는 LiveData
     val briefDate: LiveData<LocalDate> = _briefDate
 
@@ -35,30 +39,33 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
         setDateList()
     }
 
-    fun getBriefingDataApi(date:LocalDate){
+    fun getBriefingDataApi(date: LocalDate) {
         viewModelScope.launch {
             try {
                 val response = repository.getBriefingKeyword(
                     briefingDate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    type = "Korea")
-                if(response.briefings != null) {
-                    _serverTestResponse.value = response
+                    type = "Korea"
+                )
+                if (response.result != null) {
+                    _serverTestResponse.value = response.result!!
                 }
             } catch (e: Throwable) {
-                Log.d(SERVER_TAG,e.toString())
+                Log.d(SERVER_TAG, e.toString())
             }
-            Log.d(SERVER_TAG,"끝!")
+            Log.d(SERVER_TAG, "끝!")
         }
 
     }
+
     //click 이벤트가 발생하면 호출되는 함수
-    fun changeBriefDate(date: LocalDate){
+    fun changeBriefDate(date: LocalDate) {
         _briefDate.value = date
-        Log.d("날짜",_briefDate.value.toString())
+        Log.d("날짜", _briefDate.value.toString())
         getBriefingDataApi(date)
     }
-    fun setDateList(){
-        var updateDate:LocalDate = today.minusDays(1)
+
+    fun setDateList() {
+        var updateDate: LocalDate = today.minusDays(1)
         timeList.add(today)
         while (timeList.size < 7 && updateDate.isAfter(UPDATE_DATE)) {
             timeList.add(updateDate)
@@ -69,7 +76,7 @@ class HomeViewModel(private val repository:BriefingRepository):ViewModel() {
         timeList.sort()
 
 
-        Log.d("시간",timeList.size.toString())
+        Log.d("시간", timeList.size.toString())
     }
 
 

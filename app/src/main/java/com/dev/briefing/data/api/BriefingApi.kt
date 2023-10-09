@@ -1,6 +1,7 @@
 package com.dev.briefing.data.api
 
 import com.dev.briefing.data.model.BriefingDetailResponse
+import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.model.SetScrapRequest
@@ -17,12 +18,12 @@ interface BriefingApi {
     suspend fun getBriefingKeyword(
         @Query("date")brefingsDate:String,
         @Query("type")type:String,
-    ): BriefingResponse
+    ):CommonResponse<BriefingResponse>
 
     @GET("/briefings/{id}")
     suspend fun getBriefingDetail(
         @Path("id")id:Int,
-    ): BriefingDetailResponse
+    ): CommonResponse<BriefingDetailResponse>
 
     /**
      * 스크랩 등록하기

@@ -3,15 +3,15 @@ package com.dev.briefing.data.model
 import com.google.gson.annotations.SerializedName
 
 data class BriefingResponse(
-    @SerializedName("created_at")
+    @SerializedName("createdAt")
     val created_at: String,
     @SerializedName("briefings")
-    val briefings: List<BriefingPreview>?
+    val briefings: List<BriefingPreview>
 )
 data class BriefingPreview(
     @SerializedName("id")
     val id: Int,
-    @SerializedName("rank")
+    @SerializedName("ranks")
     val rank: Int,
     @SerializedName("title")
     val title: String,
@@ -23,7 +23,7 @@ data class BriefingDetailResponse(
     val id: Int,
     @SerializedName("date")
     val date: String,
-    @SerializedName("rank")
+    @SerializedName("ranks")
     val rank: Int,
     @SerializedName("title")
     val title: String,

@@ -44,7 +44,7 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                     id = id
                 )
                 if (response != null) {
-                    _detailPage.value = response
+                    _detailPage.value = response.result!!
                 } else {
                     Log.d(SERVER_TAG, "response null")
                 }
