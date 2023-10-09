@@ -20,6 +20,7 @@ object RetrofitClient {
                     level = HttpLoggingInterceptor.Level.BODY
                 })
                 .addInterceptor(NetworkInterceptor())
+                .addInterceptor(AddCookiesInterceptor())
                 .build()
         }
         //아직 retrofit 객체가 생성되지않았다면

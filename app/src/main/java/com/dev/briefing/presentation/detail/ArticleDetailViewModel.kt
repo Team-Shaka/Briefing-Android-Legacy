@@ -17,6 +17,7 @@ import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.respository.BriefingRepository
+import com.dev.briefing.data.respository.ScrapRepository
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
@@ -43,6 +44,10 @@ class ArticleDetailViewModel(private val repository: BriefingRepository,private 
 
             Log.d(SERVER_TAG,"끝!")
         }
-
     }
+    /**
+     * 스크랩한 기사들을 가져오는 메소드
+     * [_scraList] 업데이트
+     */
+
 }

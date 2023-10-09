@@ -26,6 +26,8 @@ import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.R
+import com.dev.briefing.data.model.BriefingPreview
+import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
@@ -39,7 +41,6 @@ fun ScrapScreen(
 ) {
     val context = LocalContext.current
     val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
-    var newsList = viewModel.getScrapData(context)
 
     Column(
         modifier = modifier
@@ -57,12 +58,18 @@ fun ScrapScreen(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(35.dp)
         ) {
-
-            items(newsList.entries.toList()) { entry ->
-                // entry는 Map.Entry<String, List<Int>> 타입입니다.
+            items(viewModel.scrapList.value?: listOf(
+                ScrapResponse(
+                    briefingId = 0,
+                    title = "title",
+                    subtitle = "subtitle",
+                    date = "date",
+                    rank = 0
+                )
+            )) { scrap ->
                 ArticleSection(
-                    localDate = entry.key,
-                    tmpNewsList = entry.value,
+                    localDate = scrap.date,
+                    tmpNewsList = viewModel.scrapList.value?: listOf(),
                     navController = navController
                 )
             }
@@ -104,7 +111,7 @@ fun ScrapDefaultScreen() {
 fun ArticleSection(
     modifier: Modifier = Modifier,
     localDate: String,
-    tmpNewsList: List<NewsDetail>,
+    tmpNewsList: List<ScrapResponse>,
     navController: NavController
 ) {
     val newsList = tmpNewsList.sortedBy { it.rank }
@@ -141,7 +148,7 @@ fun ArticleSection(
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
-    news: NewsDetail,
+    news: ScrapResponse,
     onItemClick: (Int) -> Unit
 ) {
     Row(
@@ -150,7 +157,7 @@ fun ArticleHeader(
             .padding(horizontal = 20.dp, vertical = 11.dp)
             //TODO: navigate to DetailScreen
             .clickable {
-                onItemClick(news.id)
+                onItemClick(news.briefingId)
             },
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween

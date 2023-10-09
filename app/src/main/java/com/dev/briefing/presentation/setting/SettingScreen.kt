@@ -36,6 +36,7 @@ import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_CODE
 import com.dev.briefing.util.ALARM_TAG
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import java.text.SimpleDateFormat
@@ -51,7 +52,7 @@ fun SettingScreen(
     val openLogOutDialog = remember { mutableStateOf(false) }
     val openExitDialog = remember { mutableStateOf(false) }
     //alarm 시간 가져오기
-    var alarmTime: Alarm = SharedPreferenceHelper.getAlarm(context)
+    var alarmTime: Alarm = prefs.getAlarm()
     var alarmHour = alarmTime.hour
     var alarmMinute = alarmTime.minute
 
@@ -79,8 +80,8 @@ fun SettingScreen(
                 alarmMinute = minute
 
                 //저장소에 알람시간 저장
-                SharedPreferenceHelper.savePreference(
-                    context, Alarm(
+                prefs.savePreference(
+                     Alarm(
                         hour = hourOfDay,
                         minute = minute
                     )
