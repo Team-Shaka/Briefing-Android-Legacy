@@ -13,5 +13,5 @@ interface BriefingDataSource {
     suspend fun getBriefingKeyword(briefingDate:String,type:String): BriefingResponse
     suspend fun getBriefingDetail(id:Int): BriefingDetailResponse
     suspend fun setScrap(memberInfo: SetScrapRequest): CommonResponse<SetScrapResponse>
-    suspend fun setUnScrap(scrapId: Int): CommonResponse<UnScrapResponse>
+    suspend fun setUnScrap(memberId: Int,briefingId:Int): CommonResponse<UnScrapResponse>
 }

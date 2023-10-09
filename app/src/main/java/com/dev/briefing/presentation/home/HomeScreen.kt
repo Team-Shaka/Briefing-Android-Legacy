@@ -63,6 +63,9 @@ fun BriefingHome(
             briefings = listOf()
         )
     )
+    val briefDate = homeViewModel.briefDate.observeAsState(
+        initial = homeViewModel.today
+    )
 //    val briefingResponseFlow by remember { mutableStateOf( homeViewModel.serverTestResponse) }
     Log.d(SERVER_TAG, "화면에 ${briefingResponseState.value.briefings}")
 
@@ -106,32 +109,33 @@ fun BriefingHome(
         LazyRow(
             modifier = modifier
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
-                .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            Log.d(SERVER_TAG,briefDate.value.toString())
             items(homeViewModel.timeList) { time ->
                 Column(
                     modifier = Modifier
                         .background(
-                            color = if (homeViewModel.briefDate.value == time) White else Color.Transparent,
+                            color = if (briefDate.value == time) White else Color.Transparent,
                             shape = RoundedCornerShape(5.dp)
                         )
-                        .padding(vertical = 6.dp, horizontal = 10.dp)
                         .clickable {
                             homeViewModel.changeBriefDate(time)
-                        },
+                        }
+                        .padding(vertical = 6.dp, horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     //TODO: 요일 앞문자만 대문자로 수정하기
+                    // TODO:
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
+                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
+                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
                     )
                 }
             }

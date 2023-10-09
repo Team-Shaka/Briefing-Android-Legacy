@@ -9,12 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-const val PREF_NAME = "prference"
-const val JWT_TOKEN = "token"
-const val MEMBER_ID = "memberId"
-const val SCRAP_DATE_ID = "scrap_with_date_id"
-const val SCRAP_ID_NEWS = "scrap_with_id_news"
-const val ALARM_TIME = "alarm"
+
 class SharedPreferenceHelper(context: Context) {
 
     private val prefs: SharedPreferences =

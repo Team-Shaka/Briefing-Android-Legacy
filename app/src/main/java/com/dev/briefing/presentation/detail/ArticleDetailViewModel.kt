@@ -25,28 +25,34 @@ import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
 
-class ArticleDetailViewModel(private val repository: BriefingRepository,private val id: Int):ViewModel() {
-    private val _detailPage: MutableLiveData<BriefingDetailResponse> = MutableLiveData<BriefingDetailResponse>()
+class ArticleDetailViewModel(private val repository: BriefingRepository, private val id: Int) :
+    ViewModel() {
+    private val _detailPage: MutableLiveData<BriefingDetailResponse> =
+        MutableLiveData<BriefingDetailResponse>()
     val detailPage: LiveData<BriefingDetailResponse>
         get() = _detailPage
-    val memberId:Int = prefs.getSharedPreference(MEMBER_ID,0)
-    init{
+    val memberId: Int = prefs.getSharedPreference(MEMBER_ID, 0)
+
+    init {
         getBrieingId(id)
     }
-    fun getBrieingId(id:Int){
+
+    fun getBrieingId(id: Int) {
         viewModelScope.launch {
             try {
                 val response = repository.getBriefingDetail(
-                    id = id)
-                if(response != null) {
+                    id = id
+                )
+                if (response != null) {
                     _detailPage.value = response
                 } else {
+                    Log.d(SERVER_TAG, "response null")
                 }
             } catch (e: Throwable) {
-                Log.d(SERVER_TAG,e.toString())
+                Log.d(SERVER_TAG, e.toString())
             }
 
-            Log.d(SERVER_TAG,"끝!")
+            Log.d(SERVER_TAG, "끝!")
         }
     }
 
@@ -68,12 +74,14 @@ class ArticleDetailViewModel(private val repository: BriefingRepository,private 
             }
         }
     }
+
     //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
     fun setUnScrap() {
         viewModelScope.launch {
             try {
                 val response = repository.unScrap(
-                    scrapId = 0
+                    memberId = memberId,
+                    briefingId = id
                 )
                 Log.d(SERVER_TAG, "통신 끝")
                 Log.d(SERVER_TAG, response.toString())

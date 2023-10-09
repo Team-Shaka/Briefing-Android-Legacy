@@ -20,8 +20,8 @@ class BriefingDataSourceImpl(private val briefingApi: BriefingApi):BriefingDataS
         return briefingApi.setScrap(memberInfo)
     }
 
-    override suspend fun setUnScrap(scrapId: Int): CommonResponse<UnScrapResponse> {
-        return briefingApi.setUnScrap(scrapId)
+    override suspend fun setUnScrap(memberId: Int,briefingId:Int): CommonResponse<UnScrapResponse> {
+        return briefingApi.setUnScrap(memberId,briefingId)
     }
 
 }
