@@ -8,6 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.respository.AuthRepository
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -34,6 +38,10 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
                 Log.d(SERVER_TAG, "통신 끝")
 
                 _accessToken.value = response.result.accessToken
+                //save preference
+                prefs.putSharedPreference(JWT_TOKEN,response.result.accessToken)
+                prefs.putSharedPreference(MEMBER_ID,response.result.memberId)
+                Log.d(SERVER_TAG, "${response.result.accessToken} ${response.result.memberId}")
                 _statusMsg.value = response.message
                 result = true
                 Log.d(SERVER_TAG, response.toString())

@@ -3,6 +3,10 @@ package com.dev.briefing.data.datasource
 import com.dev.briefing.data.api.BriefingApi
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.data.model.CommonResponse
+import com.dev.briefing.data.model.SetScrapRequest
+import com.dev.briefing.data.model.SetScrapResponse
+import com.dev.briefing.data.model.UnScrapResponse
 
 class BriefingDataSourceImpl(private val briefingApi: BriefingApi):BriefingDataSource {
 
@@ -12,4 +16,12 @@ class BriefingDataSourceImpl(private val briefingApi: BriefingApi):BriefingDataS
     override suspend fun getBriefingDetail(id:Int): BriefingDetailResponse{
         return briefingApi.getBriefingDetail(id)
     }
+    override suspend fun setScrap(memberInfo: SetScrapRequest): CommonResponse<SetScrapResponse> {
+        return briefingApi.setScrap(memberInfo)
+    }
+
+    override suspend fun setUnScrap(scrapId: Int): CommonResponse<UnScrapResponse> {
+        return briefingApi.setUnScrap(scrapId)
+    }
+
 }

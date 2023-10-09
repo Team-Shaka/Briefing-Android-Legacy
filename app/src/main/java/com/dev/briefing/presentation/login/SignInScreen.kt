@@ -46,6 +46,8 @@ import com.dev.briefing.presentation.theme.MainPrimary5
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.google.android.gms.auth.api.Auth.GoogleSignInApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -131,7 +133,7 @@ fun GoogleLoginButton(
 ) {
     val context = LocalContext.current
 
-    val singinViewModel: SignInViewModel = getViewModel<SignInViewModel>()
+    val singinViewModel: SignInViewModel = getViewModel()
     var idToken: String = ""
     var serverResult: Boolean = false
 
@@ -161,6 +163,7 @@ fun GoogleLoginButton(
     LaunchedEffect(key1 = singinViewModel.accessToken) {
         Log.d("Google", serverResult.toString())
         if (singinViewModel.accessToken != null) {
+
             startActivity(context, Intent(context, HomeActivity::class.java), null)
         } else {
             Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()

@@ -16,8 +16,11 @@ import com.dev.briefing.R
 import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.data.respository.ScrapRepository
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
@@ -26,6 +29,7 @@ class ArticleDetailViewModel(private val repository: BriefingRepository,private 
     private val _detailPage: MutableLiveData<BriefingDetailResponse> = MutableLiveData<BriefingDetailResponse>()
     val detailPage: LiveData<BriefingDetailResponse>
         get() = _detailPage
+    val memberId:Int = prefs.getSharedPreference(MEMBER_ID,0)
     init{
         getBrieingId(id)
     }
@@ -45,9 +49,38 @@ class ArticleDetailViewModel(private val repository: BriefingRepository,private 
             Log.d(SERVER_TAG,"끝!")
         }
     }
-    /**
-     * 스크랩한 기사들을 가져오는 메소드
-     * [_scraList] 업데이트
-     */
 
+    //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
+    fun setScrap() {
+        viewModelScope.launch {
+            try {
+                val response = repository.setScrap(
+                    memberInfo = SetScrapRequest(
+                        memberId = 0,
+                        briefingId = 0
+                    )
+                )
+                Log.d(SERVER_TAG, "통신 끝")
+                Log.d(SERVER_TAG, response.toString())
+                Log.d(SERVER_TAG, "메소드 끝")
+            } catch (e: Throwable) {
+                Log.d(SERVER_TAG, e.toString())
+            }
+        }
+    }
+    //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
+    fun setUnScrap() {
+        viewModelScope.launch {
+            try {
+                val response = repository.unScrap(
+                    scrapId = 0
+                )
+                Log.d(SERVER_TAG, "통신 끝")
+                Log.d(SERVER_TAG, response.toString())
+                Log.d(SERVER_TAG, "메소드 끝")
+            } catch (e: Throwable) {
+                Log.d(SERVER_TAG, e.toString())
+            }
+        }
+    }
 }
