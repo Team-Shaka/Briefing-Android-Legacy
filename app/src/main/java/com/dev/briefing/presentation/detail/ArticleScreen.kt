@@ -42,6 +42,7 @@ import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
+import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -57,7 +58,7 @@ fun ArticleDetailScreen(
     val articleDetailViewModel: ArticleDetailViewModel = getViewModel {
         parametersOf(id)
     }
-
+    val statusMsg = articleDetailViewModel.statusMsg.observeAsState()
     val articleResponse = articleDetailViewModel.detailPage.observeAsState(
         initial = BriefingDetailResponse(
             id = 3,
@@ -75,7 +76,7 @@ fun ArticleDetailScreen(
         )
     )
     var isScrap = remember {
-        articleResponse.value.isScrap
+        mutableStateOf(articleResponse.value.isScrap)
     }
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
@@ -92,17 +93,12 @@ fun ArticleDetailScreen(
     ) {
         DetailHeader(
             onBackClick = onBackClick,
-            onScrapClick = {
-                if (isScrap) {
-                    articleDetailViewModel.setUnScrap()
-                } else {
-                    articleDetailViewModel.setScrap()
-                }
-                isScrap = !isScrap
-            },
+            scrap = articleDetailViewModel.setScrap(),
+            unScrap = articleDetailViewModel.unScrap(),
             briefing = articleResponse.value,
+            isScrap = isScrap.value,
             context = context,
-            isScrap = isScrap
+            errorMsg = if (statusMsg.value != "") statusMsg.value else null
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
@@ -120,15 +116,17 @@ fun ArticleDetailScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
-    onScrapClick: (Context) -> Unit,
+    scrap: () -> Unit = {},
+    unScrap: () -> Unit = {},
     briefing: BriefingDetailResponse,
     context: Context,
+    errorMsg: String?,
     isScrap: Boolean
 ) {
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
 
-    val isScrapStatus by remember {
+    var isScrapStatus by remember {
         mutableStateOf(isScrap)
     }
     val image = if (isScrapStatus) selectScrap else scrap
@@ -162,7 +160,19 @@ fun DetailHeader(
             contentDescription = contentDescription,
             modifier = Modifier.clickable(
                 onClick = {
-                    onScrapClick(context)
+                    if (isScrapStatus) {
+                        unScrap()
+                    } else {
+                        scrap()
+                    }
+                    if (errorMsg != null) {
+                        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+                    } else {
+                        isScrapStatus = !isScrapStatus
+                        Log.d(SERVER_TAG, isScrapStatus.toString())
+                    }
+
+
                 }
             )
         )

@@ -54,23 +54,27 @@ fun ScrapScreen(
         CommonHeader(header = "스크랩북", onBackClick = onBackClick)
 
 
-        Spacer(modifier = Modifier.height(20.dp))
+        if (scrapMap.value.isNullOrEmpty()) {
+            ScrapDefaultScreen()
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(35.dp)
-        ) {
-            items(scrapMap.value?.keys?.toList() ?: listOf()) { date ->
-                scrapMap.value?.get(date)?.let {
-                    ArticleSection(
-                        localDate = date,
-                        tmpNewsList = it,
-                        navController = navController
-                    )
+        } else {
+            LazyColumn(
+                modifier = Modifier.padding(vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(35.dp)
+            ) {
+                items(scrapMap.value?.keys?.toList() ?: listOf()) { date ->
+                    scrapMap.value?.get(date)?.let {
+                        ArticleSection(
+                            localDate = date,
+                            tmpNewsList = it,
+                            navController = navController
+                        )
+                    }
                 }
-            }
 
+            }
         }
-        Spacer(modifier = Modifier.height(20.dp))
+
 
     }
 

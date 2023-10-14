@@ -33,6 +33,10 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
         get() = _detailPage
     val memberId: Int = prefs.getSharedPreference(MEMBER_ID, 0)
 
+    private val _statusMsg: MutableLiveData<String> = MutableLiveData<String>("")
+    val statusMsg: LiveData<String>
+        get() = _statusMsg
+
     init {
         getBrieingId(id)
     }
@@ -57,7 +61,7 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
     }
 
     //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
-    fun setScrap() {
+    fun setScrap(): () -> Unit = {
         viewModelScope.launch {
             try {
                 val response = repository.setScrap(
@@ -66,22 +70,31 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                         briefingId = id
                     )
                 )
-                Log.d(SERVER_TAG,response.message)
+                if (!response.isSuccess) {
+                    _statusMsg.value = response.message
+                }
+                Log.d(SERVER_TAG, response.message)
             } catch (e: Throwable) {
+                _statusMsg.value = e.message
+
             }
         }
     }
 
     //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
-    fun setUnScrap() {
+    fun unScrap(): () -> Unit = {
         viewModelScope.launch {
             try {
                 val response = repository.unScrap(
                     memberId = memberId,
                     briefingId = id
                 )
+                if (!response.isSuccess) {
+                    _statusMsg.value = response.message
+                }
             } catch (e: Throwable) {
-                Log.e(SERVER_TAG,e.toString())
+                Log.e(SERVER_TAG, e.toString())
+                _statusMsg.value = e.localizedMessage
             }
         }
     }
