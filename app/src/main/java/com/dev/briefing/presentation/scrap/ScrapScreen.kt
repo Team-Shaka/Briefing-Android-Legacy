@@ -56,7 +56,6 @@ fun ScrapScreen(
 
         if (scrapMap.value.isNullOrEmpty()) {
             ScrapDefaultScreen()
-
         } else {
             LazyColumn(
                 modifier = Modifier.padding(vertical = 20.dp),
