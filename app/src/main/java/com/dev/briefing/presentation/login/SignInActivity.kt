@@ -40,8 +40,6 @@ class SignInActivity : ComponentActivity() {
             val intent = Intent(this@SignInActivity, HomeActivity::class.java)
             startActivity(intent, null)
             finish()
-        }else{
-
         }
         setContent {
             BriefingTheme {
@@ -61,7 +59,7 @@ class SignInActivity : ComponentActivity() {
             .requestEmail()//email 요청
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-        Log.d("Google", mGoogleSignInClient.toString())
+        Log.d("Google", "1: get client${mGoogleSignInClient}")
         return mGoogleSignInClient!!
     }
 

@@ -16,6 +16,7 @@ const val  RC_SIGN_IN:Int = 9001
 
 const val PREF_NAME = "prference"
 const val JWT_TOKEN = "token"
+const val REFRESH_TOKEN = "refresh_token"
 const val MEMBER_ID = "memberId"
 const val SCRAP_DATE_ID = "scrap_with_date_id"
 const val SCRAP_ID_NEWS = "scrap_with_id_news"
