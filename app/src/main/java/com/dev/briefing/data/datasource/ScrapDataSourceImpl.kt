@@ -9,7 +9,7 @@ import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.model.SetScrapResponse
 import com.dev.briefing.data.model.UnScrapResponse
 
-class ScrapDataSourceImpl(private val scrapApi: ScrapApi,private val authApi:AuthApi):ScrapDataSource{
+class ScrapDataSourceImpl(private val scrapApi: ScrapApi):ScrapDataSource{
 
     override suspend fun getScrap(memberId: Int): CommonResponse<List<ScrapResponse>> {
         return scrapApi.getScrap(memberId)

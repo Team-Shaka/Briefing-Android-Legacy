@@ -37,7 +37,11 @@ class SignInActivity : ComponentActivity() {
         val token = prefs.getSharedPreference(JWT_TOKEN, "")
         if (token != "") {
             Toast.makeText(this, "자동 로그인 되었습니다.", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this@SignInActivity, HomeActivity::class.java), null)
+            val intent = Intent(this@SignInActivity, HomeActivity::class.java)
+            startActivity(intent, null)
+            finish()
+        }else{
+
         }
         setContent {
             BriefingTheme {

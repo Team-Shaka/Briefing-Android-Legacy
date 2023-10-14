@@ -114,6 +114,7 @@ fun SignInScreen(
             onClick = {
                 googelSignIn()
             }
+
         )
         Divider(modifier = Modifier.padding(vertical = 24.dp), color = MainPrimary3)
         Text(
@@ -164,7 +165,10 @@ fun GoogleLoginButton(
             Log.d("Google", serverResult.toString())
             Log.d("Google", singinViewModel.accessToken.toString())
             if (singinViewModel.accessToken != null && singinViewModel.accessToken.isInitialized) {
-                startActivity(context, Intent(context, HomeActivity::class.java), null)
+                val intent = Intent(context, HomeActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
             } else {
                 Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
             }

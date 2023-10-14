@@ -6,21 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.briefing.data.NewsDetail
-import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.model.ScrapResponse
-import com.dev.briefing.data.model.SetScrapRequest
-import com.dev.briefing.data.respository.AuthRepository
-import com.dev.briefing.data.respository.AuthRepositoryImpl
 import com.dev.briefing.data.respository.ScrapRepository
-import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
-import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
-import java.time.format.DateTimeFormatter
 
 class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
     private val _scrapList: MutableLiveData<MutableList<ScrapResponse>> =
