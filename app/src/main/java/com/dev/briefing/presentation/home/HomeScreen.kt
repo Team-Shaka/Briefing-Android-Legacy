@@ -36,6 +36,9 @@ import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.presentation.theme.utils.alertWidget
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
@@ -54,6 +57,8 @@ fun BriefingHome(
         startY = 0.0f,
         endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
+    val memberId = prefs.getSharedPreference(MEMBER_ID, -1)
+    val isMember = remember { mutableStateOf(memberId != -1) }
     val openAlertDialog = remember { mutableStateOf(false) }
 
     val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
@@ -80,12 +85,13 @@ fun BriefingHome(
         //scroll
         var horizontalscrollState = rememberScrollState()
 
-        if (openAlertDialog.value) {
+        if (isMember.value && openAlertDialog.value) {
             CommonDialog(
                 onDismissRequest = { openAlertDialog.value = false },
                 onConfirmation = {
-                    //TODO: navigate login scree
-//                    navController.navigate()
+                    //back key
+                    // TODO: 만약 로그인을 skip하고 home에 진입했다면, backStack에 남겨두고,
+                    // TODO: skip하지않았다면 backStack에서 없앤다
                     openAlertDialog.value = false
                 },
                 dialogTitle = R.string.dialog_login_title,
@@ -97,10 +103,15 @@ fun BriefingHome(
 
         HomeHeader(
             onScrapClick = {
-                if (openAlertDialog.value == false) {
-                    openAlertDialog.value = true
+                Log.d(SERVER_TAG, "스크랩 클릭 멤버여부: ${isMember.value} 오픈여부: $openAlertDialog.value")
+                if (!openAlertDialog.value) {
+                    if (!isMember.value) {
+                        openAlertDialog.value = true
+                    } else {
+                        navController.navigate(HomeScreen.Scrap.route)
+                    }
                 } else {
-                    navController.navigate(HomeScreen.Scrap.route)
+                    openAlertDialog.value = false
                 }
             },
             onSettingClick = onSettingClick
@@ -112,7 +123,7 @@ fun BriefingHome(
                 .align(Alignment.CenterHorizontally),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Log.d(SERVER_TAG,briefDate.value.toString())
+            Log.d(SERVER_TAG, briefDate.value.toString())
             items(homeViewModel.timeList) { time ->
                 Column(
                     modifier = Modifier
@@ -199,7 +210,7 @@ fun HomeHeader(
                     id = R.drawable.storage
                 ),
                 contentDescription = "저장 공간", modifier = Modifier
-                    .clickable(onClick = onScrapClick)
+                    .clickable { onScrapClick() }
             )
             Spacer(modifier = Modifier.width(22.dp))
             Image(
@@ -319,7 +330,7 @@ fun ArticleListTile(
                 Text(
                     text = news.subtitle,
                     style = MaterialTheme.typography.labelSmall,
-                     maxLines = 1,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }

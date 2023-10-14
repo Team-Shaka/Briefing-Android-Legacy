@@ -22,6 +22,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -112,14 +113,12 @@ fun SignInScreen(
         GoogleLoginButton(
             onClick = {
                 googelSignIn()
-                //startActivity(context, Intent(context, HomeActivity::class.java), null)
             }
         )
         Divider(modifier = Modifier.padding(vertical = 24.dp), color = MainPrimary3)
         Text(
             modifier = Modifier.clickable(onClick = {
                 openAlertDialog.value = true
-//                startActivity(context, Intent(context, HomeActivity::class.java), null)
             }),
             text = stringResource(R.string.login_skip),
             style = Typography.titleSmall.copy(color = MainPrimary5)
@@ -160,16 +159,18 @@ fun GoogleLoginButton(
                 Toast.makeText(context, "구글 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
             }
         }
-    LaunchedEffect(key1 = singinViewModel.accessToken) {
-        Log.d("Google", serverResult.toString())
-        if (singinViewModel.accessToken != null) {
 
-            startActivity(context, Intent(context, HomeActivity::class.java), null)
-        } else {
-            Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+        LaunchedEffect(key1 = singinViewModel.accessToken) {
+            Log.d("Google", serverResult.toString())
+            Log.d("Google", singinViewModel.accessToken.toString())
+            if (singinViewModel.accessToken != null && singinViewModel.accessToken.isInitialized) {
+                startActivity(context, Intent(context, HomeActivity::class.java), null)
+            } else {
+                Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+            }
         }
-    }
-    Row(
+
+   Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = White, shape = RoundedCornerShape(25.dp))

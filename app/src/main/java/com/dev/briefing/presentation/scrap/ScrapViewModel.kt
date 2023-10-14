@@ -11,22 +11,23 @@ import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.respository.AuthRepository
+import com.dev.briefing.data.respository.AuthRepositoryImpl
 import com.dev.briefing.data.respository.ScrapRepository
+import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 import java.time.format.DateTimeFormatter
 
 class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
-
     private val _scrapList: MutableLiveData<MutableList<ScrapResponse>> =
         MutableLiveData<MutableList<ScrapResponse>>(mutableListOf())
     val scrapList: LiveData<MutableList<ScrapResponse>>
         get() = _scrapList
     val memberId:Int = MainApplication.prefs.getSharedPreference(MEMBER_ID,0)
-
     init {
         getScrapData()
     }
@@ -39,7 +40,7 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = repository.getScrap(
-                    memberId = 0
+                    memberId = memberId
                 )
                 Log.d(SERVER_TAG, "통신 끝")
 
@@ -50,6 +51,7 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
                 Log.d(SERVER_TAG, "메소드 끝")
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
+                // TODO: refresh Token
             }
         }
     }
