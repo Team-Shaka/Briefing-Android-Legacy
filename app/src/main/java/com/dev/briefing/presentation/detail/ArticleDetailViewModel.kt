@@ -62,15 +62,12 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
             try {
                 val response = repository.setScrap(
                     memberInfo = SetScrapRequest(
-                        memberId = 0,
-                        briefingId = 0
+                        memberId = memberId,
+                        briefingId = id
                     )
                 )
-                Log.d(SERVER_TAG, "통신 끝")
-                Log.d(SERVER_TAG, response.toString())
-                Log.d(SERVER_TAG, "메소드 끝")
+                Log.d(SERVER_TAG,response.message)
             } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
             }
         }
     }
@@ -83,11 +80,8 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                     memberId = memberId,
                     briefingId = id
                 )
-                Log.d(SERVER_TAG, "통신 끝")
-                Log.d(SERVER_TAG, response.toString())
-                Log.d(SERVER_TAG, "메소드 끝")
             } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
+                Log.e(SERVER_TAG,e.toString())
             }
         }
     }

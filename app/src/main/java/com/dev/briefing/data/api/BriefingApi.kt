@@ -10,6 +10,7 @@ import com.dev.briefing.data.model.UnScrapResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -30,7 +31,7 @@ interface BriefingApi {
      * @Body memberId
      * @Body briefingId
      */
-    @GET("/scraps/briefings")
+    @POST("/scraps/briefings")
     suspend fun setScrap(
         @Body memberInfo: SetScrapRequest,
     ): CommonResponse<SetScrapResponse>

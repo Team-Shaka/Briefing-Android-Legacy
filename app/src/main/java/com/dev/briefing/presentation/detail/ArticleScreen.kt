@@ -57,6 +57,7 @@ fun ArticleDetailScreen(
     val articleDetailViewModel: ArticleDetailViewModel = getViewModel {
         parametersOf(id)
     }
+
     val articleResponse = articleDetailViewModel.detailPage.observeAsState(
         initial = BriefingDetailResponse(
             id = 3,
@@ -73,6 +74,9 @@ fun ArticleDetailScreen(
             )
         )
     )
+    var isScrap = remember {
+        articleResponse.value.isScrap
+    }
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -81,6 +85,7 @@ fun ArticleDetailScreen(
     Column(
         modifier = modifier
             .fillMaxHeight()
+            .fillMaxHeight()
             .background(brush = gradientBrush)
             .padding(horizontal = 30.dp)
 
@@ -88,11 +93,16 @@ fun ArticleDetailScreen(
         DetailHeader(
             onBackClick = onBackClick,
             onScrapClick = {
-            //TODO: scrap click api
+                if (isScrap) {
+                    articleDetailViewModel.setUnScrap()
+                } else {
+                    articleDetailViewModel.setScrap()
+                }
+                isScrap = !isScrap
             },
             briefing = articleResponse.value,
             context = context,
-            isScrap = articleResponse.value.isScrap
+            isScrap = isScrap
         )
         Spacer(modifier = Modifier.height(34.dp))
         LazyColumn {
@@ -118,7 +128,10 @@ fun DetailHeader(
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
 
-    val image = if (isScrap) selectScrap else scrap
+    val isScrapStatus by remember {
+        mutableStateOf(isScrap)
+    }
+    val image = if (isScrapStatus) selectScrap else scrap
     val contentDescription = if (isScrap) "Unliked" else "Liked"
 
     Row(
@@ -200,9 +213,14 @@ fun ArticleDetail(
                 text = article.title,
                 style = Typography.titleLarge
             )
-            if(article.isWarning){
-                Image(painter = painterResource(id = R.drawable.home_alert), colorFilter = ColorFilter.tint(
-                    MainPrimary), contentDescription = "fdfd")
+            if (article.isWarning) {
+                Image(
+                    painter = painterResource(id = R.drawable.home_alert),
+                    colorFilter = ColorFilter.tint(
+                        MainPrimary
+                    ),
+                    contentDescription = "fdfd"
+                )
             }
 
         }
@@ -221,7 +239,7 @@ fun ArticleDetail(
             text = stringResource(R.string.detail_article_header),
             style = Typography.headlineLarge
         )
-        if(article.isBriefOpen){
+        if (article.isBriefOpen) {
             BriefChatLink()
         }
         Column(

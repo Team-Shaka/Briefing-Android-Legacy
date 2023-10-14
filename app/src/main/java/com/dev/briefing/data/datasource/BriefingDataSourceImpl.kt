@@ -22,7 +22,7 @@ class BriefingDataSourceImpl(private val briefingApi: BriefingApi):BriefingDataS
     }
 
     override suspend fun setUnScrap(memberId: Int,briefingId:Int): CommonResponse<UnScrapResponse> {
-        return briefingApi.setUnScrap(memberId,briefingId)
+        return briefingApi.setUnScrap(briefingId = briefingId,memberId = memberId)
     }
 
 }
