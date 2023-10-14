@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +42,7 @@ fun ScrapScreen(
 ) {
     val context = LocalContext.current
     val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
-
+    val scrapMap = viewModel.scrapMap.observeAsState()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -58,21 +59,16 @@ fun ScrapScreen(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(35.dp)
         ) {
-            items(viewModel.scrapList.value?: listOf(
-                ScrapResponse(
-                    briefingId = 0,
-                    title = "title",
-                    subtitle = "subtitle",
-                    date = "date",
-                    rank = 0
-                )
-            )) { scrap ->
-                ArticleSection(
-                    localDate = scrap.date,
-                    tmpNewsList = viewModel.scrapList.value?: listOf(),
-                    navController = navController
-                )
+            items(scrapMap.value?.keys?.toList() ?: listOf()) { date ->
+                scrapMap.value?.get(date)?.let {
+                    ArticleSection(
+                        localDate = date,
+                        tmpNewsList = it,
+                        navController = navController
+                    )
+                }
             }
+
         }
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -104,6 +100,7 @@ fun ScrapDefaultScreen() {
         )
     }
 }
+
 /**
  * 스크랩화면 전체적인 틀
  */
@@ -114,7 +111,7 @@ fun ArticleSection(
     tmpNewsList: List<ScrapResponse>,
     navController: NavController
 ) {
-    val newsList = tmpNewsList.sortedBy { it.rank }
+    val newsList = tmpNewsList.sortedBy { it.ranks }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -175,7 +172,7 @@ fun ArticleHeader(
             )
         }
         Text(
-            text = "${news.date} #" + news.rank, style = MaterialTheme.typography.bodyMedium.copy(
+            text = "${news.date} #" + news.ranks, style = MaterialTheme.typography.bodyMedium.copy(
                 color = MainPrimary3,
                 lineHeight = 15.sp
             )

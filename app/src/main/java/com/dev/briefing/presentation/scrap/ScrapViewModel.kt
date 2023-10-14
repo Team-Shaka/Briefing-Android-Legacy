@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.ScrapResponse
+import com.dev.briefing.data.model.ScrapViewData
 import com.dev.briefing.data.respository.ScrapRepository
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
@@ -14,10 +15,12 @@ import com.dev.briefing.util.SERVER_TAG
 import kotlinx.coroutines.launch
 
 class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
-    private val _scrapList: MutableLiveData<MutableList<ScrapResponse>> =
-        MutableLiveData<MutableList<ScrapResponse>>(mutableListOf())
-    val scrapList: LiveData<MutableList<ScrapResponse>>
-        get() = _scrapList
+
+    private val _scrapMap: MutableLiveData<MutableMap<String,List<ScrapResponse>>> =
+        MutableLiveData<MutableMap<String,List<ScrapResponse>>>(mutableMapOf())
+    val scrapMap: LiveData<MutableMap<String,List<ScrapResponse>>>
+        get() = _scrapMap
+
     val memberId:Int = MainApplication.prefs.getSharedPreference(MEMBER_ID,0)
     init {
         getScrapData()
@@ -36,7 +39,12 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
                 Log.d(SERVER_TAG, "통신 끝")
 
                 response.result.forEach { scrap ->
-                    _scrapList.value?.add(scrap)
+                    val currentList = _scrapMap.value?.get(scrap.date) ?: emptyList() // 해당 키의 리스트를 가져오고, null일 경우 빈 리스트로 초기화
+                    val updatedList = currentList + scrap
+                    _scrapMap.value?.set(scrap.date, updatedList)
+                }
+                _scrapMap.value?.forEach { (key, value) ->
+                    Log.d(SERVER_TAG, "Key: $key, Value: $value")
                 }
                 Log.d(SERVER_TAG, response.toString())
                 Log.d(SERVER_TAG, "메소드 끝")

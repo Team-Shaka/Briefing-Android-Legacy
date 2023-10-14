@@ -176,10 +176,6 @@ fun ArticleDetail(
     article: BriefingDetailResponse,
     context: Context
 ) {
-    var tmpNewsList: List<Article> = listOf(
-        Article(1, "연합뉴스", "잼버리", "test1"),
-        Article(2, "연합뉴스", "잼버리", "test1"),
-    )
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -195,8 +191,7 @@ fun ArticleDetail(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                //TODO: 날짜 api에서 제공
-                text = "23.08.07 Breifing #${article.rank}",
+                text = "${article.date} Breifing #${article.rank}",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = SubText2,
                     fontWeight = FontWeight(400)
