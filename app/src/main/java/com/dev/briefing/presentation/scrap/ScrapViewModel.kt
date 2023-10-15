@@ -39,14 +39,14 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
                     memberId = memberId
                 )
                 Log.d(SERVER_TAG, "통신 끝")
-
+                var tmpMap : MutableMap<String, List<ScrapResponse>> = mutableMapOf()
                 response.result.forEach { scrap ->
-                    val currentList = _scrapMap.value?.get(scrap.date)
+                    val currentList = tmpMap.get(scrap.date)
                         ?: emptyList() // 해당 키의 리스트를 가져오고, null일 경우 빈 리스트로 초기화
                     val updatedList = currentList + scrap
-                    _scrapMap.value?.set(scrap.date, updatedList)
+                    tmpMap.set(scrap.date, updatedList)
                 }
-                _scrapMap.value = _scrapMap.value?.toSortedMap(compareByDescending {
+                _scrapMap.value = tmpMap.toSortedMap(compareByDescending {
                     SimpleDateFormat("yyyy-MM-dd").parse(it)
                 })
                 // TODO: Log상에서는 정렬이 되는데 

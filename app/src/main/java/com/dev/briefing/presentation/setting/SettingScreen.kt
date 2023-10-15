@@ -81,7 +81,7 @@ fun SettingScreen(
 
                 //저장소에 알람시간 저장
                 prefs.savePreference(
-                     Alarm(
+                    Alarm(
                         hour = hourOfDay,
                         minute = minute
                     )
