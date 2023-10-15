@@ -27,6 +27,9 @@ class SharedPreferenceHelper(context: Context) {
     fun getSharedPreference(key: String, defaultValue: String): String {
         return prefs.getString(key, defaultValue).toString()
     }
+    fun removeSharedPreference(key: String) {
+        prefs.edit().remove(key).apply()
+    }
 
     //key는 date
     fun savePreference( key: String, idList: List<Int>) {

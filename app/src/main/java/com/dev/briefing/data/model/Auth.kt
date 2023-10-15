@@ -15,3 +15,8 @@ data class GoogleRequest(
     @SerializedName("identityToken")
     val identityToken: String,
 )
+
+data class SingoutResponse(
+    @SerializedName("quitAt")
+    val quitAt: String,
+)

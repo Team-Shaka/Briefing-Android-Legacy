@@ -59,5 +59,16 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
         Log.d("Google", "10: coroutine 끝")
 
     }
-
+    fun signout(memberId:Int) {
+        viewModelScope.launch {
+            try {
+                val response = repository.signOut(memberId)
+                Log.d(SERVER_TAG, response.code)
+                _statusMsg.value = response.message
+            } catch (e: Throwable) {
+                Log.d(SERVER_TAG, e.toString())
+                _statusMsg.value = e.toString()
+            }
+        }
+    }
 }
