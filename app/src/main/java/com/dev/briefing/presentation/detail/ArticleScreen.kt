@@ -1,10 +1,12 @@
 package com.dev.briefing.presentation.detail
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,20 +36,27 @@ import com.dev.briefing.data.model.Article
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.di.viewModelModule
 import com.dev.briefing.presentation.home.HomeViewModel
+import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.theme.ErrorColor
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
+import com.dev.briefing.presentation.theme.MainPrimary4
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
+import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication
+import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.time.LocalDate
-
 @Composable
 fun ArticleDetailScreen(
     modifier: Modifier = Modifier,
@@ -75,6 +84,7 @@ fun ArticleDetailScreen(
             )
         )
     )
+
     var isScrap = remember {
         mutableStateOf(articleResponse.value.isScrap)
     }
@@ -125,7 +135,22 @@ fun DetailHeader(
 ) {
     val scrap = painterResource(id = R.drawable.scrap_normal)
     val selectScrap = painterResource(id = R.drawable.scrap_selected)
+    val openLogInDialog = remember { mutableStateOf(false) }
+    if (openLogInDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openLogInDialog.value = false },
+            onConfirmation = {
+                openLogInDialog.value = false
+                (context as Activity).finish()
+            },
+            dialogTitle = R.string.dialog_login_title,
+            dialogText = R.string.dialog_login_text,
+            dialogId = R.string.dialog_login_confirm,
+            confirmColor = MainPrimary4
+        )
 
+
+    }
     var isScrapStatus by remember {
         mutableStateOf(isScrap)
     }
@@ -160,16 +185,22 @@ fun DetailHeader(
             contentDescription = contentDescription,
             modifier = Modifier.clickable(
                 onClick = {
-                    if (isScrapStatus) {
-                        unScrap()
-                    } else {
-                        scrap()
-                    }
-                    if (errorMsg != null) {
-                        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
-                    } else {
-                        isScrapStatus = !isScrapStatus
-                        Log.d(SERVER_TAG, isScrapStatus.toString())
+                    val memberId: Int = MainApplication.prefs.getSharedPreference(MEMBER_ID, 0)
+                    if(memberId !=0){
+                        if (isScrapStatus) {
+                            unScrap()
+                        } else {
+                            scrap()
+                        }
+                        if (errorMsg != null) {
+                            Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+                        } else {
+                            isScrapStatus = !isScrapStatus
+                            Log.d(SERVER_TAG, isScrapStatus.toString())
+                        }
+
+                    }else{
+                        openLogInDialog.value = true
                     }
 
 

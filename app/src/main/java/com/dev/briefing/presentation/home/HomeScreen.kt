@@ -1,3 +1,4 @@
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +53,7 @@ fun BriefingHome(
     navController: NavController,
 //    onDetailClick:(Int) -> Unit
 ) {
-
+    val context = LocalContext.current
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
@@ -85,14 +87,13 @@ fun BriefingHome(
         //scroll
         var horizontalscrollState = rememberScrollState()
 
-        if (isMember.value && openAlertDialog.value) {
+        if (!isMember.value && openAlertDialog.value) {
             CommonDialog(
                 onDismissRequest = { openAlertDialog.value = false },
                 onConfirmation = {
-                    //back key
-                    // TODO: 만약 로그인을 skip하고 home에 진입했다면, backStack에 남겨두고,
-                    // TODO: skip하지않았다면 backStack에서 없앤다
                     openAlertDialog.value = false
+
+                    (context as Activity).finish()
                 },
                 dialogTitle = R.string.dialog_login_title,
                 dialogText = R.string.dialog_login_text,
