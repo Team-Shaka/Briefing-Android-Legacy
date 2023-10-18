@@ -21,6 +21,7 @@ import com.dev.briefing.R
 import com.dev.briefing.presentation.home.HomeActivity
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.RC_SIGN_IN
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -35,7 +36,8 @@ class SignInActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Log.d("SignInActivity", "onCreate: ")
         val token = prefs.getSharedPreference(JWT_TOKEN, "")
-        if (token != "") {
+        val memberId = prefs.getSharedPreference(MEMBER_ID, 0)
+        if (token != "" && memberId !=-1) {
             Toast.makeText(this, "자동 로그인 되었습니다.", Toast.LENGTH_SHORT).show()
             val intent = Intent(this@SignInActivity, HomeActivity::class.java)
             startActivity(intent, null)

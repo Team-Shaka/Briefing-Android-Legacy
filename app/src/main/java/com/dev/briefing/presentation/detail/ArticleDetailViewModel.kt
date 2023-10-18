@@ -19,8 +19,10 @@ import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.data.respository.ScrapRepository
+import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
+import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
@@ -32,6 +34,10 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
     val detailPage: LiveData<BriefingDetailResponse>
         get() = _detailPage
     val memberId: Int = prefs.getSharedPreference(MEMBER_ID, 0)
+
+    private val _authError: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val authError: LiveData<Boolean>
+        get() = _authError
 
     private val _statusMsg: MutableLiveData<String> = MutableLiveData<String>("")
     val statusMsg: LiveData<String>
@@ -56,7 +62,6 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                 Log.d(SERVER_TAG, e.toString())
             }
 
-            Log.d(SERVER_TAG, "끝!")
         }
     }
 
@@ -70,12 +75,19 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                         briefingId = id
                     )
                 )
+                Log.d(SERVER_TAG, "메세지:${response.message} 코드 : ${response.code}")
+
                 if (!response.isSuccess) {
                     _statusMsg.value = response.message
+                    getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN, ""))
                 }
                 Log.d(SERVER_TAG, response.message)
             } catch (e: Throwable) {
                 _statusMsg.value = e.message
+                Log.e(SERVER_TAG, "메세지:${e.message} 코드 : ${e.localizedMessage}")
+                if(e.message?.contains("401") != null){
+                    getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN, ""))
+                }
 
             }
         }
@@ -95,6 +107,26 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
             } catch (e: Throwable) {
                 Log.e(SERVER_TAG, e.toString())
                 _statusMsg.value = e.localizedMessage
+            }
+        }
+    }
+
+    fun getAcessToken(refreshToken: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getAccessToken(
+                    com.dev.briefing.data.model.TokenRequest(
+                        refreshToken = refreshToken
+                    )
+                )
+                if (response.result.accessToken != null) {
+                    prefs.putSharedPreference(JWT_TOKEN, response.result.accessToken)
+                    Log.d(SERVER_TAG, "토큰 재발급 성공")
+                }
+                Log.d(SERVER_TAG, response.code)
+            } catch (e: Throwable) {
+                Log.d(SERVER_TAG, e.toString())
+                _authError.value = true
             }
         }
     }

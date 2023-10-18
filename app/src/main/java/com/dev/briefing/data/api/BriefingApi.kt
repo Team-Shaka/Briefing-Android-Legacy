@@ -4,8 +4,10 @@ import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.model.CommonResponse
+import com.dev.briefing.data.model.GoogleSocialResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.model.SetScrapResponse
+import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.data.model.UnScrapResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -45,5 +47,10 @@ interface BriefingApi {
         @Path("briefingId") briefingId: Int,
         @Path("memberId") memberId: Int,
     ): CommonResponse<UnScrapResponse>
+
+    @POST("/members/auth/token")
+    suspend fun getAccessToken(
+        @Body refreshToken : TokenRequest,
+    ): CommonResponse<GoogleSocialResponse>
 
 }

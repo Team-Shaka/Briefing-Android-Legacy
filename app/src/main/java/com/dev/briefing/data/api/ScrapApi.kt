@@ -1,13 +1,16 @@
 package com.dev.briefing.data.api
 
 import com.dev.briefing.data.model.CommonResponse
+import com.dev.briefing.data.model.GoogleSocialResponse
 import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.model.SetScrapResponse
+import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.data.model.UnScrapResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ScrapApi {
@@ -19,4 +22,9 @@ interface ScrapApi {
     suspend fun getScrap(
         @Path("memberId") memberId: Int,
     ): CommonResponse<List<ScrapResponse>>
+
+    @POST("/members/auth/token")
+    suspend fun getAccessToken(
+        @Body refreshToken : TokenRequest,
+    ): CommonResponse<GoogleSocialResponse>
 }

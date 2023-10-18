@@ -7,15 +7,17 @@ import com.dev.briefing.data.model.GoogleSocialResponse
 import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.model.SetScrapResponse
+import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.data.model.UnScrapResponse
 
-class ScrapDataSourceImpl(private val scrapApi: ScrapApi):ScrapDataSource{
+class ScrapDataSourceImpl(private val scrapApi: ScrapApi) : ScrapDataSource {
 
     override suspend fun getScrap(memberId: Int): CommonResponse<List<ScrapResponse>> {
         return scrapApi.getScrap(memberId)
     }
-//    override suspend fun getAuth(refreshToken:): CommonResponse<GoogleSocialResponse> {
-//        return authApi.getLoginToken(memberId)
-//    }
+
+    override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse> {
+        return scrapApi.getAccessToken(refreshToken)
+    }
 
 }

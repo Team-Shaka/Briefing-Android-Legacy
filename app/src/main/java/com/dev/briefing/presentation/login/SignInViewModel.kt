@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.respository.AuthRepository
+import com.dev.briefing.data.respository.BriefingRepository
+import com.dev.briefing.data.respository.BriefingRepositoryImpl
 import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
@@ -68,7 +70,25 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
                 _statusMsg.value = e.toString()
+                getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN,""))
+//                signout(memberId)
             }
         }
     }
+
+    fun getAcessToken(refreshToken:String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getAccessToken(
+                    com.dev.briefing.data.model.TokenRequest(
+                        refreshToken = refreshToken
+                    )
+                )
+                Log.d(SERVER_TAG, response.code)
+            } catch (e: Throwable) {
+                Log.d(SERVER_TAG, e.toString())
+            }
+        }
+    }
+
 }

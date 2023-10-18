@@ -73,8 +73,6 @@ fun BriefingHome(
     val briefDate = homeViewModel.briefDate.observeAsState(
         initial = homeViewModel.today
     )
-//    val briefingResponseFlow by remember { mutableStateOf( homeViewModel.serverTestResponse) }
-    Log.d(SERVER_TAG, "화면에 ${briefingResponseState.value.briefings}")
 
     Column(
         modifier = modifier

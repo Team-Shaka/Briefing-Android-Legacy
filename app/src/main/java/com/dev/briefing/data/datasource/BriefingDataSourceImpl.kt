@@ -5,8 +5,10 @@ import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.model.CommonResponse
+import com.dev.briefing.data.model.GoogleSocialResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.model.SetScrapResponse
+import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.data.model.UnScrapResponse
 
 class BriefingDataSourceImpl(private val briefingApi: BriefingApi):BriefingDataSource {
@@ -23,6 +25,10 @@ class BriefingDataSourceImpl(private val briefingApi: BriefingApi):BriefingDataS
 
     override suspend fun setUnScrap(memberId: Int,briefingId:Int): CommonResponse<UnScrapResponse> {
         return briefingApi.setUnScrap(briefingId = briefingId,memberId = memberId)
+    }
+
+    override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse> {
+        return briefingApi.getAccessToken(refreshToken)
     }
 
 }

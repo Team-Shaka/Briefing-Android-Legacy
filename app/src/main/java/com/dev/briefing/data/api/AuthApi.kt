@@ -4,6 +4,7 @@ import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.model.GoogleSocialResponse
 import com.dev.briefing.data.model.SingoutResponse
+import com.dev.briefing.data.model.TokenRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.POST
@@ -20,4 +21,9 @@ interface AuthApi {
     suspend fun signOut(
         @Path("memberId") memberId : Int,
     ): CommonResponse<SingoutResponse>
+
+    @POST("/members/auth/token")
+    suspend fun getAccessToken(
+        @Body refreshToken : TokenRequest,
+    ): CommonResponse<GoogleSocialResponse>
 }

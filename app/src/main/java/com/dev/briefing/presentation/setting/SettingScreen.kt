@@ -148,6 +148,17 @@ fun SettingScreen(
             onConfirmation = {
                 authViewModel.signout(prefs.getSharedPreference(MEMBER_ID, -1))
                 openExitDialog.value = false
+
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
+                openLogOutDialog.value = false
+
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
+
             },
             dialogTitle = R.string.dialog_exit_title,
             dialogText = R.string.dialog_exit_text,
