@@ -50,3 +50,17 @@ data class Article(
     @SerializedName("url")
     val url: String,
 )
+var tmpBriefingResponse = BriefingDetailResponse(
+    id = 0,
+    rank = 0,
+    title = "데이터 로딩중",
+    subtitle = "",
+    content = "준비중..",
+    date = "2023-08-27",
+    isScrap = false,
+    isBriefOpen = false,
+    isWarning = false,
+    articles = listOf(
+        Article(id = 1, press = "로딩중", title = "로딩중", "로딩중")
+    )
+)

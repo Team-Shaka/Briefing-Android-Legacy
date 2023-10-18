@@ -1,37 +1,25 @@
 package com.dev.briefing.presentation.detail
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.briefing.R
-import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.BriefingDetailResponse
-import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.respository.BriefingRepository
-import com.dev.briefing.data.respository.ScrapRepository
 import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SERVER_TAG
-import com.dev.briefing.util.SharedPreferenceHelper
 import kotlinx.coroutines.launch
 
 class ArticleDetailViewModel(private val repository: BriefingRepository, private val id: Int) :
     ViewModel() {
     private val _detailPage: MutableLiveData<BriefingDetailResponse> =
         MutableLiveData<BriefingDetailResponse>()
-    val detailPage: LiveData<BriefingDetailResponse>
+    val detailPage: MutableLiveData<BriefingDetailResponse>
         get() = _detailPage
     val memberId: Int = prefs.getSharedPreference(MEMBER_ID, 0)
 
@@ -61,7 +49,6 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
             }
-
         }
     }
 

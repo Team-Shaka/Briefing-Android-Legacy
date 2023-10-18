@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,15 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.dev.briefing.R
-import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.Article
 import com.dev.briefing.data.model.BriefingDetailResponse
-import com.dev.briefing.data.model.BriefingPreview
-import com.dev.briefing.data.model.BriefingResponse
-import com.dev.briefing.di.viewModelModule
-import com.dev.briefing.presentation.home.HomeViewModel
-import com.dev.briefing.presentation.login.SignInActivity
-import com.dev.briefing.presentation.theme.ErrorColor
+import com.dev.briefing.data.model.tmpBriefingResponse
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
@@ -48,15 +40,12 @@ import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
-import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
-import com.dev.briefing.util.REFRESH_TOKEN
-import com.dev.briefing.util.SERVER_TAG
-import com.dev.briefing.util.SharedPreferenceHelper
+import com.dev.briefing.util.SCRAP_TAG
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-import java.time.LocalDate
+
 @Composable
 fun ArticleDetailScreen(
     modifier: Modifier = Modifier,
@@ -64,53 +53,41 @@ fun ArticleDetailScreen(
     id: Int
 ) {
     val context = LocalContext.current
+    //viewmodel
     val articleDetailViewModel: ArticleDetailViewModel = getViewModel {
         parametersOf(id)
     }
-    val statusMsg = articleDetailViewModel.statusMsg.observeAsState()
+    //aritcleResponse
     val articleResponse = articleDetailViewModel.detailPage.observeAsState(
-        initial = BriefingDetailResponse(
-            id = 3,
-            rank = 3,
-            title = "제목3",
-            subtitle = "부제목3",
-            content = "내용3",
-            date = "2023-08-27",
-            isScrap = false,
-            isBriefOpen = false,
-            isWarning = false,
-            articles = listOf(
-                Article(id = 1, press = "fdsf", title = "fddsdf", "ulr")
-            )
-        )
+        initial = tmpBriefingResponse
     )
 
-    var isScrap = remember {
-        mutableStateOf(articleResponse.value.isScrap)
-    }
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(GradientStart, GradientEnd),
-        startY = 0.0f,
-        endY = LocalConfiguration.current.screenHeightDp.toFloat()
-    )
     Column(
         modifier = modifier
             .fillMaxHeight()
             .fillMaxHeight()
-            .background(brush = gradientBrush)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(GradientStart, GradientEnd),
+                    startY = 0.0f,
+                    endY = LocalConfiguration.current.screenHeightDp.toFloat()
+                )
+            )
             .padding(horizontal = 30.dp)
 
     ) {
+        //backKey, ranking, scrap 기능이 포함된 header
+        Log.d(SCRAP_TAG,"0. 파라미터로 전달하기 전 isScrapStatus 값 : ${articleResponse.value.isScrap}")
         DetailHeader(
             onBackClick = onBackClick,
             scrap = articleDetailViewModel.setScrap(),
             unScrap = articleDetailViewModel.unScrap(),
-            briefing = articleResponse.value,
-            isScrap = isScrap.value,
+            rank = articleResponse.value.rank,
+            isScrap = articleResponse.value.isScrap,
             context = context,
-            errorMsg = if (statusMsg.value != "") statusMsg.value else null
         )
         Spacer(modifier = Modifier.height(34.dp))
+        //article List
         LazyColumn {
             item {
                 ArticleDetail(
@@ -128,13 +105,11 @@ fun DetailHeader(
     onBackClick: () -> Unit,
     scrap: () -> Unit = {},
     unScrap: () -> Unit = {},
-    briefing: BriefingDetailResponse,
+    rank: Int,
     context: Context,
-    errorMsg: String?,
     isScrap: Boolean
 ) {
-    val scrap = painterResource(id = R.drawable.scrap_normal)
-    val selectScrap = painterResource(id = R.drawable.scrap_selected)
+    // 로그인이 안된 상태에서 스크랩 시도시 로그인 다이얼로그
     val openLogInDialog = remember { mutableStateOf(false) }
     if (openLogInDialog.value) {
         CommonDialog(
@@ -148,14 +123,27 @@ fun DetailHeader(
             dialogId = R.string.dialog_login_confirm,
             confirmColor = MainPrimary4
         )
+    }
+    /**  스크랩 관련 변수
+     * 1. scrap img
+     * 2.
+     */
+
+    //1. scrapImg resource 정의
+    val unScrapImg = painterResource(id = R.drawable.scrap_normal)
+    val scrapImg = painterResource(id = R.drawable.scrap_selected)
+
+    //2. scrapStatus 정의
+    val isScrapStatus = remember {
+        //파라미터로 받은 isScrap값으로 초기화 해준다
+        mutableStateOf(false)
+    }
+    LaunchedEffect(isScrap) {
+        isScrapStatus.value = isScrap
+    }
+    Log.d(SCRAP_TAG,"1. 파라미터로 전달받은 isScrap 값: ${isScrap}, isScrapStatus 값: ${isScrapStatus}")
 
 
-    }
-    var isScrapStatus by remember {
-        mutableStateOf(isScrap)
-    }
-    val image = if (isScrapStatus) selectScrap else scrap
-    val contentDescription = if (isScrap) "Unliked" else "Liked"
 
     Row(
         modifier = Modifier
@@ -169,41 +157,37 @@ fun DetailHeader(
             painter = painterResource(
                 id = R.drawable.arrow
             ),
-            contentDescription = contentDescription, modifier = Modifier
+            contentDescription = "back Key", modifier = Modifier
                 .clickable(onClick = onBackClick)
         )
         Text(
-            text = "Briefing #${briefing.rank}",
+            text = "Briefing #${rank}",
             style = Typography.titleMedium.copy(
                 color = White,
                 fontWeight = FontWeight(400)
             )
         )
         Image(
-            //TODO: icon click여부에 따라 asset변경
-            painter = image,
-            contentDescription = contentDescription,
+            painter = if (isScrapStatus.value) scrapImg else unScrapImg,
+            contentDescription = if (isScrapStatus.value) "Unliked" else "Liked",
             modifier = Modifier.clickable(
                 onClick = {
+                    Log.d(SCRAP_TAG,"2. 클릭이벤트 발생! 변경전 scrap 값 : ${isScrapStatus.value}")
                     val memberId: Int = MainApplication.prefs.getSharedPreference(MEMBER_ID, 0)
-                    if(memberId !=0){
-                        if (isScrapStatus) {
+                    if (memberId != 0) {
+                        if (isScrapStatus.value) {
+                            Log.d(SCRAP_TAG,"3. 스크랩 취소 : ${isScrapStatus.value}")
                             unScrap()
                         } else {
+                            Log.d(SCRAP_TAG,"3. 스크랩 등록")
                             scrap()
                         }
-                        if (errorMsg != null) {
-                            Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
-                        } else {
-                            isScrapStatus = !isScrapStatus
-                            Log.d(SERVER_TAG, isScrapStatus.toString())
-                        }
+                        isScrapStatus.value = !isScrapStatus.value
+                        Log.d(SCRAP_TAG,"4. 클릭이벤트 발생! 변경전 scrap 값 : ${isScrapStatus.value}")
 
-                    }else{
+                    } else {
                         openLogInDialog.value = true
                     }
-
-
                 }
             )
         )
