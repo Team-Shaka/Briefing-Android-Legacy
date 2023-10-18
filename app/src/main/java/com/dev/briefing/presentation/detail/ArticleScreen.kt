@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -77,7 +78,7 @@ fun ArticleDetailScreen(
 
     ) {
         //backKey, ranking, scrap 기능이 포함된 header
-        Log.d(SCRAP_TAG,"0. 파라미터로 전달하기 전 isScrapStatus 값 : ${articleResponse.value.isScrap}")
+        Log.d(SCRAP_TAG, "0. 파라미터로 전달하기 전 isScrapStatus 값 : ${articleResponse.value.isScrap}")
         DetailHeader(
             onBackClick = onBackClick,
             scrap = articleDetailViewModel.setScrap(),
@@ -103,8 +104,8 @@ fun ArticleDetailScreen(
 @Composable
 fun DetailHeader(
     onBackClick: () -> Unit,
-    scrap: () -> Unit = {},
-    unScrap: () -> Unit = {},
+    scrap: () -> Boolean,
+    unScrap: () -> Boolean,
     rank: Int,
     context: Context,
     isScrap: Boolean
@@ -141,7 +142,7 @@ fun DetailHeader(
     LaunchedEffect(isScrap) {
         isScrapStatus.value = isScrap
     }
-    Log.d(SCRAP_TAG,"1. 파라미터로 전달받은 isScrap 값: ${isScrap}, isScrapStatus 값: ${isScrapStatus}")
+    Log.d(SCRAP_TAG, "1. 파라미터로 전달받은 isScrap 값: ${isScrap}, isScrapStatus 값: ${isScrapStatus}")
 
 
 
@@ -172,18 +173,25 @@ fun DetailHeader(
             contentDescription = if (isScrapStatus.value) "Unliked" else "Liked",
             modifier = Modifier.clickable(
                 onClick = {
-                    Log.d(SCRAP_TAG,"2. 클릭이벤트 발생! 변경전 scrap 값 : ${isScrapStatus.value}")
+                    Log.d(SCRAP_TAG, "2. 클릭이벤트 발생! 변경전 scrap 값 : ${isScrapStatus.value}")
                     val memberId: Int = MainApplication.prefs.getSharedPreference(MEMBER_ID, 0)
                     if (memberId != 0) {
                         if (isScrapStatus.value) {
-                            Log.d(SCRAP_TAG,"3. 스크랩 취소 : ${isScrapStatus.value}")
-                            unScrap()
+                            Log.d(SCRAP_TAG, "3. 스크랩 취소 : ${isScrapStatus.value}")
+                            if (unScrap()) {
+                                isScrapStatus.value = false
+                            }else{
+                                Toast.makeText(context, "스크랩 해제에 실패하였습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
-                            Log.d(SCRAP_TAG,"3. 스크랩 등록")
-                            scrap()
+                            Log.d(SCRAP_TAG, "3. 스크랩 등록")
+                            if (scrap()) {
+                                isScrapStatus.value = true
+                            }else{
+                                Toast.makeText(context, "스크랩에 실패하였습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                        isScrapStatus.value = !isScrapStatus.value
-                        Log.d(SCRAP_TAG,"4. 클릭이벤트 발생! 변경전 scrap 값 : ${isScrapStatus.value}")
+                        Log.d(SCRAP_TAG, "4. 클릭이벤트 발생! 변경전 scrap 값 : ${isScrapStatus.value}")
 
                     } else {
                         openLogInDialog.value = true

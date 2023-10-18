@@ -53,7 +53,7 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
     }
 
     //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
-    fun setScrap(): () -> Unit = {
+    fun setScrap(): () -> Boolean = {
         viewModelScope.launch {
             try {
                 val response = repository.setScrap(
@@ -67,35 +67,46 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                 if (!response.isSuccess) {
                     _statusMsg.value = response.message
                     getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN, ""))
+                    false
                 }
                 Log.d(SERVER_TAG, response.message)
+                true
             } catch (e: Throwable) {
                 _statusMsg.value = e.message
                 Log.e(SERVER_TAG, "메세지:${e.message} 코드 : ${e.localizedMessage}")
-                if(e.message?.contains("401") != null){
+                if (e.message?.contains("401") != null) {
                     getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN, ""))
                 }
+                false
 
             }
+
         }
+        true
     }
 
     //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
-    fun unScrap(): () -> Unit = {
+    fun unScrap(): () -> Boolean = {
         viewModelScope.launch {
             try {
                 val response = repository.unScrap(
                     memberId = memberId,
                     briefingId = id
                 )
-                if (!response.isSuccess) {
+                if (response.isSuccess) {
+                    true
+                } else {
                     _statusMsg.value = response.message
+                    getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN, ""))
+                    false
                 }
             } catch (e: Throwable) {
                 Log.e(SERVER_TAG, e.toString())
                 _statusMsg.value = e.localizedMessage
+                false
             }
         }
+        true
     }
 
     fun getAcessToken(refreshToken: String) {
@@ -108,6 +119,7 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
                 )
                 if (response.result.accessToken != null) {
                     prefs.putSharedPreference(JWT_TOKEN, response.result.accessToken)
+                    prefs.putSharedPreference(REFRESH_TOKEN, response.result.refreshToken)
                     Log.d(SERVER_TAG, "토큰 재발급 성공")
                 }
                 Log.d(SERVER_TAG, response.code)
