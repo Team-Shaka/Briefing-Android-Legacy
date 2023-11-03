@@ -3,7 +3,7 @@ package com.dev.briefing.presentation.scrap
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.dev.briefing.data.NewsDetail
-import com.dev.briefing.util.SharedPreferenceHelper
+import com.dev.briefing.util.preference.SharedPreferenceHelper
 import java.time.format.DateTimeFormatter
 
 class ScrapViewModel : ViewModel() {

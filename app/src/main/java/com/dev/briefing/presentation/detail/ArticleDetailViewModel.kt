@@ -3,22 +3,15 @@ package com.dev.briefing.presentation.detail
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.briefing.R
 import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.BriefingDetailResponse
-import com.dev.briefing.data.model.BriefingResponse
 import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.util.SERVER_TAG
-import com.dev.briefing.util.SharedPreferenceHelper
+import com.dev.briefing.util.preference.SharedPreferenceHelper
 import kotlinx.coroutines.launch
 
 class ArticleDetailViewModel(private val repository: BriefingRepository,private val id: Int):ViewModel() {

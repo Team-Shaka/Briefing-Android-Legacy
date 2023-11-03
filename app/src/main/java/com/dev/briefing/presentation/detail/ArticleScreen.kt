@@ -3,8 +3,6 @@ package com.dev.briefing.presentation.detail
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,23 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.dev.briefing.R
-import com.dev.briefing.data.NewsContent
 import com.dev.briefing.data.model.Article
 import com.dev.briefing.data.model.BriefingDetailResponse
-import com.dev.briefing.data.model.BriefingPreview
-import com.dev.briefing.data.model.BriefingResponse
-import com.dev.briefing.presentation.home.HomeViewModel
-import com.dev.briefing.presentation.theme.ErrorColor
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
 import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
-import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-import java.time.LocalDate
 
 @Composable
 fun ArticleDetailScreen(
