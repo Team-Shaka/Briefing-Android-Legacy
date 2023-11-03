@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -26,16 +25,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ComponentActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
-import com.dev.briefing.data.Alarm
-import com.dev.briefing.presentation.home.HomeActivity
-import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
-import com.dev.briefing.presentation.setting.alarm.AlarmReceiver
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_CODE
@@ -46,6 +43,7 @@ import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,94 +51,30 @@ import java.util.*
 fun SettingScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    settingViewModel : SettingViewModel = koinViewModel()
 ) {
-    val context = LocalContext.current
     val authViewModel: SignInViewModel = getViewModel<SignInViewModel>()
+    val context = LocalContext.current
     val openLogOutDialog = remember { mutableStateOf(false) }
     val openExitDialog = remember { mutableStateOf(false) }
-    //alarm 시간 가져오기
-    var alarmTime: Alarm = prefs.getAlarm()
-    var alarmHour = alarmTime.hour
-    var alarmMinute = alarmTime.minute
 
-    //calendar 객체를 가져와서 저장해둔 시간으로 setting
-    var calendar by remember { mutableStateOf(Calendar.getInstance()) }
-    calendar.set(Calendar.HOUR_OF_DAY, alarmHour) // Set initial hour to 9 (9 AM)
-    calendar.set(Calendar.MINUTE, alarmMinute)
-    var alarmTimeInMillis by remember { mutableStateOf(calendar.timeInMillis + 5000) }
-    //알람 시간을 String으로 저장하고 있는 변수
-    val timeState = remember { mutableStateOf(convertHour(alarmHour, alarmMinute)) }
+    val dailyAlerTimeStateFlow = settingViewModel.notifyTimeStateFlow.collectAsStateWithLifecycle()
 
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
             //알람 가능 시간 분기처리
             if (hourOfDay in 5..24) {
-
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minute)
-                calendar.set(Calendar.SECOND, 0);
-                timeState.value = convertHour(hourOfDay, minute)
-
-                //변경한 시간으로 String 수정
-                alarmHour = hourOfDay
-                alarmMinute = minute
-
-                //저장소에 알람시간 저장
-                prefs.savePreference(
-                    Alarm(
-                        hour = hourOfDay,
-                        minute = minute
-                    )
-                )
-
-                Log.d(
-                    ALARM_TAG,
-                    calendar.get(Calendar.HOUR_OF_DAY)
-                        .toString() + "시" + calendar.get(Calendar.MINUTE).toString()
-                )
-                alarmTimeInMillis = calendar.timeInMillis
-
-
+                settingViewModel.changeDailyAlarmTime(hourOfDay, minute)
             } else {
                 Toast.makeText(context, "오전 5시부터 오후 12시까지만 설정가능합니다", Toast.LENGTH_LONG).show()
             }
 
         },
-        calendar[Calendar.HOUR_OF_DAY],
-        calendar[Calendar.MINUTE],
+        dailyAlerTimeStateFlow.value.hour,
+        dailyAlerTimeStateFlow.value.minute,
         false
     )
-//    Log.d(ALARM_TAG, "${calendar.get(Calendar.HOUR_OF_DAY)}시 ${calendar.get(Calendar.MINUTE)}분")
-    Log.d(ALARM_TAG, ("현재시간" + System.currentTimeMillis()))
-    LaunchedEffect(key1 = alarmTimeInMillis) {
-
-        Log.d(ALARM_TAG, "설정한 시간" + (calendar.timeInMillis).toString())
-        val alarmManager: AlarmManager =
-            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//            val aT = alarmManager.nextAlarmClock.triggerTime
-
-        Log.d(ALARM_TAG, "0 알람매니저 생성 + AlarmReceiver 진입")
-        val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, ALARM_CODE, intent, PendingIntent.FLAG_MUTABLE)
-        }
-        if (alarmManager != null) {
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + 5000,
-                AlarmManager.INTERVAL_DAY,
-                alarmIntent
-            )
-            Log.d(ALARM_TAG, "알람 시스템 등록")
-
-//            val alarmTime = android.text.format.DateFormat.format("HH:mm:ss", aT).toString()
-//            Log.d(ALARM_TAG,alarmTime)
-        } else {
-
-        }
-        Log.d(ALARM_TAG, "끝 알람 매니저 등록 완료")
-
-    }
     if (openExitDialog.value) {
         Log.d(ALARM_TAG, openExitDialog.value.toString())
         CommonDialog(
@@ -200,7 +134,10 @@ fun SettingScreen(
             Spacer(modifier = Modifier.height(50.dp))
             menuWithArrow(
                 isArrow = false,
-                time = timeState.value,
+                time = formatTime(
+                    dailyAlerTimeStateFlow.value.hour,
+                    dailyAlerTimeStateFlow.value.minute
+                ),
                 icon = R.drawable.setting_clock,
                 menu = R.string.setting_alarm,
                 onClick = {
@@ -299,16 +236,7 @@ fun SettingScreen(
     }
 }
 
-@Composable
-fun setAlarmTime(alarmTime: Long, context: Context) {
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-    }
-    alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, alarmIntent)
-}
-
-fun convertHour(
+fun formatTime(
     hour: Int,
     minute: Int,
 ): String {

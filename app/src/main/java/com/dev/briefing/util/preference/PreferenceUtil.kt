@@ -3,7 +3,7 @@ package com.dev.briefing.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.dev.briefing.data.Alarm
+import com.dev.briefing.data.AlarmTime
 import com.dev.briefing.data.NewsContent
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -40,20 +40,5 @@ class SharedPreferenceHelper(context: Context) {
     fun savePreference( id: String,articleDetail: NewsContent) {
         val json = Gson().toJson(articleDetail)
         prefs.edit().putString(id, json).apply()
-    }
-
-    fun savePreference(items: Alarm) {
-        val json = Gson().toJson(items)
-        prefs.edit().putString(ALARM_TIME, json).apply()
-    }
-
-    fun getAlarm(): Alarm {
-        val json = prefs.getString(ALARM_TIME, null)
-        return if (json != null) {
-            val itemType = object : TypeToken<Alarm>() {}.type
-            Gson().fromJson(json, itemType)
-        } else {
-           Alarm(hour = 9, minute = 0)
-        }
     }
 }
