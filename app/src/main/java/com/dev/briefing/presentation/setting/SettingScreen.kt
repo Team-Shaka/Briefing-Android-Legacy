@@ -1,6 +1,7 @@
 package com.dev.briefing.presentation.setting
 
 import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -24,35 +25,48 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
+import com.dev.briefing.data.Alarm
+import com.dev.briefing.presentation.home.HomeViewModel
+import com.dev.briefing.presentation.setting.alarm.AlarmReceiver
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.ALARM_CODE
 import com.dev.briefing.util.ALARM_TAG
-import org.koin.androidx.compose.koinViewModel
+import com.dev.briefing.util.SharedPreferenceHelper
+import org.koin.androidx.compose.getViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    settingViewModel: SettingViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-
+//    val viewModel: SettingViewModel = getViewModel<SettingViewModel>()
     val openLogOutDialog = remember { mutableStateOf(false) }
     val openExitDialog = remember { mutableStateOf(false) }
+    //alarm 시간 가져오기
+    var alarmTime: Alarm = SharedPreferenceHelper.getAlarm(context)
+    var alarmHour = alarmTime.hour
+    var alarmMinute = alarmTime.minute
 
     val dailyAlerTimeStateFlow = settingViewModel.notifyTimeStateFlow.collectAsStateWithLifecycle()
 
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
+            //알람 가능 시간 분기처리
             if (hourOfDay in 5..24) {
                 settingViewModel.changeDailyAlarmTime(hourOfDay, minute)
             } else {
                 Toast.makeText(context, "오전 5시부터 오후 12시까지만 설정가능합니다", Toast.LENGTH_LONG).show()
             }
+
         },
         dailyAlerTimeStateFlow.value.hour,
         dailyAlerTimeStateFlow.value.minute,
@@ -63,8 +77,19 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openExitDialog.value = false },
             onConfirmation = {
-                //TODO: add exit logic
+                authViewModel.signout(prefs.getSharedPreference(MEMBER_ID, -1))
                 openExitDialog.value = false
+
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
+                openLogOutDialog.value = false
+
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
+
             },
             dialogTitle = R.string.dialog_exit_title,
             dialogText = R.string.dialog_exit_text,
@@ -76,8 +101,15 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openLogOutDialog.value = false },
             onConfirmation = {
-                //TODO: add logout logic
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
                 openLogOutDialog.value = false
+
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
             },
             dialogTitle = R.string.dialog_logout_title,
             dialogText = R.string.dialog_logout_text,
@@ -206,10 +238,10 @@ fun formatTime(
     minute: Int,
 ): String {
     var tmpString = ""
-    tmpString = if (hour <= 12) {
-        "오전 " + "${hour}시 ${minute}분"
+    if (hour <= 12) {
+        tmpString = "오전 " + "${hour}시 ${minute}분"
     } else {
-        "오후 " + "${hour - 12}시 ${minute}분"
+        tmpString = "오후 " + "${hour - 12}시 ${minute}분"
     }
     return tmpString
 }

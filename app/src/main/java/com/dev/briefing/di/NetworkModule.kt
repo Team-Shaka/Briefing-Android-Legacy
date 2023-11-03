@@ -4,6 +4,8 @@ package com.dev.briefing.di
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.api.BriefingApi
+import com.dev.briefing.data.api.ScrapApi
+import com.dev.briefing.data.network.AddCookiesInterceptor
 import com.dev.briefing.data.network.NetworkInterceptor
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
@@ -16,13 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 val networkModule = module {
     single {
         OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addNetworkInterceptor(NetworkInterceptor())
-            .addInterceptor(Interceptor { chain ->
-                chain.proceed(
-                    chain.request().newBuilder().build()
-                )
-            })
+            .addInterceptor(AddCookiesInterceptor())
             .build()
     }
 
@@ -39,6 +37,9 @@ val networkModule = module {
     }
     single<AuthApi> {
         get<Retrofit>().create(AuthApi::class.java)
+    }
+    single<ScrapApi> {
+        get<Retrofit>().create(ScrapApi::class.java)
     }
 
 

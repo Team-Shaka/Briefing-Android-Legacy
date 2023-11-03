@@ -22,6 +22,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,6 +48,8 @@ import com.dev.briefing.presentation.theme.MainPrimary5
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.google.android.gms.auth.api.Auth.GoogleSignInApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -60,11 +64,10 @@ fun SignInScreen(
     val context = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
     if (openAlertDialog.value) {
-        CommonDialog(
-            onDismissRequest = {
-                openAlertDialog.value = false
-                startActivity(context, Intent(context, HomeActivity::class.java), null)
-            },
+        CommonDialog(onDismissRequest = {
+            openAlertDialog.value = false
+            startActivity(context, Intent(context, HomeActivity::class.java), null)
+        },
             onConfirmation = { openAlertDialog.value = false },
             dialogTitle = R.string.dialog_login_skip_title,
             dialogText = R.string.dialog_login_skip_text,
@@ -87,11 +90,8 @@ fun SignInScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.app_name),
-                style = Typography.titleLarge.copy(
-                    fontSize = 70.sp,
-                    lineHeight = 85.sp,
-                    color = White
+                text = stringResource(R.string.app_name), style = Typography.titleLarge.copy(
+                    fontSize = 70.sp, lineHeight = 85.sp, color = White
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -103,21 +103,20 @@ fun SignInScreen(
             Spacer(modifier = Modifier.height(19.dp))
             Image(
                 modifier = Modifier,
-                painter = painterResource(id = R.drawable.ic_gpt_logo), contentDescription = "fdfd"
+                painter = painterResource(id = R.drawable.ic_gpt_logo),
+                contentDescription = "fdfd"
             )
         }
         Spacer(modifier = Modifier.weight(2f))
-        GoogleLoginButton(
-            onClick = {
-                googelSignIn()
-                //startActivity(context, Intent(context, HomeActivity::class.java), null)
-            }
+        GoogleLoginButton(onClick = {
+            googelSignIn()
+        }
+
         )
         Divider(modifier = Modifier.padding(vertical = 24.dp), color = MainPrimary3)
         Text(
             modifier = Modifier.clickable(onClick = {
                 openAlertDialog.value = true
-//                startActivity(context, Intent(context, HomeActivity::class.java), null)
             }),
             text = stringResource(R.string.login_skip),
             style = Typography.titleSmall.copy(color = MainPrimary5)
@@ -131,9 +130,10 @@ fun GoogleLoginButton(
 ) {
     val context = LocalContext.current
 
-    val singinViewModel: SignInViewModel = getViewModel<SignInViewModel>()
+    val singinViewModel: SignInViewModel = getViewModel()
     var idToken: String = ""
-    var serverResult: Boolean = false
+
+    var vieModelResult = singinViewModel.result.observeAsState(false)
 
     //4. startActivityForResult callback 함수를 통해 구글 로그인 창을 띄움
     val googleCallBack =
@@ -141,16 +141,20 @@ fun GoogleLoginButton(
             // Intent 타입으로 받은 data를 GoogleSignInResult로 바꿔준다.
             var rs = result.data?.let { GoogleSignInApi.getSignInResultFromIntent(it) }
             Log.e("RESULT", rs?.status.toString())
+            Log.d("Google", "2: callback 호출")
             if (result.resultCode == ComponentActivity.RESULT_OK) {
                 val intent = result.data
                 if (result.data != null) {
                     val task: Task<GoogleSignInAccount> =
                         GoogleSignIn.getSignedInAccountFromIntent(intent)
+                    Log.d("Google", "3: oAuth 동의화면 출력")
                     idToken = handleSignInResult(task)?.let { it } ?: ""
                     idToken?.let {
-                        serverResult = singinViewModel.getLoginCode(it)
-                        Log.d("Google", it)
+                        Log.d("Google", "6: ${idToken} handleSignInResult로 정보 받기완료")
+                        singinViewModel.getLoginCode(it)
                     }
+
+
                 } else {
                     Toast.makeText(context, "구글 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -158,14 +162,23 @@ fun GoogleLoginButton(
                 Toast.makeText(context, "구글 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
             }
         }
-    LaunchedEffect(key1 = singinViewModel.accessToken) {
-        Log.d("Google", serverResult.toString())
-        if (singinViewModel.accessToken != null) {
-            startActivity(context, Intent(context, HomeActivity::class.java), null)
+
+    LaunchedEffect(key1 = vieModelResult.value) {
+        Log.d("Google", "(상시호출) ${singinViewModel.result.value}")
+
+        if (singinViewModel.result.value == true) {
+            Log.d("Google", "11 ${singinViewModel.result.value}")
+            val intent = Intent(context, HomeActivity::class.java)
+            startActivity(context, intent, null)
+            val activity = context as? ComponentActivity
+            activity?.finish()
         } else {
-            Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+            if (singinViewModel.statusMsg.value != "") {
+                Toast.makeText(context, singinViewModel.statusMsg.value, Toast.LENGTH_SHORT).show()
+            }
         }
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,7 +193,8 @@ fun GoogleLoginButton(
     ) {
         Image(
             modifier = Modifier,
-            painter = painterResource(id = R.drawable.ic_google_logo), contentDescription = "fdfd"
+            painter = painterResource(id = R.drawable.ic_google_logo),
+            contentDescription = "fdfd"
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
@@ -193,13 +207,12 @@ fun GoogleLoginButton(
 //5. 사용자 정보 가져오기
 fun handleSignInResult(completedTask: Task<GoogleSignInAccount>): String? {
     try {
-        Log.d("Google", completedTask.isSuccessful.toString())
+        Log.d("Google", "4: task receive;${completedTask.isSuccessful} ")
         val account = completedTask.getResult(ApiException::class.java)
         //idToken을 반환시 Log 출력
         account.idToken?.let {
-            //TODO: add API 연결 코드
-            Log.d("Google", it)
-        } ?: Log.d("Google", "구글 로그인 에러")
+            Log.d("Google", "5: idToken 정보 받기 완료")
+        } ?: Log.d("Google", "5: 구글 로그인 에러")
         return account.idToken.toString()
     } catch (e: ApiException) {
         Log.d("Google", "google 로그인에 실패하였습니다. 다시시도해주세요${e}")

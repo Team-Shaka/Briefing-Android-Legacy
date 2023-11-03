@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,8 +27,12 @@ import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.R
+import com.dev.briefing.data.model.BriefingPreview
+import com.dev.briefing.data.model.ScrapResponse
+import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ScrapScreen(
@@ -36,9 +41,8 @@ fun ScrapScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val viewModel: ScrapViewModel = ScrapViewModel()
-    var newsList = viewModel.getScrapData(context)
-
+    val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
+    val scrapMap = viewModel.scrapMap.observeAsState()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -50,22 +54,26 @@ fun ScrapScreen(
         CommonHeader(header = "스크랩북", onBackClick = onBackClick)
 
 
-        Spacer(modifier = Modifier.height(20.dp))
+        if (scrapMap.value.isNullOrEmpty()) {
+            ScrapDefaultScreen()
+        } else {
+            LazyColumn(
+                modifier = Modifier.padding(vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(35.dp)
+            ) {
+                items(scrapMap.value?.keys?.toList() ?: listOf()) { date ->
+                    scrapMap.value?.get(date)?.let {
+                        ArticleSection(
+                            localDate = date,
+                            tmpNewsList = it,
+                            navController = navController
+                        )
+                    }
+                }
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(35.dp)
-        ) {
-
-            items(newsList.entries.toList()) { entry ->
-                // entry는 Map.Entry<String, List<Int>> 타입입니다.
-                ArticleSection(
-                    localDate = entry.key,
-                    tmpNewsList = entry.value,
-                    navController = navController
-                )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
+
 
     }
 
@@ -95,6 +103,7 @@ fun ScrapDefaultScreen() {
         )
     }
 }
+
 /**
  * 스크랩화면 전체적인 틀
  */
@@ -102,10 +111,10 @@ fun ScrapDefaultScreen() {
 fun ArticleSection(
     modifier: Modifier = Modifier,
     localDate: String,
-    tmpNewsList: List<NewsDetail>,
+    tmpNewsList: List<ScrapResponse>,
     navController: NavController
 ) {
-    val newsList = tmpNewsList.sortedBy { it.rank }
+    val newsList = tmpNewsList.sortedBy { it.ranks }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -139,7 +148,7 @@ fun ArticleSection(
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
-    news: NewsDetail,
+    news: ScrapResponse,
     onItemClick: (Int) -> Unit
 ) {
     Row(
@@ -148,7 +157,7 @@ fun ArticleHeader(
             .padding(horizontal = 20.dp, vertical = 11.dp)
             //TODO: navigate to DetailScreen
             .clickable {
-                onItemClick(news.id)
+                onItemClick(news.briefingId)
             },
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -166,7 +175,7 @@ fun ArticleHeader(
             )
         }
         Text(
-            text = "${news.date} #" + news.rank, style = MaterialTheme.typography.bodyMedium.copy(
+            text = "${news.date} #" + news.ranks, style = MaterialTheme.typography.bodyMedium.copy(
                 color = MainPrimary3,
                 lineHeight = 15.sp
             )
