@@ -25,19 +25,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ComponentActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
-import com.dev.briefing.data.Alarm
-import com.dev.briefing.presentation.home.HomeViewModel
-import com.dev.briefing.presentation.setting.alarm.AlarmReceiver
+import com.dev.briefing.presentation.login.SignInActivity
+import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_CODE
 import com.dev.briefing.util.ALARM_TAG
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication.Companion.prefs
+import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,15 +51,12 @@ import java.util.*
 fun SettingScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    settingViewModel : SettingViewModel = koinViewModel()
 ) {
+    val authViewModel: SignInViewModel = getViewModel<SignInViewModel>()
     val context = LocalContext.current
-//    val viewModel: SettingViewModel = getViewModel<SettingViewModel>()
     val openLogOutDialog = remember { mutableStateOf(false) }
     val openExitDialog = remember { mutableStateOf(false) }
-    //alarm 시간 가져오기
-    var alarmTime: Alarm = SharedPreferenceHelper.getAlarm(context)
-    var alarmHour = alarmTime.hour
-    var alarmMinute = alarmTime.minute
 
     val dailyAlerTimeStateFlow = settingViewModel.notifyTimeStateFlow.collectAsStateWithLifecycle()
 

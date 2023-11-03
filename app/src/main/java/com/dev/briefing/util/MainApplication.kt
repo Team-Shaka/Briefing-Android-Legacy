@@ -14,9 +14,12 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class MainApplication : Application() {
-
+    companion object {
+        lateinit var prefs: SharedPreferenceHelper
+    }
     override fun onCreate() {
         super.onCreate()
+        prefs = SharedPreferenceHelper(applicationContext)
 
         startKoin {
             androidContext(this@MainApplication)
