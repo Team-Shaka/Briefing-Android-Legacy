@@ -1,4 +1,4 @@
-package com.dev.briefing.util
+package com.dev.briefing.util.preference
 
 import android.app.Application
 
