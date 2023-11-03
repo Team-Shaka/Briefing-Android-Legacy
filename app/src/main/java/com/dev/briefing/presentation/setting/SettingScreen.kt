@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -30,12 +31,19 @@ import androidx.core.content.ContextCompat.startActivity
 import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
 import com.dev.briefing.data.Alarm
+import com.dev.briefing.presentation.home.HomeActivity
 import com.dev.briefing.presentation.home.HomeViewModel
+import com.dev.briefing.presentation.login.SignInActivity
+import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.setting.alarm.AlarmReceiver
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_CODE
 import com.dev.briefing.util.ALARM_TAG
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication.Companion.prefs
+import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SharedPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import java.text.SimpleDateFormat
@@ -47,11 +55,11 @@ fun SettingScreen(
     onBackClick: () -> Unit,
 ) {
     val context = LocalContext.current
-//    val viewModel: SettingViewModel = getViewModel<SettingViewModel>()
+    val authViewModel: SignInViewModel = getViewModel<SignInViewModel>()
     val openLogOutDialog = remember { mutableStateOf(false) }
     val openExitDialog = remember { mutableStateOf(false) }
     //alarm 시간 가져오기
-    var alarmTime: Alarm = SharedPreferenceHelper.getAlarm(context)
+    var alarmTime: Alarm = prefs.getAlarm()
     var alarmHour = alarmTime.hour
     var alarmMinute = alarmTime.minute
 
@@ -79,8 +87,8 @@ fun SettingScreen(
                 alarmMinute = minute
 
                 //저장소에 알람시간 저장
-                SharedPreferenceHelper.savePreference(
-                    context, Alarm(
+                prefs.savePreference(
+                    Alarm(
                         hour = hourOfDay,
                         minute = minute
                     )
@@ -138,8 +146,19 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openExitDialog.value = false },
             onConfirmation = {
-                //TODO: add exit logic
+                authViewModel.signout(prefs.getSharedPreference(MEMBER_ID, -1))
                 openExitDialog.value = false
+
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
+                openLogOutDialog.value = false
+
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
+
             },
             dialogTitle = R.string.dialog_exit_title,
             dialogText = R.string.dialog_exit_text,
@@ -151,8 +170,15 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openLogOutDialog.value = false },
             onConfirmation = {
-                //TODO: add logout logic
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
                 openLogOutDialog.value = false
+
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
             },
             dialogTitle = R.string.dialog_logout_title,
             dialogText = R.string.dialog_logout_text,

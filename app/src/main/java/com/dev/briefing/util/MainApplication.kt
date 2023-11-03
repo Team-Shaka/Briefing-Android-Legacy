@@ -10,8 +10,11 @@ import com.dev.briefing.di.repositoryModule
 import com.dev.briefing.di.viewModelModule
 import org.koin.core.context.startKoin
 class MainApplication: Application() {
-
+    companion object {
+        lateinit var prefs: SharedPreferenceHelper
+    }
     override fun onCreate() {
+        prefs = SharedPreferenceHelper(applicationContext)
         super.onCreate()
 
         startKoin {

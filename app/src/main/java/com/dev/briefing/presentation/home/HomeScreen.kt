@@ -1,3 +1,4 @@
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +38,9 @@ import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.presentation.theme.utils.alertWidget
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
@@ -48,12 +53,14 @@ fun BriefingHome(
     navController: NavController,
 //    onDetailClick:(Int) -> Unit
 ) {
-
+    val context = LocalContext.current
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(GradientStart, GradientEnd),
         startY = 0.0f,
         endY = LocalConfiguration.current.screenHeightDp.toFloat()
     )
+    val memberId = prefs.getSharedPreference(MEMBER_ID, -1)
+    val isMember = remember { mutableStateOf(memberId != -1) }
     val openAlertDialog = remember { mutableStateOf(false) }
 
     val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
@@ -63,8 +70,9 @@ fun BriefingHome(
             briefings = listOf()
         )
     )
-//    val briefingResponseFlow by remember { mutableStateOf( homeViewModel.serverTestResponse) }
-    Log.d(SERVER_TAG, "화면에 ${briefingResponseState.value.briefings}")
+    val briefDate = homeViewModel.briefDate.observeAsState(
+        initial = homeViewModel.today
+    )
 
     Column(
         modifier = modifier
@@ -77,13 +85,13 @@ fun BriefingHome(
         //scroll
         var horizontalscrollState = rememberScrollState()
 
-        if (openAlertDialog.value) {
+        if (!isMember.value && openAlertDialog.value) {
             CommonDialog(
                 onDismissRequest = { openAlertDialog.value = false },
                 onConfirmation = {
-                    //TODO: navigate login scree
-//                    navController.navigate()
                     openAlertDialog.value = false
+
+                    (context as Activity).finish()
                 },
                 dialogTitle = R.string.dialog_login_title,
                 dialogText = R.string.dialog_login_text,
@@ -94,10 +102,15 @@ fun BriefingHome(
 
         HomeHeader(
             onScrapClick = {
-                if (openAlertDialog.value == false) {
-                    openAlertDialog.value = true
+                Log.d(SERVER_TAG, "스크랩 클릭 멤버여부: ${isMember.value} 오픈여부: $openAlertDialog.value")
+                if (!openAlertDialog.value) {
+                    if (!isMember.value) {
+                        openAlertDialog.value = true
+                    } else {
+                        navController.navigate(HomeScreen.Scrap.route)
+                    }
                 } else {
-                    navController.navigate(HomeScreen.Scrap.route)
+                    openAlertDialog.value = false
                 }
             },
             onSettingClick = onSettingClick
@@ -106,32 +119,33 @@ fun BriefingHome(
         LazyRow(
             modifier = modifier
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
-                .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            Log.d(SERVER_TAG, briefDate.value.toString())
             items(homeViewModel.timeList) { time ->
                 Column(
                     modifier = Modifier
                         .background(
-                            color = if (homeViewModel.briefDate.value == time) White else Color.Transparent,
+                            color = if (briefDate.value == time) White else Color.Transparent,
                             shape = RoundedCornerShape(5.dp)
                         )
-                        .padding(vertical = 6.dp, horizontal = 10.dp)
                         .clickable {
                             homeViewModel.changeBriefDate(time)
-                        },
+                        }
+                        .padding(vertical = 6.dp, horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     //TODO: 요일 앞문자만 대문자로 수정하기
+                    // TODO:
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
+                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if (homeViewModel.briefDate.value == time) MainPrimary else White)
+                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
                     )
                 }
             }
@@ -195,7 +209,7 @@ fun HomeHeader(
                     id = R.drawable.storage
                 ),
                 contentDescription = "저장 공간", modifier = Modifier
-                    .clickable(onClick = onScrapClick)
+                    .clickable { onScrapClick() }
             )
             Spacer(modifier = Modifier.width(22.dp))
             Image(
@@ -299,14 +313,14 @@ fun ArticleListTile(
                 Text(
                     text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
                         color = if (backgroundColor == White) MainPrimary else White
-                    )
+                    ), overflow = TextOverflow.Ellipsis, maxLines = 1
                 )
 
             }
             Column(
                 modifier = modifier
                     .fillMaxHeight()
-                    .widthIn(max = 185.dp),
+                    .widthIn(max = 220.dp),
                 verticalArrangement = Arrangement.Center,
 
                 ) {
@@ -315,6 +329,7 @@ fun ArticleListTile(
                 Text(
                     text = news.subtitle,
                     style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
