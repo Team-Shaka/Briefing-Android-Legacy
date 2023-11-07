@@ -17,9 +17,11 @@ class SettingViewModel(
 
     fun changeDailyAlarmTime(hourOfDay: Int, minute: Int) {
         dailyAlertTimePreferenceHelper.saveAlarmTime(AlarmTime(hourOfDay, minute))
+
         _notifyTimeStateFlow.update {
             dailyAlertTimePreferenceHelper.getAlarmTime()
         }
+
         dailyAlertManager.setDailyAlarm(hourOfDay, minute)
     }
 }

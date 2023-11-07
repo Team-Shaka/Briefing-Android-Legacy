@@ -11,10 +11,10 @@ class BootCompletedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("BootCompletedReceiver", "in")
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
-            DailyAlertTimePreferenceHelper(context).getAlarmTime().also {
-                DailyAlertManager(context).setDailyAlarm(it.hour, it.minute)
-            }
-            Log.d("BootCompletedReceiver", "success")
+//            DailyAlertTimePreferenceHelper(context).getAlarmTime().also {
+//                DailyAlertManager(context).setDailyAlarm(it.hour, it.minute)
+//            }
+//            Log.d("BootCompletedReceiver", "success")
         }
     }
 }

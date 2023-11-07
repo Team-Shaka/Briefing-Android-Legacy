@@ -1,47 +1,52 @@
 package com.dev.briefing.util
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.Context
+import android.content.Intent
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.dev.briefing.data.AlarmTime
+import com.dev.briefing.receiver.DoneBroadcastReceiver
 import com.dev.briefing.worker.DailyAlertWorker
 import java.time.Duration
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 
 class DailyAlertManager(
-    private val context: Context
+    private val context: Context,
+    private val alarmManager: AlarmManager
 ) {
     fun setDailyAlarm(hourOfDay: Int, minute: Int) {
-        // 현재 시간과 설정할 시간을 계산
-        val now = LocalTime.now()
-        val targetTime = LocalTime.of(hourOfDay, minute)
-
-        // 초단위로 초기 지연 시간을 계산
-        var initialDelayInSeconds = now.until(targetTime, ChronoUnit.SECONDS)
-
-        if (now.isAfter(targetTime)) {
-            // 이미 설정 시간이 지났다면 다음 날로 설정
-            initialDelayInSeconds += Duration.ofDays(1).seconds
+//        AlarmManagerUtil(context).cancelAndSetAlarm(AlarmTime(hourOfDay, minute))
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, hourOfDay)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
         }
 
-        // 반복 간격도 초단위로 설정
-        val repeatIntervalInSeconds = Duration.ofDays(1).seconds
+        val alarmIntent = Intent(context, DoneBroadcastReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(context, 0, intent, FLAG_MUTABLE)
+        }
 
-        // WorkRequest 생성
-        val dailyWorkRequest = PeriodicWorkRequestBuilder<DailyAlertWorker>(
-            repeatIntervalInSeconds, TimeUnit.SECONDS
-        )
-            .setInitialDelay(initialDelayInSeconds, TimeUnit.SECONDS)
-            .build()
+//        alarmManager.setInexactRepeating(
+//            AlarmManager.RTC_WAKEUP,
+//            calendar.timeInMillis,
+//            AlarmManager.INTERVAL_DAY,
+//            alarmIntent
+//        )
 
-        // WorkManager에 작업 예약
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "daily_work",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            dailyWorkRequest
+        alarmManager.setAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            CalendarUtil.getNextTimeInMillisFromNow(hourOfDay, minute),
+            alarmIntent
         )
     }
 }
