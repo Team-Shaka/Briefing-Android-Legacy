@@ -2,7 +2,7 @@ package com.dev.briefing.presentation.setting
 
 import androidx.lifecycle.ViewModel
 import com.dev.briefing.data.AlarmTime
-import com.dev.briefing.util.DailyAlertManager
+import com.dev.briefing.util.dailyalert.DailyAlertManager
 import com.dev.briefing.util.preference.DailyAlertTimePreferenceHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

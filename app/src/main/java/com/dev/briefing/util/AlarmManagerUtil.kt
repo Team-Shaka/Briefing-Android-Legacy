@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.dev.briefing.data.AlarmTime
-import com.dev.briefing.receiver.DoneBroadcastReceiver
+import com.dev.briefing.receiver.DailyAlertBroadcastReceiver
 
 class AlarmManagerUtil(val context: Context) {
 
@@ -28,7 +28,7 @@ class AlarmManagerUtil(val context: Context) {
 //        pendingIntent.cancel()
         alarmManager().cancel(pendingIntent)
 
-        val intent = Intent(context.applicationContext, DoneBroadcastReceiver::class.java)
+        val intent = Intent(context.applicationContext, DailyAlertBroadcastReceiver::class.java)
         val t = PendingIntent.getBroadcast(
             context.applicationContext,
             1,
@@ -49,7 +49,7 @@ class AlarmManagerUtil(val context: Context) {
 
 
     private fun getAlarmPendingIntent(alarm: AlarmTime): PendingIntent {
-        val intent = Intent(context.applicationContext, DoneBroadcastReceiver::class.java)
+        val intent = Intent(context.applicationContext, DailyAlertBroadcastReceiver::class.java)
 
         return PendingIntent.getBroadcast(
             context.applicationContext,

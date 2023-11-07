@@ -1,6 +1,7 @@
 package com.dev.briefing.receiver
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,11 +18,21 @@ import com.dev.briefing.BuildConfig
 import com.dev.briefing.R
 import com.dev.briefing.presentation.home.HomeActivity
 import com.dev.briefing.util.ALARM_TAG
-import com.dev.briefing.util.AlarmManagerUtil.Companion.WRITE_DONE_LIST_ALARM
+import com.dev.briefing.util.dailyalert.DailyAlertManager
+import com.dev.briefing.util.preference.DailyAlertTimePreferenceHelper
 
-class DoneBroadcastReceiver : BroadcastReceiver() {
+class DailyAlertBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        showNotification(context)
+        Log.d("DailyAlertLog", "onReceive() call")
+        if (Intent.ACTION_BOOT_COMPLETED != intent.action) {
+            showNotification(context)
+        }
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        DailyAlertTimePreferenceHelper(context).getAlarmTime().also {
+            DailyAlertManager(context, alarmManager).setDailyAlarm(it.hour, it.minute)
+        }
     }
 
     private fun showNotification(context: Context) {
