@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val preferenceModule = module {
     factory {
-        DailyAlertTimePreferenceHelper(androidContext())
+        DailyAlertTimePreferenceHelper(context = androidContext())
     }
 }

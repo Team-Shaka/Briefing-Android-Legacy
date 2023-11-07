@@ -10,7 +10,7 @@ import com.google.android.gms.auth.api.Auth
 import org.koin.dsl.module
 
 val dataSourceModule = module {
-    single<BriefingDataSource> { BriefingDataSourceImpl(get()) }
-    single<AuthDataSource> { AuthDataSourceImpl(get()) }
-    single<ScrapDataSource> { ScrapDataSourceImpl(get()) }
+    single<BriefingDataSource> { BriefingDataSourceImpl(briefingApi = get()) }
+    single<AuthDataSource> { AuthDataSourceImpl(authApi = get()) }
+    single<ScrapDataSource> { ScrapDataSourceImpl(scrapApi = get()) }
 }

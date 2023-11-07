@@ -7,6 +7,6 @@ import org.koin.dsl.module
 
 val managerUtilModule = module {
     factory {
-        DailyAlertManager(androidContext(), get())
+        DailyAlertManager(context = androidContext(), alarmManager = get())
     }
 }

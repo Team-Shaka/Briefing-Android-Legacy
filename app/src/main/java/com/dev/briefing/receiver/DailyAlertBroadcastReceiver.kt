@@ -26,6 +26,8 @@ class DailyAlertBroadcastReceiver : BroadcastReceiver() {
         Log.d("DailyAlertLog", "onReceive() call")
         if (Intent.ACTION_BOOT_COMPLETED != intent.action) {
             showNotification(context)
+        } else {
+            Log.d("DailyAlertLog", "ACTION_BOOT_COMPLETED")
         }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
