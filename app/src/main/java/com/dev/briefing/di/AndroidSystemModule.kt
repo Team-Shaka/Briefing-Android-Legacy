@@ -1,16 +1,16 @@
 package com.dev.briefing.di
 
+import android.app.AlarmManager
+import android.content.Context
 import com.dev.briefing.data.datasource.AuthDataSource
 import com.dev.briefing.data.datasource.AuthDataSourceImpl
 import com.dev.briefing.data.datasource.BriefingDataSource
 import com.dev.briefing.data.datasource.BriefingDataSourceImpl
 import com.dev.briefing.data.datasource.ScrapDataSource
 import com.dev.briefing.data.datasource.ScrapDataSourceImpl
-import com.google.android.gms.auth.api.Auth
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-val dataSourceModule = module {
-    single<BriefingDataSource> { BriefingDataSourceImpl(briefingApi = get()) }
-    single<AuthDataSource> { AuthDataSourceImpl(authApi = get()) }
-    single<ScrapDataSource> { ScrapDataSourceImpl(scrapApi = get()) }
+val androidSystemModule = module {
+    single<AlarmManager> { androidContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager }
 }

@@ -53,7 +53,7 @@ fun SettingScreen(
     onBackClick: () -> Unit,
     settingViewModel : SettingViewModel = koinViewModel()
 ) {
-    val authViewModel: SignInViewModel = getViewModel<SignInViewModel>()
+    val authViewModel: SignInViewModel = getViewModel()
     val context = LocalContext.current
     val openLogOutDialog = remember { mutableStateOf(false) }
     val openExitDialog = remember { mutableStateOf(false) }
