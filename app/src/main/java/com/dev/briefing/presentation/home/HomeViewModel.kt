@@ -11,11 +11,17 @@ import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.UPDATE_DATE
+import com.dev.briefing.util.dailyalert.DailyAlertManager
+import com.dev.briefing.util.preference.DailyAlertTimePreferenceHelper
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class HomeViewModel(private val repository: BriefingRepository) : ViewModel() {
+class HomeViewModel(
+    private val repository: BriefingRepository,
+    private val dailyAlertManager: DailyAlertManager,
+    private val dailyAlertTimePreferenceHelper: DailyAlertTimePreferenceHelper
+) : ViewModel() {
 
     private val _serverTestResponse: MutableLiveData<BriefingResponse> =
         MutableLiveData<BriefingResponse>()
@@ -79,5 +85,9 @@ class HomeViewModel(private val repository: BriefingRepository) : ViewModel() {
         Log.d("시간", timeList.size.toString())
     }
 
-
+    fun setAlarm() {
+        dailyAlertTimePreferenceHelper.getAlarmTime().also {
+            dailyAlertManager.setDailyAlarm(it.hour, it.minute)
+        }
+    }
 }
