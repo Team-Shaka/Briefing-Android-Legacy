@@ -118,9 +118,11 @@ fun BriefingHome(
 
         LazyRow(
             modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
                 .scrollable(horizontalscrollState, Orientation.Horizontal)
                 .align(Alignment.CenterHorizontally),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Log.d(SERVER_TAG, briefDate.value.toString())
             items(homeViewModel.timeList) { time ->

@@ -1,5 +1,5 @@
 <resources>
-    <string name="version_code">1.0.1</string>
+    <string name="version_code">1.1.0</string>
     <string name="app_name">Briefing</string>
     <string name="home_title">Briefing</string>
     <string name="navigation_home">홈</string>
