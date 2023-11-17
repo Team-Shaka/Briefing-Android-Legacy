@@ -1,4 +1,5 @@
 <resources>
+    <string name="version_code">1.1.0</string>
     <string name="app_name">Briefing</string>
     <string name="home_title">Briefing</string>
     <string name="navigation_home">홈</string>
@@ -16,4 +17,26 @@
     <string name="notification_channel_id">your_channel_id</string>
     <string name="notification_channel_name">Your Channel Name</string>
     <string name="notification_channel_description">Your Channel Description</string>
+    <string name="login_app_description">Your Keyword Newskeeper.</string>
+    <string name="login_skip">나중에 하기</string>
+    <string name="dialog_login_title">로그인 필요</string>
+    <string name="dialog_login_text">로그인이 필요한 기능입니다.\n 로그인하시겠습니까?</string>
+    <string name="dialog_login_confirm">로그인</string>
+    <string name="dialog_basic_dismiss">취소</string>
+    <string name="dialog_logout_title">로그아웃</string>
+    <string name="dialog_logout_confirm">로그아웃</string>
+    <string name="dialog_logout_text">정말 로그아웃 하시겠습니까?\n 일부 기능 이용이 제한됩니다.</string>
+    <string name="dialog_exit_title">회원 탈퇴</string>
+    <string name="dialog_exit_text">정말 회원탈퇴 하시겠습니까?\n 해당 계정은 사용이 불가해집니다.</string>
+    <string name="dialog_exit_confirm">회원 탈퇴</string>
+    <string name="dialog_signout_confirm">로그아웃</string>
+    <string name="dialog_alarm_title">알람시간</string>
+    <string name="dialog_alarm_text">현재 알림 기능이 꺼져있습니다. \n 설정 > 알림에 들어가 확인해주세요.</string>
+    <string name="dialog_basic_confirm">확인</string>
+    <string name="dialog_login_skip_title">일부 기능 제한</string>
+    <string name="dialog_login_skip_text">로그인 및 회원가입 미진행시 일부 기능에 제한이 생길 수 있습니다.</string>
+    <string name="dialog_login_skip_confirm">로그인</string>
+    <string name="scrap_default">아직 스크랩한 브리핑 카드가 없습니다.\n스크랩을 진행해주세요.</string>
+    <string name="detail_brief_label">BETA</string>
+    <string name="detail_brief_text">Brief에게 물어보기</string>
 </resources>

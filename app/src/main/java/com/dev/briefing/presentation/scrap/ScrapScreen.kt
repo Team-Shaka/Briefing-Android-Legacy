@@ -1,6 +1,7 @@
 package com.dev.briefing.presentation.scrap
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,24 +11,28 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.navigation.HomeScreen
-import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.setting.CommonHeader
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.dev.briefing.R
+import com.dev.briefing.data.model.BriefingPreview
+import com.dev.briefing.data.model.ScrapResponse
+import com.dev.briefing.presentation.home.HomeViewModel
+import com.dev.briefing.presentation.theme.SubText2
+import com.dev.briefing.presentation.theme.Typography
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ScrapScreen(
@@ -36,9 +41,8 @@ fun ScrapScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val viewModel: ScrapViewModel = ScrapViewModel()
-    var newsList = viewModel.getScrapData(context)
-
+    val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
+    val scrapMap = viewModel.scrapMap.observeAsState()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -50,31 +54,67 @@ fun ScrapScreen(
         CommonHeader(header = "스크랩북", onBackClick = onBackClick)
 
 
-        Spacer(modifier = Modifier.height(20.dp))
+        if (scrapMap.value.isNullOrEmpty()) {
+            ScrapDefaultScreen()
+        } else {
+            LazyColumn(
+                modifier = Modifier.padding(vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(35.dp)
+            ) {
+                items(scrapMap.value?.keys?.toList() ?: listOf()) { date ->
+                    scrapMap.value?.get(date)?.let {
+                        ArticleSection(
+                            localDate = date,
+                            tmpNewsList = it,
+                            navController = navController
+                        )
+                    }
+                }
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(35.dp)
-        ) {
-
-            items(newsList.entries.toList()) { entry ->
-                // entry는 Map.Entry<String, List<Int>> 타입입니다.
-                ArticleSection(localDate = entry.key, tmpNewsList = entry.value, navController = navController)
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
+
 
     }
 
 }
 
+/**
+ * 스크랩이 없을 때 보여줄 화면
+ */
+@Composable
+fun ScrapDefaultScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(horizontal = 60.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_scrap_default),
+            contentDescription = "alert"
+        )
+        Spacer(modifier = Modifier.height(33.dp))
+        Text(
+            text = stringResource(id = R.string.scrap_default),
+            style = Typography.titleSmall.copy(color = SubText2)
+        )
+    }
+}
+
+/**
+ * 스크랩화면 전체적인 틀
+ */
 @Composable
 fun ArticleSection(
     modifier: Modifier = Modifier,
     localDate: String,
-    tmpNewsList: List<NewsDetail>,
+    tmpNewsList: List<ScrapResponse>,
     navController: NavController
 ) {
-    val newsList = tmpNewsList.sortedBy { it.rank }
+    val newsList = tmpNewsList.sortedBy { it.ranks }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -104,11 +144,11 @@ fun ArticleSection(
     }
 }
 
-//TODO: RoomDB만들면서 날짜도 저장
+//TODO: 서버 API 연결
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
-    news: NewsDetail,
+    news: ScrapResponse,
     onItemClick: (Int) -> Unit
 ) {
     Row(
@@ -117,7 +157,7 @@ fun ArticleHeader(
             .padding(horizontal = 20.dp, vertical = 11.dp)
             //TODO: navigate to DetailScreen
             .clickable {
-                onItemClick(news.id)
+                onItemClick(news.briefingId)
             },
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -128,10 +168,14 @@ fun ArticleHeader(
         ) {
             Text(text = news.title, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = news.subtitle, style = MaterialTheme.typography.labelSmall, overflow = TextOverflow.Ellipsis)
+            Text(
+                text = news.subtitle,
+                style = MaterialTheme.typography.labelSmall,
+                overflow = TextOverflow.Ellipsis
+            )
         }
         Text(
-            text = "${news.date} #" + news.rank, style = MaterialTheme.typography.bodyMedium.copy(
+            text = "${news.date} #" + news.ranks, style = MaterialTheme.typography.bodyMedium.copy(
                 color = MainPrimary3,
                 lineHeight = 15.sp
             )

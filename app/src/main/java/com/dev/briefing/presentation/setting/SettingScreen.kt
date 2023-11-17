@@ -25,15 +25,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ComponentActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dev.briefing.BuildConfig.NOTIFICATION_CHANNEL_ID
 import com.dev.briefing.R
-import com.dev.briefing.data.Alarm
-import com.dev.briefing.presentation.setting.alarm.AlarmReceiver
+import com.dev.briefing.presentation.login.SignInActivity
+import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.ALARM_CODE
 import com.dev.briefing.util.ALARM_TAG
+import com.dev.briefing.util.JWT_TOKEN
+import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.util.MainApplication.Companion.prefs
+import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SharedPreferenceHelper
+import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,60 +51,77 @@ import java.util.*
 fun SettingScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    settingViewModel : SettingViewModel = koinViewModel()
 ) {
+    val authViewModel: SignInViewModel = getViewModel()
     val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-    var alarmTime: Alarm = SharedPreferenceHelper.getAlarm(context)
-    var alarmHour = alarmTime.hour
-    var alarmMinute = alarmTime.minute
-    calendar.set(Calendar.HOUR_OF_DAY, alarmHour) // Set initial hour to 9 (9 AM)
-    calendar.set(Calendar.MINUTE, alarmMinute)
-    val timeState = remember { mutableStateOf(convertHour(alarmHour, alarmMinute)) }
+    val openLogOutDialog = remember { mutableStateOf(false) }
+    val openExitDialog = remember { mutableStateOf(false) }
+
+    val dailyAlerTimeStateFlow = settingViewModel.notifyTimeStateFlow.collectAsStateWithLifecycle()
+
     val timePickerDialog = TimePickerDialog(
         context,
-        { view, hourOfDay, minute ->
-            alarmHour = hourOfDay
-            alarmMinute = minute
-            if (hourOfDay >= 5 && hourOfDay <= 24) { // Check if selected hour is between 5 and 12
-                timeState.value = convertHour(hourOfDay, minute)
-                SharedPreferenceHelper.savePreference(
-                    context, Alarm(
-                        hour = alarmHour,
-                        minute = alarmMinute
-                    )
-                )
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay) // Set initial hour to 9 (9 AM)
-                calendar.set(Calendar.MINUTE, minute)
-                Log.d(ALARM_TAG,calendar.get(Calendar.HOUR_OF_DAY).toString()+"시" +calendar.get(Calendar.MINUTE).toString())
-
+        { _, hourOfDay, minute ->
+            //알람 가능 시간 분기처리
+            if (hourOfDay in 5..24) {
+                settingViewModel.changeDailyAlarmTime(hourOfDay, minute)
             } else {
                 Toast.makeText(context, "오전 5시부터 오후 12시까지만 설정가능합니다", Toast.LENGTH_LONG).show()
             }
 
         },
-        calendar[Calendar.HOUR_OF_DAY],
-        calendar[Calendar.MINUTE],
+        dailyAlerTimeStateFlow.value.hour,
+        dailyAlerTimeStateFlow.value.minute,
         false
     )
+    if (openExitDialog.value) {
+        Log.d(ALARM_TAG, openExitDialog.value.toString())
+        CommonDialog(
+            onDismissRequest = { openExitDialog.value = false },
+            onConfirmation = {
+                authViewModel.signout(prefs.getSharedPreference(MEMBER_ID, -1))
+                openExitDialog.value = false
 
-//    val alarmTimeInMillis = calendar.timeInMillis
-    val alarmTimeInMillis by remember { mutableStateOf(calendar.timeInMillis+5000) }
-//    val alarmTimeInMillis by remember { mutableStateOf(System.currentTimeMillis()+5000) }
-    Log.d(ALARM_TAG,("현재시간"+System.currentTimeMillis()).toString())
-    LaunchedEffect(key1 = alarmTimeInMillis) {
-        Log.d(ALARM_TAG,"설정한 시간"+(calendar.timeInMillis).toString())
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
+                openLogOutDialog.value = false
 
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        Log.d(ALARM_TAG,"0 알람매니저 생성 + AlarmReceiver 진입")
-        val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        }
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTimeInMillis, alarmIntent)
-        Log.d(ALARM_TAG,"끝 알람 매니저 등록 완료")
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
+
+            },
+            dialogTitle = R.string.dialog_exit_title,
+            dialogText = R.string.dialog_exit_text,
+            dialogId = R.string.dialog_exit_confirm
+        )
+
+    }
+    if (openLogOutDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openLogOutDialog.value = false },
+            onConfirmation = {
+                prefs.removeSharedPreference(MEMBER_ID)
+                prefs.removeSharedPreference(JWT_TOKEN)
+                prefs.removeSharedPreference(REFRESH_TOKEN)
+                openLogOutDialog.value = false
+
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                val activity = context as? ComponentActivity
+                activity?.finish()
+            },
+            dialogTitle = R.string.dialog_logout_title,
+            dialogText = R.string.dialog_logout_text,
+            dialogId = R.string.dialog_logout_confirm
+        )
+
 
     }
     LazyColumn(
-
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
@@ -107,7 +134,10 @@ fun SettingScreen(
             Spacer(modifier = Modifier.height(50.dp))
             menuWithArrow(
                 isArrow = false,
-                time = timeState.value,
+                time = formatTime(
+                    dailyAlerTimeStateFlow.value.hour,
+                    dailyAlerTimeStateFlow.value.minute
+                ),
                 icon = R.drawable.setting_clock,
                 menu = R.string.setting_alarm,
                 onClick = {
@@ -118,22 +148,26 @@ fun SettingScreen(
             menuWithArrow(
                 icon = R.drawable.setting_version,
                 menu = R.string.setting_version,
-                time = "1.0.0",
+                time = "1.0.1",
                 isArrow = false
             )
             menuWithArrow(
                 icon = R.drawable.setting_clock,
                 menu = R.string.setting_feedback,
                 onClick = {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/HQXmEBkQ6wyW9jiw7"))
-                startActivity(context, intent, null)
-            }
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/HQXmEBkQ6wyW9jiw7"))
+                    startActivity(context, intent, null)
+                }
             )
             menuWithArrow(
                 icon = R.drawable.setting_version_note,
                 menu = R.string.setting_version_note,
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://onve.notion.site/Briefing-8af692ff041c4fc6931b2fc897411e6d?pvs=4"))
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://onve.notion.site/Briefing-8af692ff041c4fc6931b2fc897411e6d?pvs=4")
+                    )
                     startActivity(context, intent, null)
                 }
             )
@@ -142,7 +176,11 @@ fun SettingScreen(
                 icon = R.drawable.setting_policy,
                 menu = R.string.setting_policy,
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88"))
+                    val intent =
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88")
+                        )
                     startActivity(context, intent, null)
                 }
             )
@@ -154,7 +192,10 @@ fun SettingScreen(
                 icon = R.drawable.setting_policy,
                 menu = R.string.setting_policy_private,
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/briefing-private/%ED%99%88"))
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://sites.google.com/view/briefing-private/%ED%99%88")
+                    )
                     startActivity(context, intent, null)
                 }
             )
@@ -166,18 +207,27 @@ fun SettingScreen(
                 icon = R.drawable.setting_caution,
                 menu = R.string.setting_caution,
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://onve.notion.site/Briefing-e1cb17e2e7c54d3b9a7036b29ee9b11a?pvs=4"))
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://onve.notion.site/Briefing-e1cb17e2e7c54d3b9a7036b29ee9b11a?pvs=4")
+                    )
                     startActivity(context, intent, null)
                 }
             )
             Spacer(modifier = Modifier.height(50.dp))
 
-            menuWithText(R.string.setting_logout)
+            menuWithText(R.string.setting_logout, onClick = {
+                Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
+                openLogOutDialog.value = true
+            })
             Divider(
                 color = BorderColor,
                 thickness = 1.dp
             )
-            menuWithText(R.string.setting_signout)
+            menuWithText(R.string.setting_signout, onClick = {
+                Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
+                openExitDialog.value = true
+            }, color = DialogExit)
             Spacer(modifier = Modifier.height(100.dp))
 
         }
@@ -185,15 +235,8 @@ fun SettingScreen(
 
     }
 }
-@Composable
-fun setAlarmTime(alarmTime: Long,context: Context){
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-    }
-    alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, alarmIntent)
-}
-fun convertHour(
+
+fun formatTime(
     hour: Int,
     minute: Int,
 ): String {
@@ -209,13 +252,16 @@ fun convertHour(
 @Composable
 fun menuWithText(
     @StringRes menu: Int = R.string.navigation_chat,
+    onClick: () -> Unit = {},
+    color: Color = MainPrimary2,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(color = White, shape = RoundedCornerShape(5.dp))
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp)
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -223,7 +269,7 @@ fun menuWithText(
             text = stringResource(id = menu),
             style = MaterialTheme.typography.titleSmall.copy(
                 fontWeight = FontWeight(400),
-                color = SubText2
+                color = color
             )
         )
     }
@@ -288,8 +334,8 @@ fun CommonHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color= color)
-            .padding(top = 60.dp, bottom = 20.dp ),
+            .background(color = color)
+            .padding(top = 60.dp, bottom = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     )

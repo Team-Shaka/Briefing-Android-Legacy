@@ -23,9 +23,6 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
                 onSettingClick = {
                     navController.navigate(HomeScreen.Setting.route)
                 },
-                onScrapClick = {
-                    navController.navigate(HomeScreen.Scrap.route)
-                },
                 navController = navController
             )
         }
