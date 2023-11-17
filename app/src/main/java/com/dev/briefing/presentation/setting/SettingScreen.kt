@@ -148,7 +148,7 @@ fun SettingScreen(
             menuWithArrow(
                 icon = R.drawable.setting_version,
                 menu = R.string.setting_version,
-                time = "1.0.1",
+                time = "1.1.1",
                 isArrow = false
             )
             menuWithArrow(
