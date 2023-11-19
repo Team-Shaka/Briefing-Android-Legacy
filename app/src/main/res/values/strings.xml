@@ -43,6 +43,24 @@
     <string name="setting_section_info">앱 정보</string>
     <string name="setting_section_alarm">알림</string>
     <string name="setting_section_document">개인 정보 보호</string>
+    <string name="premium_policy_service">서비스정책</string>
+    <string name="premium_policy_private">개인정보보호정책</string>
     <string name="setting_section_auth">로그인/로그 아웃</string>
     <string name="setting_premium">Briefing Premium</string>
+    <string name="premium_title">더 강력하고, 더 폭넓은 기능을 %s으로 누려보세요.</string>
+    <string name="premium_function_title">Premium을 통해서 다음과 같은 기능을 사용할 수 있습니다.</string>
+    <string name="premium_function_1">광고 제거</string>
+    <string name="premium_function_2">모든 분야 Briefing 제공</string>
+    <string name="premium_function_3">과거 Briefing 조회 가능</string>
+    <string name="premium_function_4">음성 Briefing 기능 추가</string>
+    <string name="premium_function_5">기능 미리 사용하기</string>
+    <string name="premium_yearly_title">Briefing Premium Yearly</string>
+    <string name="premium_monthly_title">Briefing Premium Monthly</string>
+    <string name="premium_yearly_subtitle">Briefing Premium 연간 구독</string>
+    <string name="premium_yearly_price">연 13,000원</string>
+    <string name="premium_yearly_discount">연 2,600원 절약</string>
+    <string name="premium_monthly_subtitle">Briefing Premium 월간 구독</string>
+    <string name="premium_monthly_price">월 1,300원</string>
+    <string name="premium_policy_1">Briefing Premium을 선택함으로써, 당신은 구독서비스 “Brieifing Premium”의 서비스정책과 개인정보보호정책에 동의하는 것입니다. 만약 서비스 내용이 마음에 들지 않는 경우, Play Store에서 해당 멤버십을 탈퇴할 수 있습니다.</string>
+    <string name="premium_policy_2">당신의 Briefing Premium 구독제 서비스는 Play Store를 통해서 결제가 되며, 환전시 해당 금액은 Google의 환전 정책을 따릅니다. 당신의 결제는 Google을 통해 진행되며, 24시간의 결제 과정을 지난 뒤에 완료될 예정입니다.</string>
 </resources>

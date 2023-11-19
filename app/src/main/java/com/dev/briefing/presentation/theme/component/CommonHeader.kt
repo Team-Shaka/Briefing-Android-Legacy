@@ -41,8 +41,7 @@ fun CommonHeader(
         val (backKey, title) = createRefs()
         Image(
             modifier = Modifier
-                .width(33.dp)
-                .height(33.dp)
+                .height(20.dp)
                 .clickable(onClick = onBackClick)
                 .constrainAs(backKey) {
                     start.linkTo(parent.start)
