@@ -1,6 +1,5 @@
 package com.dev.briefing.presentation.setting.component
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,82 +21,84 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
-import com.dev.briefing.presentation.theme.MainPrimary2
+import com.dev.briefing.presentation.theme.Black
 import com.dev.briefing.presentation.theme.MainPrimary3
+import com.dev.briefing.presentation.theme.MainPrimary6
 import com.dev.briefing.presentation.theme.White
 
-@Composable
-fun menuWithArrow(
-    time: String = "",
-    isArrow: Boolean = true,
-    @DrawableRes icon: Int = R.drawable.setting_caution,
-    @StringRes menu: Int = R.string.navigation_chat,
-    onClick: () -> Unit = {},
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = White, shape = RoundedCornerShape(5.dp))
-            .padding(horizontal = 12.dp, vertical = 12.dp)
-            .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = "더보기"
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = stringResource(id = menu),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight(400)
-                )
-            )
-        }
-        if (isArrow) {
-            Image(
-                painter = painterResource(id = R.drawable.left_arrow),
-                contentDescription = "더보기"
-            )
-        } else {
-            Text(
-                text = time,
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight(400),
-                    color = MainPrimary3
-                )
-            )
-        }
-
-
-    }
+enum class SettingMenuType {
+    ARROW,
+    TEXT,
+    ARROW_WITH_TEXT
 }
 
+/**
+ * @param value : 값(TEXT 타입일 경우 들어갈 값)
+ * @param  : 화살표 유무
+ * @param title : 타이틀
+ * @param onClick : 클릭 이벤트
+ */
 @Composable
-fun menuWithText(
-    @StringRes menu: Int = R.string.navigation_chat,
+fun SettingMenuItem(
+    modifier: Modifier = Modifier,
+    type: SettingMenuType = SettingMenuType.ARROW,
+    @StringRes title: Int = R.string.navigation_chat,
+    titleColor: Color = Black,
+    value: String = "",
     onClick: () -> Unit = {},
-    color: Color = MainPrimary2,
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = White, shape = RoundedCornerShape(5.dp))
-            .padding(horizontal = 12.dp, vertical = 12.dp)
+            .background(color = White)
+            .padding(horizontal = 19.dp, vertical = 29.dp)
             .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(id = menu),
+            text = stringResource(id = title),
             style = MaterialTheme.typography.titleSmall.copy(
                 fontWeight = FontWeight(400),
-                color = color
+                color = titleColor
             )
         )
+        when (type) {
+            SettingMenuType.ARROW -> {
+                Image(
+                    painter = painterResource(id = R.drawable.left_arrow),
+                    contentDescription = "더보기"
+                )
+            }
+
+            SettingMenuType.TEXT -> {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight(400),
+                        color = MainPrimary6
+                    )
+                )
+            }
+
+            SettingMenuType.ARROW_WITH_TEXT -> {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight(400),
+                            color = MainPrimary3
+                        )
+                    )
+                    Spacer(Modifier.width(11.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.left_arrow),
+                        contentDescription = "더보기"
+                    )
+                }
+            }
+        }
     }
 }

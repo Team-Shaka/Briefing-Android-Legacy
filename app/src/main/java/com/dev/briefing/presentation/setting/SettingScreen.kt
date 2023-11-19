@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dev.briefing.R
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
-import com.dev.briefing.presentation.setting.component.menuWithArrow
+import com.dev.briefing.presentation.setting.component.SettingMenuItem
 import com.dev.briefing.presentation.setting.component.menuWithText
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
@@ -116,37 +116,37 @@ fun SettingScreen(
         item {
             CommonHeader(onBackClick = onBackClick, header = "설정")
             Spacer(modifier = Modifier.height(50.dp))
-            menuWithArrow(
+            SettingMenuItem(
                 isArrow = false,
-                time = formatTime(
+                value = formatTime(
                     dailyAlerTimeStateFlow.value.hour,
                     dailyAlerTimeStateFlow.value.minute
                 ),
                 icon = R.drawable.setting_clock,
-                menu = R.string.setting_alarm,
+                title = R.string.setting_alarm,
                 onClick = {
                     timePickerDialog.show()
                 },
             )
             Spacer(modifier = Modifier.height(50.dp))
-            menuWithArrow(
+            SettingMenuItem(
                 icon = R.drawable.setting_version,
-                menu = R.string.setting_version,
-                time = "1.1.1",
+                title = R.string.setting_version,
+                value = "1.1.1",
                 isArrow = false
             )
-            menuWithArrow(
+            SettingMenuItem(
                 icon = R.drawable.setting_clock,
-                menu = R.string.setting_feedback,
+                title = R.string.setting_feedback,
                 onClick = {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/HQXmEBkQ6wyW9jiw7"))
                     startActivity(context, intent, null)
                 }
             )
-            menuWithArrow(
+            SettingMenuItem(
                 icon = R.drawable.setting_version_note,
-                menu = R.string.setting_version_note,
+                title = R.string.setting_version_note,
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
@@ -156,9 +156,9 @@ fun SettingScreen(
                 }
             )
             Spacer(modifier = Modifier.height(50.dp))
-            menuWithArrow(
+            SettingMenuItem(
                 icon = R.drawable.setting_policy,
-                menu = R.string.setting_policy,
+                title = R.string.setting_policy,
                 onClick = {
                     val intent =
                         Intent(
@@ -172,9 +172,9 @@ fun SettingScreen(
                 color = BorderColor,
                 thickness = 1.dp
             )
-            menuWithArrow(
+            SettingMenuItem(
                 icon = R.drawable.setting_policy,
-                menu = R.string.setting_policy_private,
+                title = R.string.setting_policy_private,
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
@@ -187,9 +187,9 @@ fun SettingScreen(
                 color = BorderColor,
                 thickness = 1.dp
             )
-            menuWithArrow(
+            SettingMenuItem(
                 icon = R.drawable.setting_caution,
-                menu = R.string.setting_caution,
+                title = R.string.setting_caution,
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
