@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -35,6 +36,7 @@ import com.dev.briefing.presentation.setting.component.PremiumPriceInfo
 import com.dev.briefing.presentation.setting.component.PremiumTextWithTitle
 import com.dev.briefing.presentation.theme.Black
 import com.dev.briefing.presentation.theme.SubText2
+import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 
 val _functions = listOf(
@@ -48,115 +50,119 @@ val _functions = listOf(
 @Composable
 fun PremiumScreen(
     modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
-    LazyColumn(
-        modifier = modifier
-            .background(color = White)
-            .padding(horizontal = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        item {
-            CommonHeader(header = "Briefing Premium")
-            Spacer(modifier = Modifier.height(30.dp))
-            Image(
-                modifier = Modifier
-                    .width(73.dp),
-                painter = painterResource(id = R.drawable.ic_logo_items),
-                contentDescription = "로고"
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                PremiumText
-            )
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-//                modifier = Modifier.align(Alignment.Start),
-                text = PremiumTextWithTitle
-            )
-            Text(
-                modifier = Modifier.padding(top = 33.dp, bottom = 21.dp),
-                text = stringResource(id = R.string.premium_function_title),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight(400),
-                    color = Black
-                ),
-            )
-            //기능 리스트
-            LazyColumn(
-                horizontalAlignment = Alignment.Start,
-                userScrollEnabled = false,
-            ) {
-                items(5) { it ->
-                    PremiumFunctionItem(
-                        text = _functions[it]
+    Column {
+        CommonHeader(header = "Briefing Premium", color = White, onBackClick = onBackClick)
+        LazyColumn(
+            modifier = modifier
+                .background(color = White)
+                .padding(horizontal = 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(30.dp))
+                Image(
+                    modifier = Modifier
+                        .width(73.dp),
+                    painter = painterResource(id = R.drawable.ic_logo_items),
+                    contentDescription = "로고"
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    PremiumText
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+                Text(
+                    //                modifier = Modifier.align(Alignment.Start),
+                    text = PremiumTextWithTitle
+                )
+                Text(
+                    modifier = Modifier.padding(top = 33.dp, bottom = 21.dp),
+                    text = stringResource(id = R.string.premium_function_title),
+                    style = Typography.headlineLarge.copy(
+                        fontWeight = FontWeight(400),
+                        color = Black
+                    ),
+                )
+                //기능 리스트
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    for (i in 0..4)
+                        PremiumFunctionItem(
+                            text = _functions[i]
+                        )
+                }
+                Spacer(modifier = Modifier.height(17.dp))
+                PremiumPriceInfo(
+                    title = stringResource(id = R.string.premium_yearly_title),
+                    subtitle = stringResource(id = R.string.premium_yearly_subtitle),
+                    price = R.string.premium_yearly_price,
+                    subInfo = R.string.premium_yearly_discount
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                PremiumPriceInfo(
+                    title = stringResource(id = R.string.premium_monthly_title),
+                    subtitle = stringResource(id = R.string.premium_monthly_subtitle),
+                    price = R.string.premium_monthly_price,
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    Text(
+                        modifier = Modifier.clickable {
+                            val intent =
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    // TODO: change url
+                                    Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88")
+                                )
+                            ContextCompat.startActivity(context, intent, null)
+                        },
+                        text = stringResource(id = R.string.premium_policy_service),
+                        style = Typography.bodyMedium.copy(color = Black),
+                        textDecoration = TextDecoration.Underline
+                    )
+                    Spacer(modifier = Modifier.width(17.dp))
+                    Text(
+                        modifier = Modifier.clickable {
+                            val intent =
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    // TODO: change url
+                                    Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88")
+                                )
+                            ContextCompat.startActivity(context, intent, null)
+                        },
+                        text = stringResource(id = R.string.premium_policy_private),
+                        style = Typography.bodyMedium.copy(color = Black),
+                        textDecoration = TextDecoration.Underline
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(17.dp))
-            PremiumPriceInfo(
-                title = stringResource(id = R.string.premium_yearly_title),
-                subtitle = stringResource(id = R.string.premium_yearly_subtitle),
-                price = R.string.premium_yearly_price,
-                subInfo = R.string.premium_yearly_discount
-            )
-            Spacer(modifier = Modifier.height(15.dp))
-            PremiumPriceInfo(
-                title = stringResource(id = R.string.premium_monthly_title),
-                subtitle = stringResource(id = R.string.premium_monthly_subtitle),
-                price = R.string.premium_monthly_price,
-            )
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                horizontalArrangement = Arrangement.Start,
-            ) {
                 Text(
-                    modifier = Modifier.clickable {
-                        val intent =
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                // TODO: change url
-                                Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88")
-                            )
-                        ContextCompat.startActivity(context, intent, null)
-                    },
-                    text = stringResource(id = R.string.premium_policy_service),
-                    textDecoration = TextDecoration.Underline
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = stringResource(id = R.string.premium_policy_1),
+                    style = Typography.bodyMedium.copy(
+                        fontWeight = FontWeight(400),
+                        color = SubText2
+                    ),
                 )
-                Spacer(modifier = Modifier.width(17.dp))
                 Text(
-                    modifier = Modifier.clickable {
-                        val intent =
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                // TODO: change url
-                                Uri.parse("https://sites.google.com/view/brieifinguse/%ED%99%88")
-                            )
-                        ContextCompat.startActivity(context, intent, null)
-                    },
-                    text = stringResource(id = R.string.premium_policy_private),
-                    textDecoration = TextDecoration.Underline
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = stringResource(id = R.string.premium_policy_2),
+                    style = Typography.bodyMedium.copy(
+                        fontWeight = FontWeight(400),
+                        color = SubText2
+                    ),
                 )
-            }
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                text = stringResource(id = R.string.premium_policy_1),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight(400),
-                    color = SubText2
-                ),
-            )
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                text = stringResource(id = R.string.premium_policy_2),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight(400),
-                    color = SubText2
-                ),
-            )
-            Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
+            }
         }
     }
 }

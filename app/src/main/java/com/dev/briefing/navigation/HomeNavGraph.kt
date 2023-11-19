@@ -56,7 +56,11 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             )
         }
         composable(route = HomeScreen.Premium.route) {
-            PremiumScreen()
+            PremiumScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

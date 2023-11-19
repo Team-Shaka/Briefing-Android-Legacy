@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.Black
 import com.dev.briefing.presentation.theme.MainPrimary6
+import com.dev.briefing.presentation.theme.Typography
 
 val PremiumText = buildAnnotatedString {
     withStyle(
@@ -131,7 +132,7 @@ fun PremiumFunctionItem(
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = stringResource(id = text),
-            style = MaterialTheme.typography.titleSmall.copy(
+            style = Typography.headlineLarge.copy(
                 fontWeight = FontWeight(400), color = Black
             ),
         )
@@ -161,13 +162,13 @@ fun PremiumPriceInfo(
         PremiumSubScribeText(subtitle, fontWeight = FontWeight(400), fontSize = 13.sp)
         Spacer(modifier = Modifier.height(11.dp))
         Text(
-            stringResource(id = price), style = MaterialTheme.typography.titleLarge.copy(
+            stringResource(id = price), style = Typography.titleLarge.copy(
                 color = Black
             )
         )
         if (subInfo != null) {
             Text(
-                stringResource(id = subInfo), style = MaterialTheme.typography.bodyMedium.copy(
+                stringResource(id = subInfo), style = Typography.bodyMedium.copy(
                     color = MainPrimary6
                 )
             )

@@ -40,7 +40,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         color = MainPrimary,
         fontSize = 17.sp,
-        lineHeight = 18.sp
+        lineHeight = 20.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = ProductSans,
