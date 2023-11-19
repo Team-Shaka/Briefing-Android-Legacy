@@ -20,16 +20,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.navigation.HomeScreen
-import com.dev.briefing.presentation.setting.CommonHeader
+import com.dev.briefing.util.component.CommonHeader
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.R
-import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.ScrapResponse
-import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import org.koin.androidx.compose.getViewModel
