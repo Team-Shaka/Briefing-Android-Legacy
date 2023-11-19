@@ -17,8 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ComponentActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.R
+import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.setting.component.SettingMenu
@@ -39,6 +41,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     onBackClick: () -> Unit,
     settingViewModel: SettingViewModel = koinViewModel()
 ) {
@@ -112,7 +115,7 @@ fun SettingScreen(
             .fillMaxWidth()
             .fillMaxHeight()
             .background(color = SubBackGround)
-            .padding(bottom=40.dp),
+            .padding(bottom = 40.dp),
         horizontalAlignment = Alignment.Start,
     ) {
         item {
@@ -140,7 +143,7 @@ fun SettingScreen(
                 ),
                 title = R.string.setting_premium,
                 onClick = {
-                    // TODO: premium page
+                    navController.navigate(HomeScreen.Premium.route)
                 },
             )
             //앱 정보
@@ -148,7 +151,7 @@ fun SettingScreen(
             SettingMenuItem(
                 type = SettingMenu(
                     isArrow = false,
-                    text =  BuildConfig.VERSION_NAME
+                    text = BuildConfig.VERSION_NAME
                 ),
                 title = R.string.setting_version,
             )

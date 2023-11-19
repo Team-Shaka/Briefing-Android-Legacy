@@ -10,7 +10,7 @@ val MainPrimary5 =Color(0xFFDDE9ED)
 val MainPrimary6 =Color(0xFF306DAB)
 
 val SubBackGround = Color(0xFFF8F8F8)
-val SubText2 = Color(0xFFB6B6B6)
+val SubText2 = Color(0xFF7C7C7C)
 val White = Color(0xFFffffff)
 val Black = Color(0xFF000000)
 val BorderColor = Color(0x0000002E)

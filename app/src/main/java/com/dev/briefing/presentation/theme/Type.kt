@@ -25,21 +25,21 @@ val Typography = Typography(
         fontFamily = ProductSans,
         fontWeight = FontWeight.Bold,
         color = MainPrimary,
-        fontSize = 20.sp,
+        fontSize = 25.sp,
         lineHeight = 30.sp
     ),
     titleSmall= TextStyle(
         fontFamily = ProductSans,
         fontWeight = FontWeight.Bold,
         color = MainPrimary,
-        fontSize = 17.sp,
+        fontSize = 20.sp,
         lineHeight = 20.sp
     ),
     headlineLarge= TextStyle(
         fontFamily = ProductSans,
         fontWeight = FontWeight.Bold,
         color = MainPrimary,
-        fontSize = 15.sp,
+        fontSize = 17.sp,
         lineHeight = 18.sp
     ),
     bodyMedium = TextStyle(

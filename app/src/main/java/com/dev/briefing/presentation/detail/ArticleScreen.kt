@@ -217,7 +217,6 @@ fun ArticleDetail(
         verticalArrangement = Arrangement.spacedBy(13.dp),
 
         ) {
-
         Spacer(modifier = Modifier.height(11.dp))
         Row(
             modifier = modifier.fillMaxWidth(),
