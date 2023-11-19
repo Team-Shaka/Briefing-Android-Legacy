@@ -26,7 +26,7 @@ import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.Black
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.White
-
+import androidx.compose.ui.graphics.ColorFilter
 @Composable
 fun SettingSection(
     @StringRes title: Int = R.string.navigation_chat,
