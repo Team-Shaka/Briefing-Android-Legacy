@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.dev.briefing.navigation.HomeScreen
-import com.dev.briefing.util.component.CommonHeader
+import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White

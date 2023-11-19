@@ -1,4 +1,4 @@
-package com.dev.briefing.util.component
+package com.dev.briefing.presentation.theme.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

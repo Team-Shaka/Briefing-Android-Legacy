@@ -17,11 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
+import com.dev.briefing.presentation.theme.MainPrimary2
 import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.White
 
@@ -72,5 +74,31 @@ fun menuWithArrow(
         }
 
 
+    }
+}
+
+@Composable
+fun menuWithText(
+    @StringRes menu: Int = R.string.navigation_chat,
+    onClick: () -> Unit = {},
+    color: Color = MainPrimary2,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = White, shape = RoundedCornerShape(5.dp))
+            .padding(horizontal = 12.dp, vertical = 12.dp)
+            .clickable(onClick = onClick),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = menu),
+            style = MaterialTheme.typography.titleSmall.copy(
+                fontWeight = FontWeight(400),
+                color = color
+            )
+        )
     }
 }

@@ -21,6 +21,7 @@ import com.dev.briefing.R
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.setting.component.menuWithArrow
+import com.dev.briefing.presentation.setting.component.menuWithText
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_TAG
@@ -28,7 +29,7 @@ import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.REFRESH_TOKEN
-import com.dev.briefing.util.component.CommonHeader
+import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.util.extension.convert.formatTime
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
