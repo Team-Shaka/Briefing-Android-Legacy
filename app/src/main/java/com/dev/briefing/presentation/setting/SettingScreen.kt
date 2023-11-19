@@ -8,20 +8,22 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ComponentActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dev.briefing.BuildConfig
 import com.dev.briefing.R
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
+import com.dev.briefing.presentation.setting.component.SettingMenu
 import com.dev.briefing.presentation.setting.component.SettingMenuItem
-import com.dev.briefing.presentation.setting.component.menuWithText
+import com.dev.briefing.presentation.setting.component.SettingSection
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_TAG
@@ -38,7 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    settingViewModel : SettingViewModel = koinViewModel()
+    settingViewModel: SettingViewModel = koinViewModel()
 ) {
     val authViewModel: SignInViewModel = getViewModel()
     val context = LocalContext.current
@@ -110,33 +112,50 @@ fun SettingScreen(
             .fillMaxWidth()
             .fillMaxHeight()
             .background(color = SubBackGround)
-            .padding(horizontal = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(bottom=40.dp),
+        horizontalAlignment = Alignment.Start,
     ) {
         item {
-            CommonHeader(onBackClick = onBackClick, header = "설정")
-            Spacer(modifier = Modifier.height(50.dp))
+            CommonHeader(onBackClick = onBackClick, header = "설정", color = White)
+            //알림
+            SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(
-                isArrow = false,
-                value = formatTime(
-                    dailyAlerTimeStateFlow.value.hour,
-                    dailyAlerTimeStateFlow.value.minute
+                type = SettingMenu(
+                    isArrow = true,
+                    text = formatTime(
+                        dailyAlerTimeStateFlow.value.hour,
+                        dailyAlerTimeStateFlow.value.minute
+                    ),
                 ),
-                icon = R.drawable.setting_clock,
                 title = R.string.setting_alarm,
                 onClick = {
                     timePickerDialog.show()
                 },
             )
-            Spacer(modifier = Modifier.height(50.dp))
+            //구독 정보
+            SettingSection(R.string.setting_section_premium)
             SettingMenuItem(
-                icon = R.drawable.setting_version,
+                type = SettingMenu(
+                    isArrow = true,
+                ),
+                title = R.string.setting_premium,
+                onClick = {
+                    // TODO: premium page
+                },
+            )
+            //앱 정보
+            SettingSection(R.string.setting_section_info)
+            SettingMenuItem(
+                type = SettingMenu(
+                    isArrow = false,
+                    text =  BuildConfig.VERSION_NAME
+                ),
                 title = R.string.setting_version,
-                value = "1.1.1",
-                isArrow = false
             )
             SettingMenuItem(
-                icon = R.drawable.setting_clock,
+                type = SettingMenu(
+                    isArrow = true,
+                ),
                 title = R.string.setting_feedback,
                 onClick = {
                     val intent =
@@ -145,7 +164,9 @@ fun SettingScreen(
                 }
             )
             SettingMenuItem(
-                icon = R.drawable.setting_version_note,
+                type = SettingMenu(
+                    isArrow = true,
+                ),
                 title = R.string.setting_version_note,
                 onClick = {
                     val intent = Intent(
@@ -155,9 +176,12 @@ fun SettingScreen(
                     startActivity(context, intent, null)
                 }
             )
-            Spacer(modifier = Modifier.height(50.dp))
+            //개인 정보 보호
+            SettingSection(R.string.setting_section_document)
             SettingMenuItem(
-                icon = R.drawable.setting_policy,
+                type = SettingMenu(
+                    isArrow = true,
+                ),
                 title = R.string.setting_policy,
                 onClick = {
                     val intent =
@@ -168,12 +192,10 @@ fun SettingScreen(
                     startActivity(context, intent, null)
                 }
             )
-            Divider(
-                color = BorderColor,
-                thickness = 1.dp
-            )
             SettingMenuItem(
-                icon = R.drawable.setting_policy,
+                type = SettingMenu(
+                    isArrow = true,
+                ),
                 title = R.string.setting_policy_private,
                 onClick = {
                     val intent = Intent(
@@ -183,12 +205,10 @@ fun SettingScreen(
                     startActivity(context, intent, null)
                 }
             )
-            Divider(
-                color = BorderColor,
-                thickness = 1.dp
-            )
             SettingMenuItem(
-                icon = R.drawable.setting_caution,
+                type = SettingMenu(
+                    isArrow = true,
+                ),
                 title = R.string.setting_caution,
                 onClick = {
                     val intent = Intent(
@@ -198,21 +218,29 @@ fun SettingScreen(
                     startActivity(context, intent, null)
                 }
             )
-            Spacer(modifier = Modifier.height(50.dp))
-
-            menuWithText(R.string.setting_logout, onClick = {
-                Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
-                openLogOutDialog.value = true
-            })
-            Divider(
-                color = BorderColor,
-                thickness = 1.dp
+            //로그 아웃 및 회원 탈퇴
+            SettingSection(R.string.setting_section_auth)
+            SettingMenuItem(
+                type = SettingMenu(
+                    isArrow = true,
+                ),
+                title = R.string.setting_logout,
+                onClick = {
+                    Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
+                    openLogOutDialog.value = true
+                }
             )
-            menuWithText(R.string.setting_signout, onClick = {
-                Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
-                openExitDialog.value = true
-            }, color = DialogExit)
-            Spacer(modifier = Modifier.height(100.dp))
+            SettingMenuItem(
+                type = SettingMenu(
+                    isArrow = true,
+                ),
+                title = R.string.setting_signout,
+                titleColor = DialogExit,
+                onClick = {
+                    Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
+                    openExitDialog.value = true
+                }
+            )
         }
     }
 }

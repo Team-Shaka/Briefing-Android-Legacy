@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,36 +25,46 @@ import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.Black
 import com.dev.briefing.presentation.theme.MainPrimary3
-import com.dev.briefing.presentation.theme.MainPrimary6
 import com.dev.briefing.presentation.theme.White
 
-enum class SettingMenuType {
-    ARROW,
-    TEXT,
-    ARROW_WITH_TEXT
+@Composable
+fun SettingSection(
+    @StringRes title: Int = R.string.navigation_chat,
+) {
+    Text(
+        modifier = Modifier.padding(start = 26.dp, top = 26.dp, bottom = 8.dp),
+        text = stringResource(id = title),
+        style = MaterialTheme.typography.titleSmall.copy(
+            color = Black,
+            fontWeight = FontWeight(400)
+        )
+    )
 }
 
+data class SettingMenu(
+    val isArrow: Boolean,
+    val text: String? = null,
+    val value: String? = null,
+)
+
 /**
- * @param value : 값(TEXT 타입일 경우 들어갈 값)
- * @param  : 화살표 유무
  * @param title : 타이틀
  * @param onClick : 클릭 이벤트
  */
 @Composable
 fun SettingMenuItem(
     modifier: Modifier = Modifier,
-    type: SettingMenuType = SettingMenuType.ARROW,
-    @StringRes title: Int = R.string.navigation_chat,
+    type: SettingMenu,
+    @StringRes title: Int,
     titleColor: Color = Black,
-    value: String = "",
     onClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(color = White)
-            .padding(horizontal = 19.dp, vertical = 29.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(start = 26.dp, top = 19.dp, end = 19.dp, bottom = 19.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -63,41 +75,29 @@ fun SettingMenuItem(
                 color = titleColor
             )
         )
-        when (type) {
-            SettingMenuType.ARROW -> {
-                Image(
-                    painter = painterResource(id = R.drawable.left_arrow),
-                    contentDescription = "더보기"
-                )
-            }
-
-            SettingMenuType.TEXT -> {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (type.text != null) {
                 Text(
-                    text = value,
+                    text = type.text,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight(400),
-                        color = MainPrimary6
                     )
                 )
             }
+            if (type.text != null && type.isArrow) {
+                Spacer(Modifier.width(11.dp))
+            }
+            if (type.isArrow) {
+                Image(
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(24.dp),
+                    painter = painterResource(id = R.drawable.left_arrow, ),
+                    contentDescription = "더보기"
 
-            SettingMenuType.ARROW_WITH_TEXT -> {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = value,
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight(400),
-                            color = MainPrimary3
-                        )
-                    )
-                    Spacer(Modifier.width(11.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.left_arrow),
-                        contentDescription = "더보기"
-                    )
-                }
+                )
             }
         }
     }

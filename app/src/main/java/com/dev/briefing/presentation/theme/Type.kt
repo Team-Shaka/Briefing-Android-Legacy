@@ -24,8 +24,8 @@ val Typography = Typography(
     titleMedium= TextStyle(
         fontFamily = ProductSans,
         fontWeight = FontWeight.Bold,
-        color = White,
-        fontSize = 25.sp,
+        color = MainPrimary,
+        fontSize = 20.sp,
         lineHeight = 30.sp
     ),
     titleSmall= TextStyle(
