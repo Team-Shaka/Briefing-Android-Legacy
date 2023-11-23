@@ -26,9 +26,6 @@ import com.dev.briefing.data.model.tmpBriefingResponse
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
-import com.dev.briefing.presentation.theme.SubText2
-import com.dev.briefing.presentation.theme.Typography
-import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.util.SCRAP_TAG
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -96,7 +93,7 @@ fun ArticleDetail(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = White, shape = RoundedCornerShape(10.dp))
+            .background(color = BriefingTheme.color.BackgroundWhite, shape = RoundedCornerShape(10.dp))
             .padding(horizontal = 30.dp),
         verticalArrangement = Arrangement.spacedBy(13.dp),
 
@@ -108,8 +105,8 @@ fun ArticleDetail(
         ) {
             Text(
                 text = "${article.date} Breifing #${article.rank}",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    color = SubText2,
+                style = BriefingTheme.typography.bold30.copy(
+                    color = BriefingTheme.color.TextGray,
                     fontWeight = FontWeight(400)
 
                 ),
@@ -122,7 +119,7 @@ fun ArticleDetail(
         ) {
             Text(
                 text = article.title,
-                style = Typography.titleLarge
+                style = BriefingTheme.typography.bold30
             )
             if (article.isWarning) {
                 Image(
@@ -137,18 +134,18 @@ fun ArticleDetail(
         }
         Text(
             text = article.subtitle,
-            style = Typography.headlineLarge
+            style = BriefingTheme.typography.bold17
         )
         Text(
             text = article.content,
-            style = Typography.bodyMedium.copy(
+            style = BriefingTheme.typography.regular13.copy(
                 fontWeight = FontWeight(400),
                 color = BriefingTheme.color.PrimaryBlue
             )
         )
         Text(
             text = stringResource(R.string.detail_article_header),
-            style = Typography.headlineLarge
+            style = BriefingTheme.typography.bold17
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(13.dp)

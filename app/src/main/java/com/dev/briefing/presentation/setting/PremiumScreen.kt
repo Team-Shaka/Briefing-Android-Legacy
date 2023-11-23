@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,10 +32,7 @@ import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.presentation.setting.component.PremiumFunctionItem
 import com.dev.briefing.presentation.setting.component.PremiumPriceInfo
 import com.dev.briefing.presentation.setting.component.PremiumTextWithTitle
-import com.dev.briefing.presentation.theme.Black
-import com.dev.briefing.presentation.theme.SubText2
-import com.dev.briefing.presentation.theme.Typography
-import com.dev.briefing.presentation.theme.White
+import com.dev.briefing.presentation.theme.BriefingTheme
 
 val _functions = listOf(
     R.string.premium_function_1,
@@ -55,10 +50,10 @@ fun PremiumScreen(
     val context = LocalContext.current
 
     Column {
-        CommonHeader(header = "Briefing Premium", color = White, onBackClick = onBackClick)
+        CommonHeader(header = "Briefing Premium", color = BriefingTheme.color.BackgroundWhite, onBackClick = onBackClick)
         LazyColumn(
             modifier = modifier
-                .background(color = White)
+                .background(color = BriefingTheme.color.BackgroundWhite)
                 .padding(horizontal = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -82,9 +77,9 @@ fun PremiumScreen(
                 Text(
                     modifier = Modifier.padding(top = 33.dp, bottom = 21.dp),
                     text = stringResource(id = R.string.premium_function_title),
-                    style = Typography.headlineLarge.copy(
+                    style = BriefingTheme.typography.bold17.copy(
                         fontWeight = FontWeight(400),
-                        color = Black
+                        color = BriefingTheme.color.TextBlack
                     ),
                 )
                 //기능 리스트
@@ -125,7 +120,7 @@ fun PremiumScreen(
                             ContextCompat.startActivity(context, intent, null)
                         },
                         text = stringResource(id = R.string.premium_policy_service),
-                        style = Typography.bodyMedium.copy(color = Black),
+                        style = BriefingTheme.typography.regular13.copy(color = BriefingTheme.color.TextBlack),
                         textDecoration = TextDecoration.Underline
                     )
                     Spacer(modifier = Modifier.width(17.dp))
@@ -140,24 +135,24 @@ fun PremiumScreen(
                             ContextCompat.startActivity(context, intent, null)
                         },
                         text = stringResource(id = R.string.premium_policy_private),
-                        style = Typography.bodyMedium.copy(color = Black),
+                        style = BriefingTheme.typography.regular13.copy(color = BriefingTheme.color.TextBlack),
                         textDecoration = TextDecoration.Underline
                     )
                 }
                 Text(
                     modifier = Modifier.padding(top = 20.dp),
                     text = stringResource(id = R.string.premium_policy_1),
-                    style = Typography.bodyMedium.copy(
+                    style = BriefingTheme.typography.regular13.copy(
                         fontWeight = FontWeight(400),
-                        color = SubText2
+                        color = BriefingTheme.color.TextGray
                     ),
                 )
                 Text(
                     modifier = Modifier.padding(top = 20.dp),
                     text = stringResource(id = R.string.premium_policy_2),
-                    style = Typography.bodyMedium.copy(
+                    style = BriefingTheme.typography.regular13.copy(
                         fontWeight = FontWeight(400),
-                        color = SubText2
+                        color = BriefingTheme.color.TextGray
                     ),
                 )
                 Spacer(modifier = Modifier.height(40.dp))

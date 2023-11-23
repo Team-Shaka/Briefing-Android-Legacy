@@ -22,13 +22,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.theme.component.CommonHeader
-import com.dev.briefing.presentation.theme.SubBackGround
-import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.R
 import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.presentation.theme.BriefingTheme
-import com.dev.briefing.presentation.theme.SubText2
-import com.dev.briefing.presentation.theme.Typography
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -44,7 +40,7 @@ fun ScrapScreen(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = SubBackGround)
+            .background(color = BriefingTheme.color.BackgrundGray)
             .padding(horizontal = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -96,7 +92,7 @@ fun ScrapDefaultScreen() {
         Spacer(modifier = Modifier.height(33.dp))
         Text(
             text = stringResource(id = R.string.scrap_default),
-            style = Typography.titleSmall.copy(color = SubText2)
+            style = BriefingTheme.typography.bold20.copy(color = BriefingTheme.color.TextGray)
         )
     }
 }
@@ -122,13 +118,13 @@ fun ArticleSection(
         Text(
             modifier = Modifier.padding(start = 10.dp),
             text = localDate,
-            style = MaterialTheme.typography.headlineLarge
+            style = BriefingTheme.typography.bold30
         )
         Spacer(modifier = Modifier.height(6.dp))
 
         Column(
             modifier = Modifier.background(
-                color = White,
+                color = BriefingTheme.color.BackgroundWhite,
                 shape = RoundedCornerShape(5.dp)
             )
 
@@ -167,16 +163,16 @@ fun ArticleHeader(
             modifier = Modifier.widthIn(max = 161.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(text = news.title, style = MaterialTheme.typography.titleSmall)
+            Text(text = news.title, style = BriefingTheme.typography.bold20)
             Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = news.subtitle,
-                style = MaterialTheme.typography.labelSmall,
+                style = BriefingTheme.typography.regular13,
                 overflow = TextOverflow.Ellipsis
             )
         }
         Text(
-            text = "${news.date} #" + news.ranks, style = MaterialTheme.typography.bodyMedium.copy(
+            text = "${news.date} #" + news.ranks, style = BriefingTheme.typography.regular13.copy(
                 color = BriefingTheme.color.PrimaryBlue,
                 lineHeight = 15.sp
             )

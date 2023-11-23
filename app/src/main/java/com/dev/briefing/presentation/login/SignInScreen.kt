@@ -42,8 +42,6 @@ import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.login.mGoogleSignInClient
 import com.dev.briefing.presentation.theme.BriefingTheme
-import com.dev.briefing.presentation.theme.Typography
-import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MainApplication.Companion.prefs
@@ -87,15 +85,15 @@ fun SignInScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.app_name), style = Typography.titleLarge.copy(
-                    fontSize = 70.sp, lineHeight = 85.sp, color = White
+                text = stringResource(R.string.app_name), style = BriefingTheme.typography.bold30.copy(
+                    fontSize = 70.sp, lineHeight = 85.sp, color = BriefingTheme.color.BackgroundWhite
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = stringResource(R.string.login_app_description),
-                style = Typography.titleMedium.copy(color = White, fontWeight = FontWeight.Normal)
+                style = BriefingTheme.typography.bold30.copy(color = BriefingTheme.color.BackgroundWhite, fontWeight = FontWeight.Normal)
             )
             Spacer(modifier = Modifier.height(19.dp))
             Image(
@@ -116,7 +114,7 @@ fun SignInScreen(
                 openAlertDialog.value = true
             }),
             text = stringResource(R.string.login_skip),
-            style = Typography.titleSmall.copy(color = BriefingTheme.color.PrimaryBlue)
+            style = BriefingTheme.typography.bold20.copy(color = BriefingTheme.color.PrimaryBlue)
         )
     }
 }
@@ -179,7 +177,7 @@ fun GoogleLoginButton(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = White, shape = RoundedCornerShape(25.dp))
+            .background(color = BriefingTheme.color.BackgroundWhite, shape = RoundedCornerShape(25.dp))
             .padding(vertical = 13.dp)
             .clickable(onClick = {
                 onClick()
@@ -196,7 +194,7 @@ fun GoogleLoginButton(
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = "Log in with Google",
-            style = Typography.headlineLarge.copy(color = Color(0xFF7C7C7C))
+            style = BriefingTheme.typography.bold17.copy(color = Color(0xFF7C7C7C))
         )
     }
 }

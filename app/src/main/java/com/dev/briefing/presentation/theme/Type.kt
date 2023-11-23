@@ -33,60 +33,70 @@ data class BriefingTypo(
 val localBriefingTypo =
     BriefingTypo(
         bold30 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Medium,
             fontSize = 30.sp,
             lineHeight = 36.39.sp
         ),
         regular30 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Normal,
             fontSize = 30.sp,
             lineHeight = 36.39.sp
         ),
         bold20 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             lineHeight = 24.39.sp
         ),
         regular20 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Normal,
             fontSize = 20.sp,
             lineHeight = 24.39.sp
         ),
         bold17 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Bold,
             fontSize = 17.sp,
             lineHeight = 20.69.sp
         ),
         regular17 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Normal,
             fontSize = 17.sp,
             lineHeight = 20.69.sp
         ),
         bold15 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp,
             lineHeight = 18.39.sp
         ),
         regular15 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Normal,
             fontSize = 15.sp,
             lineHeight = 18.39.sp
         ),
         bold13 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp,
             lineHeight = 15.99.sp
         ),
         regular13 = TextStyle(
+            color = Black,
             fontFamily = ProductSans,
             fontWeight = FontWeight.Normal,
             fontSize = 13.sp,
@@ -107,65 +117,3 @@ val LocalBriefingTypo = staticCompositionLocalOf {
         regular13 = TextStyle.Default,
     )
 }
-
-//legacy
-val Typography = Typography(
-    titleLarge = TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Bold,
-        color = MainPrimary,
-        fontSize = 30.sp,
-        lineHeight = 36.sp
-    ),
-    titleMedium= TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Bold,
-        color = MainPrimary,
-        fontSize = 25.sp,
-        lineHeight = 30.sp
-    ),
-    titleSmall= TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Bold,
-        color = MainPrimary,
-        fontSize = 20.sp,
-        lineHeight = 20.sp
-    ),
-    headlineLarge= TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Bold,
-        color = MainPrimary,
-        fontSize = 17.sp,
-        lineHeight = 20.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Normal,
-        color = MainPrimary3,
-        fontSize = 13.sp,
-        lineHeight = 22.sp
-    ),
-    labelLarge = TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Normal,
-        color = MainPrimary3,
-        fontSize = 14.sp,
-        lineHeight = 16.sp
-    ),
-
-    labelMedium = TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Normal,
-        color = MainPrimary3,
-        fontSize = 11.sp,
-        lineHeight = 13.sp
-    ),
-    labelSmall= TextStyle(
-        fontFamily = ProductSans,
-        fontWeight = FontWeight.Bold,
-        color = MainPrimary3,
-        fontSize = 10.sp,
-        lineHeight = 12.sp
-    )
-
-)

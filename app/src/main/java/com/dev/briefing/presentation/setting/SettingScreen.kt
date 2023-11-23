@@ -114,12 +114,12 @@ fun SettingScreen(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = SubBackGround)
+            .background(color = BriefingTheme.color.BackgrundGray)
             .padding(bottom = 40.dp),
         horizontalAlignment = Alignment.Start,
     ) {
         item {
-            CommonHeader(onBackClick = onBackClick, header = "설정", color = White)
+            CommonHeader(onBackClick = onBackClick, header = "설정", color = BriefingTheme.color.BackgroundWhite)
             //알림
             SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(
@@ -238,7 +238,7 @@ fun SettingScreen(
                     isArrow = true,
                 ),
                 title = R.string.setting_signout,
-                titleColor = DialogExit,
+                titleColor = BriefingTheme.color.TextRed,
                 onClick = {
                     Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
                     openExitDialog.value = true

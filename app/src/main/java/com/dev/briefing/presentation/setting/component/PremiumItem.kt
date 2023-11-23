@@ -26,9 +26,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.briefing.R
-import com.dev.briefing.presentation.theme.Black
 import com.dev.briefing.presentation.theme.BriefingTheme
-import com.dev.briefing.presentation.theme.Typography
 
 @Composable
 fun PremiumText(): AnnotatedString {
@@ -44,7 +42,7 @@ fun PremiumText(): AnnotatedString {
         }
         withStyle(
             style = SpanStyle(
-                fontWeight = FontWeight.Bold, color = Black, fontSize = 20.sp
+                fontWeight = FontWeight.Bold, color = BriefingTheme.color.TextBlack, fontSize = 20.sp
             )
         ) {
             append(" Premium")
@@ -57,7 +55,7 @@ fun PremiumTextWithTitle(): AnnotatedString {
     return buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                fontWeight = FontWeight(400), color = Black, fontSize = 20.sp
+                fontWeight = FontWeight(400), color = BriefingTheme.color.TextBlack, fontSize = 20.sp
             )
         ) {
             append("더 강력하고, 더 폭넓은 기능을\n")
@@ -73,14 +71,14 @@ fun PremiumTextWithTitle(): AnnotatedString {
         }
         withStyle(
             style = SpanStyle(
-                fontWeight = FontWeight.Bold, color = Black, fontSize = 20.sp
+                fontWeight = FontWeight.Bold, color = BriefingTheme.color.TextBlack, fontSize = 20.sp
             )
         ) {
             append(" Premium")
         }
         withStyle(
             style = SpanStyle(
-                fontWeight = FontWeight(400), color = Black, fontSize = 20.sp
+                fontWeight = FontWeight(400), color = BriefingTheme.color.TextBlack, fontSize = 20.sp
             )
         ) {
             append("으로 누려보세요.")
@@ -106,14 +104,14 @@ fun PremiumSubScribeText(
         }
         withStyle(
             style = SpanStyle(
-                fontWeight = fontWeight, color = Black, fontSize = fontSize
+                fontWeight = fontWeight, color = BriefingTheme.color.TextBlack, fontSize = fontSize
             )
         ) {
             append(" Premium")
         }
         withStyle(
             style = SpanStyle(
-                fontWeight = fontWeight, color = Black, fontSize = fontSize
+                fontWeight = fontWeight, color = BriefingTheme.color.TextBlack, fontSize = fontSize
             )
         ) {
             append(text)
@@ -142,8 +140,8 @@ fun PremiumFunctionItem(
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = stringResource(id = text),
-            style = Typography.headlineLarge.copy(
-                fontWeight = FontWeight(400), color = Black
+            style = BriefingTheme.typography.bold17.copy(
+                fontWeight = FontWeight(400), color = BriefingTheme.color.TextBlack
             ),
         )
     }
@@ -162,7 +160,7 @@ fun PremiumPriceInfo(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = Black,
+                color = BriefingTheme.color.TextBlack,
             )
             .padding(vertical = 15.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -172,13 +170,13 @@ fun PremiumPriceInfo(
         PremiumSubScribeText(subtitle, fontWeight = FontWeight(400), fontSize = 13.sp)
         Spacer(modifier = Modifier.height(11.dp))
         Text(
-            stringResource(id = price), style = Typography.titleLarge.copy(
-                color = Black
+            stringResource(id = price), style = BriefingTheme.typography.bold30.copy(
+                color = BriefingTheme.color.TextBlack
             )
         )
         if (subInfo != null) {
             Text(
-                stringResource(id = subInfo), style = Typography.bodyMedium.copy(
+                stringResource(id = subInfo), style = BriefingTheme.typography.regular13.copy(
                     color = BriefingTheme.color.PrimaryBlue
                 )
             )

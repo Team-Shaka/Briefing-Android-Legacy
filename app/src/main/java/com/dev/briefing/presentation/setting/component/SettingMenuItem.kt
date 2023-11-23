@@ -23,9 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
-import com.dev.briefing.presentation.theme.Black
-import com.dev.briefing.presentation.theme.White
-import androidx.compose.ui.graphics.ColorFilter
+import com.dev.briefing.presentation.theme.BriefingTheme
+
 @Composable
 fun SettingSection(
     @StringRes title: Int = R.string.navigation_chat,
@@ -33,8 +32,8 @@ fun SettingSection(
     Text(
         modifier = Modifier.padding(start = 26.dp, top = 26.dp, bottom = 8.dp),
         text = stringResource(id = title),
-        style = MaterialTheme.typography.headlineLarge.copy(
-            color = Black,
+        style = BriefingTheme.typography.regular17.copy(
+            color = BriefingTheme.color.TextBlack,
             fontWeight = FontWeight(400)
         )
     )
@@ -55,13 +54,13 @@ fun SettingMenuItem(
     modifier: Modifier = Modifier,
     type: SettingMenu,
     @StringRes title: Int,
-    titleColor: Color = Black,
+    titleColor: Color = BriefingTheme.color.TextBlack,
     onClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = White)
+            .background(color = BriefingTheme.color.BackgroundWhite)
             .clickable(onClick = onClick)
             .padding(start = 26.dp, top = 19.dp, end = 19.dp, bottom = 19.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,8 +68,7 @@ fun SettingMenuItem(
     ) {
         Text(
             text = stringResource(id = title),
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight(400),
+            style = BriefingTheme.typography.regular17.copy(
                 color = titleColor
             )
         )
@@ -80,9 +78,7 @@ fun SettingMenuItem(
             if (type.text != null) {
                 Text(
                     text = type.text,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight(400),
-                    )
+                    style = BriefingTheme.typography.regular17
                 )
             }
             if (type.text != null && type.isArrow) {

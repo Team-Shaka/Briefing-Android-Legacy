@@ -22,8 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.BriefingTheme
-import com.dev.briefing.presentation.theme.Typography
-import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
@@ -91,8 +89,8 @@ fun DetailHeader(
         )
         Text(
             text = "Briefing #${rank}",
-            style = Typography.titleMedium.copy(
-                color = White,
+            style = BriefingTheme.typography.regular15.copy(
+                color = BriefingTheme.color.BackgroundWhite,
                 fontWeight = FontWeight(400)
             )
         )

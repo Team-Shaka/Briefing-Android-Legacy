@@ -19,9 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.briefing.R
-import com.dev.briefing.presentation.theme.Black
-import com.dev.briefing.presentation.theme.SubBackGround
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.dev.briefing.presentation.theme.BriefingTheme
 
 @Preview
 @Composable
@@ -29,7 +28,7 @@ fun CommonHeader(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     header: String = "",
-    color: Color = SubBackGround
+    color: Color = BriefingTheme.color.BackgrundGray
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -59,8 +58,8 @@ fun CommonHeader(
                 end.linkTo(parent.end)
             },
             text = header,
-            style = MaterialTheme.typography.titleSmall.copy(
-                color = Black,
+            style = BriefingTheme.typography.bold20.copy(
+                color = BriefingTheme.color.TextBlack,
                 fontSize = 20.sp,
                 fontWeight = FontWeight(400)
             )

@@ -127,7 +127,7 @@ fun BriefingHome(
                 Column(
                     modifier = Modifier
                         .background(
-                            color = if (briefDate.value == time) White else Color.Transparent,
+                            color = if (briefDate.value == time) BriefingTheme.color.BackgroundWhite else Color.Transparent,
                             shape = RoundedCornerShape(5.dp)
                         )
                         .clickable {
@@ -141,11 +141,11 @@ fun BriefingHome(
                     // TODO:
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else White)
+                        style = BriefingTheme.typography.regular13.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else White)
+                        style = BriefingTheme.typography.bold30.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
                     )
                 }
             }
@@ -197,7 +197,7 @@ fun HomeHeader(
         ) {
         Text(
             text = stringResource(R.string.home_title),
-            style = MaterialTheme.typography.titleMedium.copy(
+            style = BriefingTheme.typography.regular20.copy(
                 fontSize = 24.sp,
                 fontWeight = FontWeight(400)
             )
@@ -234,7 +234,7 @@ fun ArticleList(
     Column(
         modifier
             .background(
-                SubBackGround,
+                BriefingTheme.color.BackgrundGray,
                 shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
             )
             .fillMaxHeight()
@@ -246,11 +246,11 @@ fun ArticleList(
         } else {
             Text(
                 text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
-                style = Typography.titleMedium.copy(color = BriefingTheme.color.PrimaryBlue)
+                style = BriefingTheme.typography.bold30.copy(color = BriefingTheme.color.PrimaryBlue)
             )
             Text(
                 text = "Updated: ${briefingResponse.created_at}",
-                style = MaterialTheme.typography.labelMedium
+                style = BriefingTheme.typography.regular13
             )
             Spacer(modifier = Modifier.height(13.dp))
             LazyColumn(
@@ -290,7 +290,7 @@ fun ArticleListTile(
             .clickable {
                 onItemClick(news.id)
             }
-            .background(White, shape = RoundedCornerShape(40.dp))
+            .background(BriefingTheme.color.BackgroundWhite, shape = RoundedCornerShape(40.dp))
             .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -302,7 +302,7 @@ fun ArticleListTile(
                 1 -> BriefingTheme.color.PrimaryBlue
                 2 -> BriefingTheme.color.PrimaryBlue
                 3 -> BriefingTheme.color.PrimaryBlue
-                else -> White
+                else -> BriefingTheme.color.BackgroundWhite
             }
             Box(
                 modifier = Modifier
@@ -311,8 +311,8 @@ fun ArticleListTile(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
-                        color = if (backgroundColor == White) BriefingTheme.color.PrimaryBlue else White
+                    text = news.rank.toString(), style = BriefingTheme.typography.bold20.copy(
+                        color = if (backgroundColor == BriefingTheme.color.BackgroundWhite) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite
                     ), overflow = TextOverflow.Ellipsis, maxLines = 1
                 )
 
@@ -324,11 +324,11 @@ fun ArticleListTile(
                 verticalArrangement = Arrangement.Center,
 
                 ) {
-                Text(text = news.title, style = MaterialTheme.typography.titleSmall)
+                Text(text = news.title, style = BriefingTheme.typography.bold20)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = news.subtitle,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = BriefingTheme.typography.regular13,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
