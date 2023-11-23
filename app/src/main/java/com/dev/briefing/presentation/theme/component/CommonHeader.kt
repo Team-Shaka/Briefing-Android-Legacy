@@ -35,7 +35,7 @@ fun CommonHeader(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = color)
-            .padding(top = 24.dp, bottom = 15.dp, start = 19.dp),
+            .padding(top = 24.dp, bottom = 15.dp, start = 19.dp, end = 19.dp),
     )
     {
         val (backKey, title) = createRefs()

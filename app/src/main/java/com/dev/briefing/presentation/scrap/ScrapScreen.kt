@@ -103,6 +103,8 @@ fun ScrapDefaultScreen() {
 
 /**
  * 스크랩화면 전체적인 틀
+ * 1.1에서는 날짜별로 묶어서 보여주는 Section이 있었기에
+ * 해당 Layout을 분리
  */
 @Composable
 fun ArticleSection(
@@ -141,7 +143,10 @@ fun ArticleSection(
     }
 }
 
-//TODO: 서버 API 연결
+/**
+ * Scrap item
+ * click시 상세페이지로 이동
+ */
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
@@ -152,7 +157,6 @@ fun ArticleHeader(
         modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 11.dp)
-            //TODO: navigate to DetailScreen
             .clickable {
                 onItemClick(news.briefingId)
             },
