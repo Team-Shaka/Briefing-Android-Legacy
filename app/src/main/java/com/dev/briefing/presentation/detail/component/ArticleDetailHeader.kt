@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
-import com.dev.briefing.presentation.theme.MainPrimary4
+import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
@@ -50,7 +50,7 @@ fun DetailHeader(
             dialogTitle = R.string.dialog_login_title,
             dialogText = R.string.dialog_login_text,
             dialogId = R.string.dialog_login_confirm,
-            confirmColor = MainPrimary4
+            confirmColor = BriefingTheme.color.PrimaryBlue
         )
     }
     /**  스크랩 관련 변수

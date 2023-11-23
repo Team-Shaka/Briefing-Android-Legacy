@@ -3,7 +3,6 @@ package com.dev.briefing.presentation.setting.component
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -28,55 +27,64 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.Black
-import com.dev.briefing.presentation.theme.MainPrimary6
+import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.Typography
 
-val PremiumText = buildAnnotatedString {
-    withStyle(
-        style = SpanStyle(
-            fontWeight = FontWeight.Bold, color = MainPrimary6, fontSize = 20.sp
-        )
-    ) {
-        append("Briefing")
-    }
-    withStyle(
-        style = SpanStyle(
-            fontWeight = FontWeight.Bold, color = Black, fontSize = 20.sp
-        )
-    ) {
-        append(" Premium")
+@Composable
+fun PremiumText(): AnnotatedString {
+    return buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.Bold,
+                color = BriefingTheme.color.PrimaryBlue,
+                fontSize = 20.sp
+            )
+        ) {
+            append("Briefing")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.Bold, color = Black, fontSize = 20.sp
+            )
+        ) {
+            append(" Premium")
+        }
     }
 }
 
-
-val PremiumTextWithTitle = buildAnnotatedString {
-    withStyle(
-        style = SpanStyle(
-            fontWeight = FontWeight(400), color = Black, fontSize = 20.sp
-        )
-    ) {
-        append("더 강력하고, 더 폭넓은 기능을\n")
-    }
-    withStyle(
-        style = SpanStyle(
-            fontWeight = FontWeight.Bold, color = MainPrimary6, fontSize = 20.sp
-        )
-    ) {
-        append("Briefing")
-    }
-    withStyle(
-        style = SpanStyle(
-            fontWeight = FontWeight.Bold, color = Black, fontSize = 20.sp
-        )
-    ) {
-        append(" Premium")
-    }
-    withStyle(
-        style = SpanStyle(
-            fontWeight = FontWeight(400), color = Black, fontSize = 20.sp
-        )
-    ) {
-        append("으로 누려보세요.")
+@Composable
+fun PremiumTextWithTitle(): AnnotatedString {
+    return buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight(400), color = Black, fontSize = 20.sp
+            )
+        ) {
+            append("더 강력하고, 더 폭넓은 기능을\n")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.Bold,
+                color = BriefingTheme.color.PrimaryBlue,
+                fontSize = 20.sp
+            )
+        ) {
+            append("Briefing")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.Bold, color = Black, fontSize = 20.sp
+            )
+        ) {
+            append(" Premium")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight(400), color = Black, fontSize = 20.sp
+            )
+        ) {
+            append("으로 누려보세요.")
+        }
     }
 }
 
@@ -89,7 +97,9 @@ fun PremiumSubScribeText(
     val textSpan = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                fontWeight = fontWeight, color = MainPrimary6, fontSize = fontSize
+                fontWeight = fontWeight,
+                color = BriefingTheme.color.PrimaryBlue,
+                fontSize = fontSize
             )
         ) {
             append("Briefing")
@@ -169,7 +179,7 @@ fun PremiumPriceInfo(
         if (subInfo != null) {
             Text(
                 stringResource(id = subInfo), style = Typography.bodyMedium.copy(
-                    color = MainPrimary6
+                    color = BriefingTheme.color.PrimaryBlue
                 )
             )
         }

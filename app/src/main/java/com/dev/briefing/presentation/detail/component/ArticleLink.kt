@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dev.briefing.R
 import com.dev.briefing.data.model.Article
-import com.dev.briefing.presentation.theme.MainPrimary
+import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 
@@ -41,7 +41,7 @@ fun ArticleLink(
         modifier
             .fillMaxWidth()
             .background(White, shape = RoundedCornerShape(40.dp))
-            .border(1.dp, MainPrimary, shape = RoundedCornerShape(10.dp))
+            .border(1.dp, BriefingTheme.color.PrimaryBlue, shape = RoundedCornerShape(10.dp))
             .clickable {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsLink.url))
                 ContextCompat.startActivity(context, intent, null)
@@ -57,7 +57,7 @@ fun ArticleLink(
             Text(
                 text = newsLink.press, style = Typography.bodyMedium.copy(
                     fontWeight = FontWeight(700),
-                    color = MainPrimary
+                    color = BriefingTheme.color.PrimaryBlue
                 )
             )
             Spacer(modifier = Modifier.height(4.dp))

@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.Black
-import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.White
 import androidx.compose.ui.graphics.ColorFilter
 @Composable

@@ -24,8 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -96,7 +94,7 @@ fun BriefingHome(
                 dialogTitle = R.string.dialog_login_title,
                 dialogText = R.string.dialog_login_text,
                 dialogId = R.string.dialog_login_confirm,
-                confirmColor = MainPrimary4
+                confirmColor = BriefingTheme.color.PrimaryBlue
             )
         }
 
@@ -143,11 +141,11 @@ fun BriefingHome(
                     // TODO:
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
+                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else White)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
+                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else White)
                     )
                 }
             }
@@ -248,7 +246,7 @@ fun ArticleList(
         } else {
             Text(
                 text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
-                style = Typography.titleMedium.copy(color = MainPrimary)
+                style = Typography.titleMedium.copy(color = BriefingTheme.color.PrimaryBlue)
             )
             Text(
                 text = "Updated: ${briefingResponse.created_at}",
@@ -301,9 +299,9 @@ fun ArticleListTile(
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             val backgroundColor = when (news.rank) {
-                1 -> MainPrimary
-                2 -> MainPrimary2
-                3 -> MainPrimary3
+                1 -> BriefingTheme.color.PrimaryBlue
+                2 -> BriefingTheme.color.PrimaryBlue
+                3 -> BriefingTheme.color.PrimaryBlue
                 else -> White
             }
             Box(
@@ -314,7 +312,7 @@ fun ArticleListTile(
             ) {
                 Text(
                     text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
-                        color = if (backgroundColor == White) MainPrimary else White
+                        color = if (backgroundColor == White) BriefingTheme.color.PrimaryBlue else White
                     ), overflow = TextOverflow.Ellipsis, maxLines = 1
                 )
 

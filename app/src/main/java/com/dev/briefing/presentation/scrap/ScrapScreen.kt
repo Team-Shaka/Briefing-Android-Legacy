@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.theme.component.CommonHeader
-import com.dev.briefing.presentation.theme.MainPrimary3
 import com.dev.briefing.presentation.theme.SubBackGround
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.R
 import com.dev.briefing.data.model.ScrapResponse
+import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import org.koin.androidx.compose.getViewModel
@@ -177,7 +177,7 @@ fun ArticleHeader(
         }
         Text(
             text = "${news.date} #" + news.ranks, style = MaterialTheme.typography.bodyMedium.copy(
-                color = MainPrimary3,
+                color = BriefingTheme.color.PrimaryBlue,
                 lineHeight = 15.sp
             )
         )

@@ -72,12 +72,12 @@ fun PremiumScreen(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    PremiumText
+                    PremiumText()
                 )
                 Spacer(modifier = Modifier.height(40.dp))
                 Text(
                     //                modifier = Modifier.align(Alignment.Start),
-                    text = PremiumTextWithTitle
+                    text = PremiumTextWithTitle()
                 )
                 Text(
                     modifier = Modifier.padding(top = 33.dp, bottom = 21.dp),

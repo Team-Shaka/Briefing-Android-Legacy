@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.data.model.BriefingDetailResponse
 import com.dev.briefing.data.model.tmpBriefingResponse
+import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.GradientEnd
 import com.dev.briefing.presentation.theme.GradientStart
-import com.dev.briefing.presentation.theme.MainPrimary
 import com.dev.briefing.presentation.theme.SubText2
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
@@ -128,7 +128,7 @@ fun ArticleDetail(
                 Image(
                     painter = painterResource(id = R.drawable.home_alert),
                     colorFilter = ColorFilter.tint(
-                        MainPrimary
+                        BriefingTheme.color.PrimaryBlue
                     ),
                     contentDescription = "fdfd"
                 )
@@ -143,7 +143,7 @@ fun ArticleDetail(
             text = article.content,
             style = Typography.bodyMedium.copy(
                 fontWeight = FontWeight(400),
-                color = MainPrimary
+                color = BriefingTheme.color.PrimaryBlue
             )
         )
         Text(

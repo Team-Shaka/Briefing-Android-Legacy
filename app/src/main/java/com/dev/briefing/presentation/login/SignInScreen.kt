@@ -41,10 +41,7 @@ import com.dev.briefing.presentation.home.HomeActivity
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.login.mGoogleSignInClient
-import com.dev.briefing.presentation.theme.MainPrimary
-import com.dev.briefing.presentation.theme.MainPrimary2
-import com.dev.briefing.presentation.theme.MainPrimary3
-import com.dev.briefing.presentation.theme.MainPrimary5
+import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.Typography
 import com.dev.briefing.presentation.theme.White
 import com.dev.briefing.presentation.theme.utils.CommonDialog
@@ -72,7 +69,7 @@ fun SignInScreen(
             dialogTitle = R.string.dialog_login_skip_title,
             dialogText = R.string.dialog_login_skip_text,
             dialogId = R.string.dialog_login_skip_confirm,
-            confirmColor = MainPrimary2,
+            confirmColor = BriefingTheme.color.PrimaryBlue,
             dismissText = R.string.dialog_basic_confirm
         )
     }
@@ -80,7 +77,7 @@ fun SignInScreen(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = MainPrimary)
+            .background(color = BriefingTheme.color.PrimaryBlue)
             .padding(horizontal = 36.dp, vertical = 60.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -113,13 +110,13 @@ fun SignInScreen(
         }
 
         )
-        Divider(modifier = Modifier.padding(vertical = 24.dp), color = MainPrimary3)
+        Divider(modifier = Modifier.padding(vertical = 24.dp), color = BriefingTheme.color.PrimaryBlue)
         Text(
             modifier = Modifier.clickable(onClick = {
                 openAlertDialog.value = true
             }),
             text = stringResource(R.string.login_skip),
-            style = Typography.titleSmall.copy(color = MainPrimary5)
+            style = Typography.titleSmall.copy(color = BriefingTheme.color.PrimaryBlue)
         )
     }
 }
