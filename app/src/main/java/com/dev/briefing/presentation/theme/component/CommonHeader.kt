@@ -21,6 +21,16 @@ import com.dev.briefing.presentation.theme.BriefingTheme
 
 @Preview
 @Composable
+fun PreviewCommonHeader(){
+    CommonHeader(
+        onBackClick = {},
+        header = "Briefing Premium",
+        color = BriefingTheme.color.BackgroundWhite
+    )
+}
+
+
+@Composable
 fun CommonHeader(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
