@@ -89,7 +89,7 @@ fun DetailHeader(
         )
         Text(
             text = "Briefing #${rank}",
-            style = BriefingTheme.typography.regular15.copy(
+            style = BriefingTheme.typography.SmallcontextStyleRegular.copy(
                 color = BriefingTheme.color.BackgroundWhite,
                 fontWeight = FontWeight(400)
             )

@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +30,7 @@ fun SettingSection(
     Text(
         modifier = Modifier.padding(start = 26.dp, top = 26.dp, bottom = 8.dp),
         text = stringResource(id = title),
-        style = BriefingTheme.typography.regular17.copy(
+        style = BriefingTheme.typography.ContextStyleRegular.copy(
             color = BriefingTheme.color.TextBlack,
             fontWeight = FontWeight(400)
         )
@@ -68,7 +66,7 @@ fun SettingMenuItem(
     ) {
         Text(
             text = stringResource(id = title),
-            style = BriefingTheme.typography.regular17.copy(
+            style = BriefingTheme.typography.ContextStyleRegular.copy(
                 color = titleColor
             )
         )
@@ -78,7 +76,7 @@ fun SettingMenuItem(
             if (type.text != null) {
                 Text(
                     text = type.text,
-                    style = BriefingTheme.typography.regular17
+                    style = BriefingTheme.typography.ContextStyleRegular
                 )
             }
             if (type.text != null && type.isArrow) {

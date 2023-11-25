@@ -22,7 +22,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +37,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import com.dev.briefing.R
 import com.dev.briefing.presentation.home.HomeActivity
-import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.login.mGoogleSignInClient
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.utils.CommonDialog
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.google.android.gms.auth.api.Auth.GoogleSignInApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -85,7 +81,7 @@ fun SignInScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.app_name), style = BriefingTheme.typography.bold30.copy(
+                text = stringResource(R.string.app_name), style = BriefingTheme.typography.TitleStyleBold.copy(
                     fontSize = 70.sp, lineHeight = 85.sp, color = BriefingTheme.color.BackgroundWhite
                 )
             )
@@ -93,7 +89,7 @@ fun SignInScreen(
 
             Text(
                 text = stringResource(R.string.login_app_description),
-                style = BriefingTheme.typography.bold30.copy(color = BriefingTheme.color.BackgroundWhite, fontWeight = FontWeight.Normal)
+                style = BriefingTheme.typography.TitleStyleBold.copy(color = BriefingTheme.color.BackgroundWhite, fontWeight = FontWeight.Normal)
             )
             Spacer(modifier = Modifier.height(19.dp))
             Image(
@@ -114,7 +110,7 @@ fun SignInScreen(
                 openAlertDialog.value = true
             }),
             text = stringResource(R.string.login_skip),
-            style = BriefingTheme.typography.bold20.copy(color = BriefingTheme.color.PrimaryBlue)
+            style = BriefingTheme.typography.SubtitleStyleBold.copy(color = BriefingTheme.color.PrimaryBlue)
         )
     }
 }
@@ -194,7 +190,7 @@ fun GoogleLoginButton(
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = "Log in with Google",
-            style = BriefingTheme.typography.bold17.copy(color = Color(0xFF7C7C7C))
+            style = BriefingTheme.typography.ContextStyleBold.copy(color = Color(0xFF7C7C7C))
         )
     }
 }

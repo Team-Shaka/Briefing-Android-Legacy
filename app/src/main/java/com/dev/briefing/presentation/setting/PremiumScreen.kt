@@ -77,7 +77,7 @@ fun PremiumScreen(
                 Text(
                     modifier = Modifier.padding(top = 33.dp, bottom = 21.dp),
                     text = stringResource(id = R.string.premium_function_title),
-                    style = BriefingTheme.typography.bold17.copy(
+                    style = BriefingTheme.typography.ContextStyleBold.copy(
                         fontWeight = FontWeight(400),
                         color = BriefingTheme.color.TextBlack
                     ),
@@ -120,7 +120,7 @@ fun PremiumScreen(
                             ContextCompat.startActivity(context, intent, null)
                         },
                         text = stringResource(id = R.string.premium_policy_service),
-                        style = BriefingTheme.typography.regular13.copy(color = BriefingTheme.color.TextBlack),
+                        style = BriefingTheme.typography.DetailStyleRegular.copy(color = BriefingTheme.color.TextBlack),
                         textDecoration = TextDecoration.Underline
                     )
                     Spacer(modifier = Modifier.width(17.dp))
@@ -135,14 +135,14 @@ fun PremiumScreen(
                             ContextCompat.startActivity(context, intent, null)
                         },
                         text = stringResource(id = R.string.premium_policy_private),
-                        style = BriefingTheme.typography.regular13.copy(color = BriefingTheme.color.TextBlack),
+                        style = BriefingTheme.typography.DetailStyleRegular.copy(color = BriefingTheme.color.TextBlack),
                         textDecoration = TextDecoration.Underline
                     )
                 }
                 Text(
                     modifier = Modifier.padding(top = 20.dp),
                     text = stringResource(id = R.string.premium_policy_1),
-                    style = BriefingTheme.typography.regular13.copy(
+                    style = BriefingTheme.typography.DetailStyleRegular.copy(
                         fontWeight = FontWeight(400),
                         color = BriefingTheme.color.TextGray
                     ),
@@ -150,7 +150,7 @@ fun PremiumScreen(
                 Text(
                     modifier = Modifier.padding(top = 20.dp),
                     text = stringResource(id = R.string.premium_policy_2),
-                    style = BriefingTheme.typography.regular13.copy(
+                    style = BriefingTheme.typography.DetailStyleRegular.copy(
                         fontWeight = FontWeight(400),
                         color = BriefingTheme.color.TextGray
                     ),

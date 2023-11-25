@@ -140,7 +140,7 @@ fun PremiumFunctionItem(
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = stringResource(id = text),
-            style = BriefingTheme.typography.bold17.copy(
+            style = BriefingTheme.typography.ContextStyleBold.copy(
                 fontWeight = FontWeight(400), color = BriefingTheme.color.TextBlack
             ),
         )
@@ -170,13 +170,13 @@ fun PremiumPriceInfo(
         PremiumSubScribeText(subtitle, fontWeight = FontWeight(400), fontSize = 13.sp)
         Spacer(modifier = Modifier.height(11.dp))
         Text(
-            stringResource(id = price), style = BriefingTheme.typography.bold30.copy(
+            stringResource(id = price), style = BriefingTheme.typography.TitleStyleBold.copy(
                 color = BriefingTheme.color.TextBlack
             )
         )
         if (subInfo != null) {
             Text(
-                stringResource(id = subInfo), style = BriefingTheme.typography.regular13.copy(
+                stringResource(id = subInfo), style = BriefingTheme.typography.DetailStyleRegular.copy(
                     color = BriefingTheme.color.PrimaryBlue
                 )
             )

@@ -6,7 +6,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -105,7 +104,7 @@ fun ArticleDetail(
         ) {
             Text(
                 text = "${article.date} Breifing #${article.rank}",
-                style = BriefingTheme.typography.bold30.copy(
+                style = BriefingTheme.typography.TitleStyleBold.copy(
                     color = BriefingTheme.color.TextGray,
                     fontWeight = FontWeight(400)
 
@@ -119,7 +118,7 @@ fun ArticleDetail(
         ) {
             Text(
                 text = article.title,
-                style = BriefingTheme.typography.bold30
+                style = BriefingTheme.typography.TitleStyleBold
             )
             if (article.isWarning) {
                 Image(
@@ -134,18 +133,18 @@ fun ArticleDetail(
         }
         Text(
             text = article.subtitle,
-            style = BriefingTheme.typography.bold17
+            style = BriefingTheme.typography.ContextStyleBold
         )
         Text(
             text = article.content,
-            style = BriefingTheme.typography.regular13.copy(
+            style = BriefingTheme.typography.DetailStyleRegular.copy(
                 fontWeight = FontWeight(400),
                 color = BriefingTheme.color.PrimaryBlue
             )
         )
         Text(
             text = stringResource(R.string.detail_article_header),
-            style = BriefingTheme.typography.bold17
+            style = BriefingTheme.typography.ContextStyleBold
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(13.dp)

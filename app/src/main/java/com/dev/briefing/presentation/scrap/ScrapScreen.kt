@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -92,7 +91,7 @@ fun ScrapDefaultScreen() {
         Spacer(modifier = Modifier.height(33.dp))
         Text(
             text = stringResource(id = R.string.scrap_default),
-            style = BriefingTheme.typography.bold20.copy(color = BriefingTheme.color.TextGray)
+            style = BriefingTheme.typography.SubtitleStyleBold.copy(color = BriefingTheme.color.TextGray)
         )
     }
 }
@@ -118,7 +117,7 @@ fun ArticleSection(
         Text(
             modifier = Modifier.padding(start = 10.dp),
             text = localDate,
-            style = BriefingTheme.typography.bold30
+            style = BriefingTheme.typography.TitleStyleBold
         )
         Spacer(modifier = Modifier.height(6.dp))
 
@@ -163,16 +162,16 @@ fun ArticleHeader(
             modifier = Modifier.widthIn(max = 161.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(text = news.title, style = BriefingTheme.typography.bold20)
+            Text(text = news.title, style = BriefingTheme.typography.SubtitleStyleBold)
             Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = news.subtitle,
-                style = BriefingTheme.typography.regular13,
+                style = BriefingTheme.typography.DetailStyleRegular,
                 overflow = TextOverflow.Ellipsis
             )
         }
         Text(
-            text = "${news.date} #" + news.ranks, style = BriefingTheme.typography.regular13.copy(
+            text = "${news.date} #" + news.ranks, style = BriefingTheme.typography.DetailStyleRegular.copy(
                 color = BriefingTheme.color.PrimaryBlue,
                 lineHeight = 15.sp
             )

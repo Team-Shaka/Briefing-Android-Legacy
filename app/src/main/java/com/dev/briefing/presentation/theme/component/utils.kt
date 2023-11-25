@@ -1,15 +1,11 @@
 package com.dev.briefing.presentation.theme.utils
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,12 +13,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,7 +74,7 @@ fun alertWidget() {
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = "인터넷이 연결되지 않았습니다.\n" +
                     "연결 상태를 확인해 주세요.",
-            style = BriefingTheme.typography.bold20.copy(
+            style = BriefingTheme.typography.SubtitleStyleBold.copy(
                 color = BriefingTheme.color.TextRed
             ),
             textAlign = TextAlign.Center
@@ -111,11 +105,11 @@ fun CommonDialog(
         ) {
             Text(
                 text = stringResource(dialogTitle),
-                style = BriefingTheme.typography.bold30.copy(fontSize = 20.sp, color = BriefingTheme.color.TextBlack)
+                style = BriefingTheme.typography.TitleStyleBold.copy(fontSize = 20.sp, color = BriefingTheme.color.TextBlack)
             )
             Text(
                 text = stringResource(dialogText),
-                style = BriefingTheme.typography.bold17.copy(
+                style = BriefingTheme.typography.ContextStyleBold.copy(
                     color = BriefingTheme.color.TextBlack,
                     fontWeight = FontWeight.Normal
                 ), textAlign = TextAlign.Center
@@ -135,7 +129,7 @@ fun CommonDialog(
                     text = stringResource(
                         dismissText,
                     ),
-                    style = BriefingTheme.typography.bold17.copy(color = BriefingTheme.color.TextBlack),
+                    style = BriefingTheme.typography.ContextStyleBold.copy(color = BriefingTheme.color.TextBlack),
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.width(10.dp))
@@ -151,7 +145,7 @@ fun CommonDialog(
                     text = stringResource(
                         dialogId
                     ),
-                    style = BriefingTheme.typography.bold17.copy(color = BriefingTheme.color.BackgroundWhite),
+                    style = BriefingTheme.typography.ContextStyleBold.copy(color = BriefingTheme.color.BackgroundWhite),
                     textAlign = TextAlign.Center
                 )
             }

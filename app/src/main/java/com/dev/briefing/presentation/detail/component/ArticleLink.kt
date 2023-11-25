@@ -53,7 +53,7 @@ fun ArticleLink(
             modifier = Modifier.widthIn(max = 193.dp)
         ) {
             Text(
-                text = newsLink.press, style = BriefingTheme.typography.regular13.copy(
+                text = newsLink.press, style = BriefingTheme.typography.DetailStyleRegular.copy(
                     fontWeight = FontWeight(700),
                     color = BriefingTheme.color.PrimaryBlue
                 )
@@ -61,7 +61,7 @@ fun ArticleLink(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = newsLink.title,
-                style = BriefingTheme.typography.regular13,
+                style = BriefingTheme.typography.DetailStyleRegular,
                 overflow = TextOverflow.Ellipsis
             )
         }

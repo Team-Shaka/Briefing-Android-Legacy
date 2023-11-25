@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.GenericShape
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,7 +35,6 @@ import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.presentation.theme.utils.alertWidget
-import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
@@ -141,11 +139,11 @@ fun BriefingHome(
                     // TODO:
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = BriefingTheme.typography.regular13.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
+                        style = BriefingTheme.typography.DetailStyleRegular.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = BriefingTheme.typography.bold30.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
+                        style = BriefingTheme.typography.TitleStyleBold.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
                     )
                 }
             }
@@ -197,7 +195,7 @@ fun HomeHeader(
         ) {
         Text(
             text = stringResource(R.string.home_title),
-            style = BriefingTheme.typography.regular20.copy(
+            style = BriefingTheme.typography.SubtitleStyleRegular.copy(
                 fontSize = 24.sp,
                 fontWeight = FontWeight(400)
             )
@@ -246,11 +244,11 @@ fun ArticleList(
         } else {
             Text(
                 text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
-                style = BriefingTheme.typography.bold30.copy(color = BriefingTheme.color.PrimaryBlue)
+                style = BriefingTheme.typography.TitleStyleBold.copy(color = BriefingTheme.color.PrimaryBlue)
             )
             Text(
                 text = "Updated: ${briefingResponse.created_at}",
-                style = BriefingTheme.typography.regular13
+                style = BriefingTheme.typography.DetailStyleRegular
             )
             Spacer(modifier = Modifier.height(13.dp))
             LazyColumn(
@@ -311,7 +309,7 @@ fun ArticleListTile(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = news.rank.toString(), style = BriefingTheme.typography.bold20.copy(
+                    text = news.rank.toString(), style = BriefingTheme.typography.SubtitleStyleBold.copy(
                         color = if (backgroundColor == BriefingTheme.color.BackgroundWhite) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite
                     ), overflow = TextOverflow.Ellipsis, maxLines = 1
                 )
@@ -324,11 +322,11 @@ fun ArticleListTile(
                 verticalArrangement = Arrangement.Center,
 
                 ) {
-                Text(text = news.title, style = BriefingTheme.typography.bold20)
+                Text(text = news.title, style = BriefingTheme.typography.SubtitleStyleBold)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = news.subtitle,
-                    style = BriefingTheme.typography.regular13,
+                    style = BriefingTheme.typography.DetailStyleRegular,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
