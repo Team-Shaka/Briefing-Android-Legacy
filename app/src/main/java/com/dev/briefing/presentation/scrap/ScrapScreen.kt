@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -20,18 +19,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.dev.briefing.data.NewsDetail
 import com.dev.briefing.navigation.HomeScreen
-import com.dev.briefing.presentation.setting.CommonHeader
-import com.dev.briefing.presentation.theme.MainPrimary3
-import com.dev.briefing.presentation.theme.SubBackGround
-import com.dev.briefing.presentation.theme.White
+import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.R
-import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.ScrapResponse
-import com.dev.briefing.presentation.home.HomeViewModel
-import com.dev.briefing.presentation.theme.SubText2
-import com.dev.briefing.presentation.theme.Typography
+import com.dev.briefing.presentation.theme.BriefingTheme
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -47,7 +39,7 @@ fun ScrapScreen(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = SubBackGround)
+            .background(color = BriefingTheme.color.BackgrundGray)
             .padding(horizontal = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -99,13 +91,15 @@ fun ScrapDefaultScreen() {
         Spacer(modifier = Modifier.height(33.dp))
         Text(
             text = stringResource(id = R.string.scrap_default),
-            style = Typography.titleSmall.copy(color = SubText2)
+            style = BriefingTheme.typography.SubtitleStyleBold.copy(color = BriefingTheme.color.TextGray)
         )
     }
 }
 
 /**
  * 스크랩화면 전체적인 틀
+ * 1.1에서는 날짜별로 묶어서 보여주는 Section이 있었기에
+ * 해당 Layout을 분리
  */
 @Composable
 fun ArticleSection(
@@ -123,13 +117,13 @@ fun ArticleSection(
         Text(
             modifier = Modifier.padding(start = 10.dp),
             text = localDate,
-            style = MaterialTheme.typography.headlineLarge
+            style = BriefingTheme.typography.TitleStyleBold
         )
         Spacer(modifier = Modifier.height(6.dp))
 
         Column(
             modifier = Modifier.background(
-                color = White,
+                color = BriefingTheme.color.BackgroundWhite,
                 shape = RoundedCornerShape(5.dp)
             )
 
@@ -144,7 +138,10 @@ fun ArticleSection(
     }
 }
 
-//TODO: 서버 API 연결
+/**
+ * Scrap item
+ * click시 상세페이지로 이동
+ */
 @Composable
 fun ArticleHeader(
     modifier: Modifier = Modifier,
@@ -155,7 +152,6 @@ fun ArticleHeader(
         modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 11.dp)
-            //TODO: navigate to DetailScreen
             .clickable {
                 onItemClick(news.briefingId)
             },
@@ -166,17 +162,17 @@ fun ArticleHeader(
             modifier = Modifier.widthIn(max = 161.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(text = news.title, style = MaterialTheme.typography.titleSmall)
+            Text(text = news.title, style = BriefingTheme.typography.SubtitleStyleBold)
             Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = news.subtitle,
-                style = MaterialTheme.typography.labelSmall,
+                style = BriefingTheme.typography.DetailStyleRegular,
                 overflow = TextOverflow.Ellipsis
             )
         }
         Text(
-            text = "${news.date} #" + news.ranks, style = MaterialTheme.typography.bodyMedium.copy(
-                color = MainPrimary3,
+            text = "${news.date} #" + news.ranks, style = BriefingTheme.typography.DetailStyleRegular.copy(
+                color = BriefingTheme.color.PrimaryBlue,
                 lineHeight = 15.sp
             )
         )

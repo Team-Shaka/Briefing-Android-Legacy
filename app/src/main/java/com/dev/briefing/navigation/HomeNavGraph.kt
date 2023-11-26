@@ -9,8 +9,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.scrap.ScrapScreen
+import com.dev.briefing.presentation.setting.PremiumScreen
 import com.dev.briefing.presentation.setting.SettingScreen
-
 
 
 fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
@@ -27,10 +27,11 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             )
         }
         composable(
-            arguments = listOf( navArgument("id") { type = NavType.IntType }),
-            route = HomeScreen.Detail.route+"/{id}")
-            {backStackEntry ->
-            var id: Int = backStackEntry.arguments?.getInt("id")?: 0
+            arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            route = HomeScreen.Detail.route + "/{id}"
+        )
+        { backStackEntry ->
+            var id: Int = backStackEntry.arguments?.getInt("id") ?: 0
             ArticleDetailScreen(
                 onBackClick = {
                     navController.popBackStack()
@@ -48,9 +49,17 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
         }
         composable(route = HomeScreen.Setting.route) {
             SettingScreen(
+                navController = navController,
                 onBackClick = {
                     navController.popBackStack()
                 },
+            )
+        }
+        composable(route = HomeScreen.Premium.route) {
+            PremiumScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
             )
         }
     }
@@ -59,6 +68,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
 sealed class HomeScreen(val route: String) {
     object Home : HomeScreen(route = "HOME")
     object Setting : HomeScreen(route = "SETTING")
+    object Premium : HomeScreen(route = "PREMIUM")
     object Scrap : HomeScreen(route = "SCRAP")
     object Detail : HomeScreen(route = "DETAIL")
 

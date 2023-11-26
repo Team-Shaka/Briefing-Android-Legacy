@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.GenericShape
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -24,8 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -38,7 +35,6 @@ import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.presentation.theme.utils.alertWidget
-import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
@@ -96,7 +92,7 @@ fun BriefingHome(
                 dialogTitle = R.string.dialog_login_title,
                 dialogText = R.string.dialog_login_text,
                 dialogId = R.string.dialog_login_confirm,
-                confirmColor = MainPrimary4
+                confirmColor = BriefingTheme.color.PrimaryBlue
             )
         }
 
@@ -129,7 +125,7 @@ fun BriefingHome(
                 Column(
                     modifier = Modifier
                         .background(
-                            color = if (briefDate.value == time) White else Color.Transparent,
+                            color = if (briefDate.value == time) BriefingTheme.color.BackgroundWhite else Color.Transparent,
                             shape = RoundedCornerShape(5.dp)
                         )
                         .clickable {
@@ -143,11 +139,11 @@ fun BriefingHome(
                     // TODO:
                     Text(
                         text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
+                        style = BriefingTheme.typography.DetailStyleRegular.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
                     )
                     Text(
                         text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
+                        style = BriefingTheme.typography.TitleStyleBold.copy(color = if (briefDate.value == time) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite)
                     )
                 }
             }
@@ -199,7 +195,7 @@ fun HomeHeader(
         ) {
         Text(
             text = stringResource(R.string.home_title),
-            style = MaterialTheme.typography.titleMedium.copy(
+            style = BriefingTheme.typography.SubtitleStyleRegular.copy(
                 fontSize = 24.sp,
                 fontWeight = FontWeight(400)
             )
@@ -236,7 +232,7 @@ fun ArticleList(
     Column(
         modifier
             .background(
-                SubBackGround,
+                BriefingTheme.color.BackgrundGray,
                 shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
             )
             .fillMaxHeight()
@@ -248,11 +244,11 @@ fun ArticleList(
         } else {
             Text(
                 text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
-                style = Typography.titleMedium.copy(color = MainPrimary)
+                style = BriefingTheme.typography.TitleStyleBold.copy(color = BriefingTheme.color.PrimaryBlue)
             )
             Text(
                 text = "Updated: ${briefingResponse.created_at}",
-                style = MaterialTheme.typography.labelMedium
+                style = BriefingTheme.typography.DetailStyleRegular
             )
             Spacer(modifier = Modifier.height(13.dp))
             LazyColumn(
@@ -292,7 +288,7 @@ fun ArticleListTile(
             .clickable {
                 onItemClick(news.id)
             }
-            .background(White, shape = RoundedCornerShape(40.dp))
+            .background(BriefingTheme.color.BackgroundWhite, shape = RoundedCornerShape(40.dp))
             .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -301,10 +297,10 @@ fun ArticleListTile(
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             val backgroundColor = when (news.rank) {
-                1 -> MainPrimary
-                2 -> MainPrimary2
-                3 -> MainPrimary3
-                else -> White
+                1 -> BriefingTheme.color.PrimaryBlue
+                2 -> BriefingTheme.color.PrimaryBlue
+                3 -> BriefingTheme.color.PrimaryBlue
+                else -> BriefingTheme.color.BackgroundWhite
             }
             Box(
                 modifier = Modifier
@@ -313,8 +309,8 @@ fun ArticleListTile(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
-                        color = if (backgroundColor == White) MainPrimary else White
+                    text = news.rank.toString(), style = BriefingTheme.typography.SubtitleStyleBold.copy(
+                        color = if (backgroundColor == BriefingTheme.color.BackgroundWhite) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite
                     ), overflow = TextOverflow.Ellipsis, maxLines = 1
                 )
 
@@ -326,11 +322,11 @@ fun ArticleListTile(
                 verticalArrangement = Arrangement.Center,
 
                 ) {
-                Text(text = news.title, style = MaterialTheme.typography.titleSmall)
+                Text(text = news.title, style = BriefingTheme.typography.SubtitleStyleBold)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = news.subtitle,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = BriefingTheme.typography.DetailStyleRegular,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
