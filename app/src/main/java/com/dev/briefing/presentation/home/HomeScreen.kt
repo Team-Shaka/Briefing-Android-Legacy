@@ -1,5 +1,6 @@
 import android.app.Activity
 import android.util.Log
+import android.widget.ImageButton
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -8,6 +9,10 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.GenericShape
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -38,9 +44,11 @@ import com.dev.briefing.presentation.theme.utils.alertWidget
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
+import kotlinx.coroutines.selects.select
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDate
+import java.time.format.TextStyle
 
 @Composable
 fun BriefingHome(
@@ -108,8 +116,7 @@ fun BriefingHome(
                 } else {
                     openAlertDialog.value = false
                 }
-            },
-            onSettingClick = onSettingClick
+            }, onSettingClick = onSettingClick
         )
 
         LazyRow(
@@ -122,19 +129,17 @@ fun BriefingHome(
         ) {
             Log.d(SERVER_TAG, briefDate.value.toString())
             items(homeViewModel.timeList) { time ->
-                Column(
-                    modifier = Modifier
-                        .background(
-                            color = if (briefDate.value == time) BriefingTheme.color.BackgroundWhite else Color.Transparent,
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                        .clickable {
-                            homeViewModel.changeBriefDate(time)
-                        }
-                        .padding(vertical = 6.dp, horizontal = 10.dp),
+                Column(modifier = Modifier
+                    .background(
+                        color = if (briefDate.value == time) BriefingTheme.color.BackgroundWhite else Color.Transparent,
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .clickable {
+                        homeViewModel.changeBriefDate(time)
+                    }
+                    .padding(vertical = 6.dp, horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                    horizontalAlignment = Alignment.CenterHorizontally) {
                     //TODO: 요일 앞문자만 대문자로 수정하기
                     // TODO:
                     Text(
@@ -180,6 +185,15 @@ private fun getBottomLineShape(bottomLineThickness: Int): Shape {
     }
 }
 
+
+@Preview
+@Composable
+fun HomeHeaderPreview() {
+    BriefingTheme {
+        HomeHeader(onScrapClick = { }, onSettingClick = {})
+    }
+}
+
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
@@ -189,33 +203,37 @@ fun HomeHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 27.dp, vertical = 32.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-
-        ) {
+            .padding(horizontal = 27.dp, vertical = 27.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             text = stringResource(R.string.home_title),
-            style = BriefingTheme.typography.SubtitleStyleRegular.copy(
+            style = androidx.compose.ui.text.TextStyle(
                 fontSize = 24.sp,
-                fontWeight = FontWeight(400)
+                fontFamily = ProductSans,
+                fontWeight = FontWeight(700),
+                color = BriefingTheme.color.PrimaryBlue,
             )
         )
 
-        Row {
-            Image(
-                painter = painterResource(
+        IconButton(modifier = Modifier.size(24.dp), onClick = onScrapClick) {
+            Icon(
+                modifier = Modifier.size(width = 23.dp, height = 19.dp), painter = painterResource(
                     id = R.drawable.storage
-                ),
-                contentDescription = "저장 공간", modifier = Modifier
-                    .clickable { onScrapClick() }
+                ), tint = BriefingTheme.color.TextBlack, contentDescription = null
             )
-            Spacer(modifier = Modifier.width(22.dp))
-            Image(
-                painter = painterResource(
+        }
+
+        Spacer(Modifier.width(20.dp))
+
+        IconButton(modifier = Modifier.size(24.dp), onClick = onSettingClick) {
+            Icon(
+                modifier = Modifier.size(24.dp, 24.dp), painter = painterResource(
                     id = R.drawable.setting
-                ),
-                contentDescription = "설정", modifier = Modifier
-                    .clickable(onClick = onSettingClick)
+                ), tint = BriefingTheme.color.TextBlack, contentDescription = null
             )
         }
 
@@ -273,16 +291,12 @@ fun ArticleList(
 
 @Composable
 fun ArticleListTile(
-    news: BriefingPreview,
-    modifier: Modifier = Modifier,
-    onItemClick: (Int) -> Unit
+    news: BriefingPreview, modifier: Modifier = Modifier, onItemClick: (Int) -> Unit
 ) {
     Row(
         Modifier
             .shadow(
-                elevation = 20.dp,
-                spotColor = Color(0x1A000000),
-                ambientColor = Color(0x1A000000)
+                elevation = 20.dp, spotColor = Color(0x1A000000), ambientColor = Color(0x1A000000)
             )
             .fillMaxWidth()
             .clickable {
@@ -291,8 +305,7 @@ fun ArticleListTile(
             .background(BriefingTheme.color.BackgroundWhite, shape = RoundedCornerShape(40.dp))
             .padding(vertical = 15.dp, horizontal = 13.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
@@ -309,9 +322,12 @@ fun ArticleListTile(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = news.rank.toString(), style = BriefingTheme.typography.SubtitleStyleBold.copy(
+                    text = news.rank.toString(),
+                    style = BriefingTheme.typography.SubtitleStyleBold.copy(
                         color = if (backgroundColor == BriefingTheme.color.BackgroundWhite) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.BackgroundWhite
-                    ), overflow = TextOverflow.Ellipsis, maxLines = 1
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
 
             }
@@ -339,7 +355,8 @@ fun ArticleListTile(
             modifier = Modifier
                 .width(27.dp)
                 .height(27.dp),
-            painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd"
+            painter = painterResource(id = R.drawable.left_arrow),
+            contentDescription = "fdfd"
         )
     }
 }
