@@ -1,6 +1,6 @@
 package com.dev.briefing.navigation
 
-import BriefingHome
+import BriefingHomeScreen
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -19,7 +19,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
         startDestination = HomeScreen.Home.route,
     ) {
         composable(route = HomeScreen.Home.route) {
-            BriefingHome(
+            BriefingHomeScreen(
                 onSettingClick = {
                     navController.navigate(HomeScreen.Setting.route)
                 },
@@ -62,6 +62,9 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
                 }
             )
         }
+
+        composable(route = HomeScreen.BriefingCard.route) {
+        }
     }
 }
 
@@ -71,5 +74,5 @@ sealed class HomeScreen(val route: String) {
     object Premium : HomeScreen(route = "PREMIUM")
     object Scrap : HomeScreen(route = "SCRAP")
     object Detail : HomeScreen(route = "DETAIL")
-
+    object BriefingCard : HomeScreen(route = "BRIEFING_CARD")
 }

@@ -63,4 +63,8 @@
     <string name="premium_monthly_price">월 1,300원</string>
     <string name="premium_policy_1">Briefing Premium을 선택함으로써, 당신은 구독서비스 “Brieifing Premium”의 서비스정책과 개인정보보호정책에 동의하는 것입니다. 만약 서비스 내용이 마음에 들지 않는 경우, Play Store에서 해당 멤버십을 탈퇴할 수 있습니다.</string>
     <string name="premium_policy_2">당신의 Briefing Premium 구독제 서비스는 Play Store를 통해서 결제가 되며, 환전시 해당 금액은 Google의 환전 정책을 따릅니다. 당신의 결제는 Google을 통해 진행되며, 24시간의 결제 과정을 지난 뒤에 완료될 예정입니다.</string>
+    <string name="title_tab_home_society">사회</string>
+    <string name="title_tab_home_science">과학</string>
+    <string name="title_tab_home_global">글로벌</string>
+    <string name="title_tab_home_economy">경제</string>
 </resources>
