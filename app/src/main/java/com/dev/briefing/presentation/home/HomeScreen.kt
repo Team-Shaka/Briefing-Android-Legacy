@@ -3,6 +3,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
 
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.sp
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.dev.briefing.R
 import com.dev.briefing.data.model.BriefingPreview
 import com.dev.briefing.data.model.BriefingResponse
@@ -38,6 +41,7 @@ import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDate
@@ -54,6 +58,7 @@ fun BriefingHomeScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BriefingHomeScreen(
     modifier: Modifier = Modifier,
@@ -79,6 +84,8 @@ fun BriefingHomeScreen(
         )
     )
 
+    val composeCoroutine = rememberCoroutineScope()
+
     Column(
         Modifier
             .fillMaxSize()
@@ -99,27 +106,38 @@ fun BriefingHomeScreen(
             }, onSettingClick = onSettingClick
         )
 
+        val pagerState = rememberPagerState(pageCount = { HomeCategory.values().size })
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                selectedTabIdx = page
+            }
+        }
+
         BriefingTabRow(
             tabs = HomeCategory.values().map {
                 stringResource(id = it.tabTitle)
             },
             selectedTabIndex = selectedTabIdx,
             onTabSelected = {
-                selectedTabIdx = it
+                composeCoroutine.launch {
+                    pagerState.animateScrollToPage(it)
+                }
             })
 
-        CategoryArticleList(createdAt = "2023.11.02 (목) 아침브리핑", articles = (1..10).map {
-            BriefingPreview(
-                0,
-                it,
-                LoremIpsum(3).values.joinToString(),
-                LoremIpsum(10).values.joinToString()
-            )
-        }, onArticleSelect = {
-            navController.navigate(HomeScreen.BriefingCard.route)
-        }, onRefresh = {
+        HorizontalPager(state = pagerState) { page ->
+            CategoryArticleList(createdAt = "2023.11.02 (목) 아침브리핑", articles = (1..10).map {
+                BriefingPreview(
+                    0,
+                    it,
+                    LoremIpsum(3).values.joinToString(),
+                    LoremIpsum(10).values.joinToString()
+                )
+            }, onArticleSelect = {
+                navController.navigate(HomeScreen.BriefingCard.route)
+            }, onRefresh = {
 
-        })
+            })
+        }
     }
 
 }

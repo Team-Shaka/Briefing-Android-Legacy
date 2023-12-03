@@ -7,7 +7,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.dev.briefing.presentation.briefingcard.BriefingCardScreen
 import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.scrap.ScrapScreen
 import com.dev.briefing.presentation.setting.PremiumScreen
@@ -39,8 +38,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             ArticleDetailScreen(
                 onBackClick = {
                     navController.popBackStack()
-                },
-                id = id
+                }, navController
             )
         }
         composable(route = HomeScreen.Scrap.route) {
@@ -65,12 +63,6 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 }
             )
-        }
-
-        composable(route = HomeScreen.BriefingCard.route) {
-            BriefingCardScreen(navController) {
-                navController.popBackStack()
-            }
         }
     }
 }
