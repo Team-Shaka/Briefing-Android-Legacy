@@ -48,7 +48,9 @@ fun BriefingHomeScreenPreview() {
     val navController = rememberNavController()
 
     BriefingTheme {
-        BriefingHomeScreen(onSettingClick = { }, navController = navController)
+        BriefingHomeScreen(onSettingClick = { }, navController = navController) {
+
+        }
     }
 }
 
@@ -57,6 +59,7 @@ fun BriefingHomeScreen(
     modifier: Modifier = Modifier,
     onSettingClick: () -> Unit,
     navController: NavController,
+    onBackClick: () -> Unit,
 ) {
     var selectedTabIdx by remember {
         mutableIntStateOf(0)
@@ -105,14 +108,18 @@ fun BriefingHomeScreen(
                 selectedTabIdx = it
             })
 
-        CategoryArticleList("2023.11.02 (목) 아침브리핑", (1..10).map {
+        CategoryArticleList(createdAt = "2023.11.02 (목) 아침브리핑", articles = (1..10).map {
             BriefingPreview(
                 0,
                 it,
                 LoremIpsum(3).values.joinToString(),
                 LoremIpsum(10).values.joinToString()
             )
-        }, {}, {})
+        }, onArticleSelect = {
+            navController.navigate(HomeScreen.BriefingCard.route)
+        }, onRefresh = {
+
+        })
     }
 
 }

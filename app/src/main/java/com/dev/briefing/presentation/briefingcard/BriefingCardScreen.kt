@@ -1,6 +1,5 @@
 package com.dev.briefing.presentation.briefingcard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,29 +22,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.BriefingTheme
-import com.dev.briefing.presentation.theme.Typography
-import java.time.format.TextStyle
 
 @Composable
 @Preview
 fun BriefingCardScreenPreview() {
     BriefingTheme {
-        BriefingCardScreen()
+        BriefingCardScreen(rememberNavController()) {
+
+        }
     }
 }
 
 @Composable
-fun BriefingCardScreen() {
-    Column(Modifier.fillMaxSize()) {
-        TopBar(onBackPressed = {}, onMenuButtonPressed = {})
+fun BriefingCardScreen(navController: NavController, onBackClick: () -> Unit) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = BriefingTheme.color.BackgroundWhite)) {
+        TopBar(onBackPressed = onBackClick, onMenuButtonPressed = {})
 
         BriefingCardHeader(
             modifier = Modifier.padding(30.dp, 18.dp),
@@ -85,7 +86,7 @@ fun BriefingCardScreen() {
 }
 
 @Composable
-fun RelatedArticles(modifier : Modifier = Modifier) {
+fun RelatedArticles(modifier: Modifier = Modifier) {
     Column(modifier) {
         Text(
             text = "관련 기사",
@@ -182,7 +183,7 @@ fun BriefingCardSummary(
     Column(modifier) {
         Text(
             text = summaryTitle,
-            style = Typography.bodyMedium.merge(
+            style = BriefingTheme.typography.TitleStyleBold.merge(
                 fontSize = 20.sp,
                 lineHeight = 25.sp,
                 fontWeight = FontWeight(700),
@@ -194,7 +195,7 @@ fun BriefingCardSummary(
 
         Text(
             text = summaryContent,
-            style = Typography.bodyMedium.merge(
+            style = BriefingTheme.typography.DetailStyleRegular.merge(
                 fontSize = 17.sp,
                 lineHeight = 30.sp,
                 fontWeight = FontWeight(400),
@@ -262,7 +263,7 @@ fun BriefingCardHeader(
 
             IconButton(onClick = {}) {
                 Icon(
-                    painter = painterResource(id = R.drawable.bookmark),
+                    painter = painterResource(id = R.drawable.bookmark_breifingcard),
                     contentDescription = null
                 )
             }
