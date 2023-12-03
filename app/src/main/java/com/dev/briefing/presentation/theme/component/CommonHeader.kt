@@ -21,7 +21,7 @@ import com.dev.briefing.presentation.theme.BriefingTheme
 
 @Preview
 @Composable
-fun PreviewCommonHeader(){
+fun PreviewCommonHeader() {
     CommonHeader(
         onBackClick = {},
         header = "Briefing Premium",
@@ -35,13 +35,24 @@ fun CommonHeader(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     header: String = "",
-    color: Color = BriefingTheme.color.BackgrundGray
+    color: Color = BriefingTheme.color.BackgroundWhite,
+    isPadding: Boolean = false
 ) {
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(color = color)
-            .padding(top = 24.dp, bottom = 15.dp, start = 19.dp, end = 19.dp),
+            .padding(
+                top = 24.dp, bottom = 15.dp, start = if (isPadding) {
+                    20.dp
+                } else {
+                    0.dp
+                }, end = if (isPadding) {
+                    20.dp
+                } else {
+                    0.dp
+                }
+            ),
     )
     {
         val (backKey, title) = createRefs()
