@@ -13,11 +13,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -182,6 +185,42 @@ private fun getBottomLineShape(bottomLineThickness: Int): Shape {
         lineTo(size.width, size.height - bottomLineThickness)
         // 4) Top-left corner
         lineTo(0f, size.height - bottomLineThickness)
+    }
+}
+
+
+@Composable
+@Preview
+fun HomeTabPreview() {
+    BriefingTheme {
+        HomeTab(tabs = listOf("사회", "과학", "글로벌", "경제"), selectedTabIndex = 1, {
+
+        })
+    }
+}
+
+@Composable
+fun HomeTab(tabs: List<String>, selectedTabIndex: Int, onTabSelected: (index: Int) -> Unit) {
+    TabRow(
+        selectedTabIndex = selectedTabIndex, modifier = Modifier,
+        indicator = {
+            TabRowDefaults.Indicator(
+                color = BriefingTheme.color.PrimaryBlue,
+                height = 2.dp,
+                modifier = Modifier
+                    .tabIndicatorOffset(it[selectedTabIndex])
+                    .padding(horizontal = 24.dp)
+            )
+        }
+    ) {
+        tabs.forEachIndexed { index, text ->
+            Tab(modifier = Modifier.width(56.dp), selected = selectedTabIndex == index, onClick = {
+                onTabSelected(index)
+            }, text = {
+                Text(text = text)
+            })
+
+        }
     }
 }
 
