@@ -73,5 +73,4 @@ sealed class HomeScreen(val route: String) {
     object Premium : HomeScreen(route = "PREMIUM")
     object Scrap : HomeScreen(route = "SCRAP")
     object Detail : HomeScreen(route = "DETAIL")
-    object BriefingCard : HomeScreen(route = "BRIEFING_CARD")
 }

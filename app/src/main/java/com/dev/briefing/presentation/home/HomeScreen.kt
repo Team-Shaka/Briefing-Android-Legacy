@@ -1,4 +1,6 @@
+import android.app.Activity
 import android.util.Log
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,15 +9,20 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,9 +45,11 @@ import com.dev.briefing.presentation.common.BriefingTabRow
 import com.dev.briefing.presentation.home.HomeCategory
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.SERVER_TAG
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
@@ -52,39 +61,58 @@ fun BriefingHomeScreenPreview() {
     val navController = rememberNavController()
 
     BriefingTheme {
-        BriefingHomeScreen(onSettingClick = { }, navController = navController) {
+        BriefingHomeScreen(onSettingClick = { }, navController = navController, onBackClick = {
 
-        }
+        })
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun BriefingHomeScreen(
-    modifier: Modifier = Modifier,
     onSettingClick: () -> Unit,
     navController: NavController,
     onBackClick: () -> Unit,
+    homeViewModel: HomeViewModel = getViewModel()
 ) {
-    var selectedTabIdx by remember {
-        mutableIntStateOf(0)
-    }
-
-    val context = LocalContext.current
-
     val memberId = prefs.getSharedPreference(MEMBER_ID, -1)
     val isMember = remember { mutableStateOf(memberId != -1) }
     val openAlertDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
-    val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(
-        initial = BriefingResponse(
-            created_at = LocalDate.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd")),
-            briefings = listOf()
+    val isRefreshing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val pullRefreshState = rememberPullToRefreshState()
+
+    if (pullRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            // fetch something
+            delay(1500)
+            pullRefreshState.endRefresh()
+        }
+    }
+
+
+    if (!isMember.value && openAlertDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openAlertDialog.value = false },
+            onConfirmation = {
+                openAlertDialog.value = false
+
+                (context as Activity).finish()
+            },
+            dialogTitle = R.string.dialog_login_title,
+            dialogText = R.string.dialog_login_text,
+            dialogId = R.string.dialog_login_confirm,
+            confirmColor = BriefingTheme.color.PrimaryBlue
         )
-    )
+    }
 
     val composeCoroutine = rememberCoroutineScope()
+
+    var selectedTabIdx by remember {
+        mutableIntStateOf(0)
+    }
 
     Column(
         Modifier
@@ -93,7 +121,6 @@ fun BriefingHomeScreen(
     ) {
         HomeHeader(
             onScrapClick = {
-                Log.d(SERVER_TAG, "스크랩 클릭 멤버여부: ${isMember.value} 오픈여부: $openAlertDialog.value")
                 if (!openAlertDialog.value) {
                     if (!isMember.value) {
                         openAlertDialog.value = true
@@ -124,19 +151,35 @@ fun BriefingHomeScreen(
                 }
             })
 
-        HorizontalPager(state = pagerState) { page ->
-            CategoryArticleList(createdAt = "2023.11.02 (목) 아침브리핑", articles = (1..10).map {
-                BriefingPreview(
-                    0,
-                    it,
-                    LoremIpsum(3).values.joinToString(),
-                    LoremIpsum(10).values.joinToString()
-                )
-            }, onArticleSelect = {
-                navController.navigate(HomeScreen.BriefingCard.route)
-            }, onRefresh = {
+        val scaleFraction = if (pullRefreshState.isRefreshing) 1f else
+            LinearOutSlowInEasing.transform(pullRefreshState.progress).coerceIn(0f, 1f)
 
-            })
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(pullRefreshState.nestedScrollConnection)
+        ) {
+            HorizontalPager(state = pagerState) {
+                CategoryArticleList(createdAt = "2023.11.02 (목) 아침브리핑", articles = (1..10).map {
+                    BriefingPreview(
+                        0,
+                        it,
+                        LoremIpsum(3).values.joinToString(),
+                        LoremIpsum(10).values.joinToString()
+                    )
+                }, onArticleSelect = {
+                    navController.navigate(HomeScreen.Detail.route + "/1")
+                }, onRefresh = {
+
+                })
+            }
+
+            PullToRefreshContainer(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
+                state = pullRefreshState
+            )
         }
     }
 
