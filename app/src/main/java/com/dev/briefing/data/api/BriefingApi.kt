@@ -52,5 +52,4 @@ interface BriefingApi {
     suspend fun getAccessToken(
         @Body refreshToken : TokenRequest,
     ): CommonResponse<GoogleSocialResponse>
-
 }
