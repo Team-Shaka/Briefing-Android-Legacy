@@ -13,7 +13,10 @@ import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.data.model.UnScrapResponse
 
 class BriefingRepositoryImpl(private val briefDataSource: BriefingDataSource) : BriefingRepository {
-    override suspend fun getBriefingKeyword(briefingDate: String, type: String): CommonResponse<BriefingResponse> {
+    override suspend fun getBriefingKeyword(
+        briefingDate: String,
+        type: String
+    ): CommonResponse<BriefingResponse> {
         return briefDataSource.getBriefingKeyword(briefingDate, type)
     }
 
