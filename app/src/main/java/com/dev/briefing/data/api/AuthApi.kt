@@ -12,17 +12,17 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AuthApi {
-    @POST("/members/auth/google")
+    @POST("/v2/members/auth/google")
     suspend fun getLoginToken(
         @Body identityToken : GoogleRequest,
     ): CommonResponse<GoogleSocialResponse>
 
-    @DELETE("/members/{memberId}")
+    @DELETE("/v2/members/{memberId}")
     suspend fun signOut(
         @Path("memberId") memberId : Int,
     ): CommonResponse<SingoutResponse>
 
-    @POST("/members/auth/token")
+    @POST("/v2/members/auth/token")
     suspend fun getAccessToken(
         @Body refreshToken : TokenRequest,
     ): CommonResponse<GoogleSocialResponse>

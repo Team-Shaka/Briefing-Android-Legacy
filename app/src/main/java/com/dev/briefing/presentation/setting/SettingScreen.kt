@@ -119,7 +119,7 @@ fun SettingScreen(
         horizontalAlignment = Alignment.Start,
     ) {
         item {
-            CommonHeader(onBackClick = onBackClick, header = "설정", color = BriefingTheme.color.BackgroundWhite)
+            CommonHeader(onBackClick = onBackClick, header = "설정", color = BriefingTheme.color.BackgroundWhite, isPadding = true)
             //알림
             SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(

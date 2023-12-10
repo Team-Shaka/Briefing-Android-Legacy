@@ -106,13 +106,7 @@ fun ScrapDefaultScreen() {
 @Composable
 fun PreviewScrapItem() {
     ScrapItem(
-        scrap = Scrap(
-            briefingId = 1,
-            title = "title",
-            subtitle = "subtitle",
-            ranks = 1,
-            date = "2023-1-1"
-        ),
+        scrap = tmpScrap,
         onItemClick = {}
     )
 }
@@ -139,8 +133,7 @@ fun ScrapItem(
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            //TODO: GPT 모델 번호 field 추가
-            text = "${scrap.date} | 이슈 #${scrap.ranks} | GPT-3로 생성됨",
+            text = "${scrap.date} ${scrap.timeOfDay}| 이슈 #${scrap.ranks} | ${scrap.gptModel}로 생성됨",
             style = BriefingTheme.typography.DetailStyleRegular.copy(
                 color = BriefingTheme.color.TextGray
             )

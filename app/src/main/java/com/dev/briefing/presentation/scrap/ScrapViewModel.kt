@@ -38,23 +38,20 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
                 val response = repository.getScrap(
                     memberId = memberId
                 )
-                response.result.let {scrapList ->
-                    scrapList.forEach {scrap->
-                        if(_scrap.value == null || _scrap.value!!.isEmpty()){
-                            _scrap.value = listOf(scrap.toScrap())
-                        }else{
-                            _scrap.value = _scrap.value!! + listOf(scrap.toScrap())
-                        }
-                        Log.d(SERVER_TAG, _scrap.value.toString())
-
+                response.result.let { scrapList ->
+                    val tmpScrapList: MutableList<Scrap> = mutableListOf()
+                    scrapList.forEach { scrap ->
+                        tmpScrapList.add(scrap.toScrap())
                     }
+                    _scrap.value = tmpScrapList
                 }
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
             }
         }
     }
-    fun getAcessToken(refreshToken:String) {
+
+    fun getAcessToken(refreshToken: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getAccessToken(
