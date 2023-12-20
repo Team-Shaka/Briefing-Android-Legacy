@@ -23,10 +23,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
                 onSettingClick = {
                     navController.navigate(HomeScreen.Setting.route)
                 },
-                navController = navController,
-                onBackClick = {
-                    navController.popBackStack()
-                }
+                navController = navController
             )
         }
         composable(

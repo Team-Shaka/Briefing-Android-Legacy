@@ -10,11 +10,11 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { HomeViewModel(
-        repository = get(),
+        briefingRepository = get(),
         dailyAlertManager = get(),
         dailyAlertTimePreferenceHelper = get()
     ) }
-    viewModel { (id: Int) -> ArticleDetailViewModel(repository = get(), id = id) }
+    viewModel { (id: Int) -> ArticleDetailViewModel(repository = get(), authRepository = get(), scrapRepository = get(),  id = id) }
     viewModel { SignInViewModel(repository = get()) }
     viewModel { SettingViewModel(dailyAlertTimePreferenceHelper = get(), dailyAlertManager = get()) }
     viewModel { ScrapViewModel(repository = get())}

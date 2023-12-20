@@ -1,11 +1,9 @@
 package com.dev.briefing.data.api
 
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleSocialResponse
+import com.dev.briefing.data.model.response.common.CommonResponse
 import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.model.SetScrapResponse
-import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.data.model.UnScrapResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,8 +21,23 @@ interface ScrapApi {
         @Path("memberId") memberId: Int,
     ): CommonResponse<List<ScrapResponse>>
 
-    @POST("/members/auth/token")
-    suspend fun getAccessToken(
-        @Body refreshToken : TokenRequest,
-    ): CommonResponse<GoogleSocialResponse>
+    /**
+     * 스크랩 등록하기
+     * @Body memberId
+     * @Body briefingId
+     */
+    @POST("/scraps/briefings")
+    suspend fun setScrap(
+        @Body memberInfo: SetScrapRequest,
+    ): CommonResponse<SetScrapResponse>
+
+    /**
+     * 스크랩 해제하기
+     * @@Path scrapId
+     */
+    @DELETE("/scraps/briefings/{briefingId}/members/{memberId}")
+    suspend fun setUnScrap(
+        @Path("briefingId") briefingId: Int,
+        @Path("memberId") memberId: Int,
+    ): CommonResponse<UnScrapResponse>
 }

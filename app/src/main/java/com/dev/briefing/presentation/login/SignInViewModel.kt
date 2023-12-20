@@ -5,20 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.briefing.data.model.CommonResponse
 import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.respository.AuthRepository
-import com.dev.briefing.data.respository.BriefingRepository
-import com.dev.briefing.data.respository.BriefingRepositoryImpl
 import com.dev.briefing.util.JWT_TOKEN
 import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.MainApplication.Companion.prefs
 import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SERVER_TAG
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
 

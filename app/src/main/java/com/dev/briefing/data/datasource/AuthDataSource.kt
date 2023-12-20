@@ -1,7 +1,6 @@
 package com.dev.briefing.data.datasource
 
-import com.dev.briefing.data.model.BriefingResponse
-import com.dev.briefing.data.model.CommonResponse
+import com.dev.briefing.data.model.response.common.CommonResponse
 import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.model.GoogleSocialResponse
 import com.dev.briefing.data.model.SingoutResponse

@@ -1,5 +1,4 @@
 import android.app.Activity
-import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,27 +31,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import androidx.viewpager2.widget.ViewPager2
 import com.dev.briefing.R
-import com.dev.briefing.data.model.BriefingPreview
-import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.model.BriefingCompactArticle
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.common.BriefingTabRow
+import com.dev.briefing.presentation.home.HomeBriefingArticleUiState
 import com.dev.briefing.presentation.home.HomeCategory
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.SERVER_TAG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.format.DateTimeFormatter
 import org.koin.androidx.compose.getViewModel
-import java.time.LocalDate
 
 @Preview
 @Composable
@@ -61,9 +56,7 @@ fun BriefingHomeScreenPreview() {
     val navController = rememberNavController()
 
     BriefingTheme {
-        BriefingHomeScreen(onSettingClick = { }, navController = navController, onBackClick = {
-
-        })
+        BriefingHomeScreen(onSettingClick = { }, navController = navController)
     }
 }
 
@@ -72,9 +65,11 @@ fun BriefingHomeScreenPreview() {
 fun BriefingHomeScreen(
     onSettingClick: () -> Unit,
     navController: NavController,
-    onBackClick: () -> Unit,
     homeViewModel: HomeViewModel = getViewModel()
 ) {
+    val uiState = homeViewModel.briefingArticleUiState.collectAsStateWithLifecycle()
+
+
     val memberId = prefs.getSharedPreference(MEMBER_ID, -1)
     val isMember = remember { mutableStateOf(memberId != -1) }
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -82,16 +77,6 @@ fun BriefingHomeScreen(
 
     val isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val pullRefreshState = rememberPullToRefreshState()
-
-    if (pullRefreshState.isRefreshing) {
-        LaunchedEffect(true) {
-            // fetch something
-            delay(1500)
-            pullRefreshState.endRefresh()
-        }
-    }
-
 
     if (!isMember.value && openAlertDialog.value) {
         CommonDialog(
@@ -108,11 +93,12 @@ fun BriefingHomeScreen(
         )
     }
 
-    val composeCoroutine = rememberCoroutineScope()
 
+    val composeCoroutine = rememberCoroutineScope()
     var selectedTabIdx by remember {
         mutableIntStateOf(0)
     }
+    val state = uiState.value
 
     Column(
         Modifier
@@ -151,38 +137,81 @@ fun BriefingHomeScreen(
                 }
             })
 
-        val scaleFraction = if (pullRefreshState.isRefreshing) 1f else
-            LinearOutSlowInEasing.transform(pullRefreshState.progress).coerceIn(0f, 1f)
+        HorizontalPager(state = pagerState) { page ->
+            val briefingArticleCategory = HomeCategory.values()[page].category
+            homeViewModel.loadBriefings(HomeCategory.values()[page].category)
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(pullRefreshState.nestedScrollConnection)
-        ) {
-            HorizontalPager(state = pagerState) {
-                CategoryArticleList(createdAt = "2023.11.02 (목) 아침브리핑", articles = (1..10).map {
-                    BriefingPreview(
-                        0,
-                        it,
-                        LoremIpsum(3).values.joinToString(),
-                        LoremIpsum(10).values.joinToString()
-                    )
-                }, onArticleSelect = {
-                    navController.navigate(HomeScreen.Detail.route + "/1")
-                }, onRefresh = {
-
-                })
-            }
-
-            PullToRefreshContainer(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
-                state = pullRefreshState
+            HomeScreenArticleList(
+                isRefresh = state.currentLoadingCategories.contains(
+                    briefingArticleCategory
+                ), onRefreshRequest = {
+                    homeViewModel.loadBriefings(HomeCategory.values()[page].category, true)
+                },
+                articles = state.briefingArticles.getOrDefault(briefingArticleCategory, listOf())
             )
+        }
+
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .nestedScroll(pullRefreshState.nestedScrollConnection)
+//        ) {
+//            HorizontalPager(state = pagerState) { page ->
+//                val briefingArticleCategory = HomeCategory.values()[page].category
+//                homeViewModel.loadBriefings(HomeCategory.values()[page].category)
+//
+//            }
+//        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenArticleList(
+    isRefresh: Boolean,
+    onRefreshRequest: () -> Unit,
+    articles: List<BriefingCompactArticle>
+) {
+    val pullRefreshState = rememberPullToRefreshState()
+    val scaleFraction = if (pullRefreshState.isRefreshing) 1f else
+        LinearOutSlowInEasing.transform(pullRefreshState.progress).coerceIn(0f, 1f)
+
+    LaunchedEffect(pullRefreshState.isRefreshing) {
+        if (pullRefreshState.isRefreshing && !isRefresh) {
+            onRefreshRequest.invoke()
         }
     }
 
+    LaunchedEffect(key1 = isRefresh) {
+        if (pullRefreshState.isRefreshing && !isRefresh) {
+            pullRefreshState.endRefresh()
+        }
+        if (isRefresh && !pullRefreshState.isRefreshing) {
+            pullRefreshState.startRefresh()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(pullRefreshState.nestedScrollConnection)
+    ) {
+        CategoryArticleList(
+            createdAt = "2023.11.02 (목) 아침브리핑",
+            articles = articles,
+            onArticleSelect = {
+            },
+            onRefresh = {
+                onRefreshRequest.invoke()
+            })
+
+        PullToRefreshContainer(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
+            state = pullRefreshState
+        )
+    }
 }
 
 @Composable
@@ -257,7 +286,7 @@ fun HomeHeader(
                 .fillMaxWidth()
                 .weight(1f),
             text = stringResource(R.string.home_title),
-            style = androidx.compose.ui.text.TextStyle(
+            style = TextStyle(
                 fontSize = 24.sp,
                 fontFamily = ProductSans,
                 fontWeight = FontWeight(700),
@@ -289,8 +318,8 @@ fun HomeHeader(
 @Composable
 fun CategoryArticleList(
     createdAt: String,
-    articles: List<BriefingPreview>,
-    onArticleSelect: (BriefingPreview) -> Unit,
+    articles: List<BriefingCompactArticle>,
+    onArticleSelect: (BriefingCompactArticle) -> Unit,
     onRefresh: () -> Unit
 ) {
     LazyColumn {
@@ -311,11 +340,12 @@ fun CategoryArticleList(
 fun CategoryArticleListItemPreview() {
     BriefingTheme {
         ArticleListItem(
-            news = BriefingPreview(
-                0,
-                0,
-                LoremIpsum(3).values.joinToString(),
-                LoremIpsum(10).values.joinToString()
+            article = BriefingCompactArticle(
+                id = 0,
+                ranks = 0,
+                title = LoremIpsum(3).values.joinToString(),
+                subtitle = LoremIpsum(10).values.joinToString(),
+                scrapCount = 0
             ),
             onItemClick = {
 
@@ -325,20 +355,20 @@ fun CategoryArticleListItemPreview() {
 
 @Composable
 fun ArticleListItem(
-    news: BriefingPreview,
-    onItemClick: (BriefingPreview) -> Unit
+    article: BriefingCompactArticle,
+    onItemClick: (BriefingCompactArticle) -> Unit
 ) {
     Row(
         Modifier
             .fillMaxWidth()
             .clickable {
-                onItemClick(news)
+                onItemClick(article)
             }
             .padding(14.dp)
     ) {
         Text(
             modifier = Modifier.width(54.dp),
-            text = "${news.rank}.",
+            text = "${article.ranks}.",
             style = TextStyle(
                 fontSize = 35.sp,
                 fontFamily = ProductSans,
@@ -351,12 +381,15 @@ fun ArticleListItem(
         Spacer(Modifier.width(16.dp))
 
         Column {
-            Text(text = news.title, style = BriefingTheme.typography.SubtitleStyleBold)
+            Text(text = article.title, style = BriefingTheme.typography.SubtitleStyleBold)
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = news.subtitle, style = BriefingTheme.typography.ContextStyleRegular25.copy(
+                text = article.subtitle,
+                style = BriefingTheme.typography.ContextStyleRegular25.copy(
                     color = BriefingTheme.color.TextGray
-                )
+                ),
+                minLines = 2,
+                maxLines = 2
             )
             Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -370,7 +403,7 @@ fun ArticleListItem(
                         tint = BriefingTheme.color.TextGray
                     )
                     Text(
-                        text = "+1K",
+                        text = article.scrapCount.toString(),
                         style = BriefingTheme.typography.DetailStyleRegular.copy(color = BriefingTheme.color.TextGray)
                     )
                 }
