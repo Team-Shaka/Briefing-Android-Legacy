@@ -7,14 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.GoogleRequest
 import com.dev.briefing.data.respository.AuthRepository
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SERVER_TAG
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import kotlinx.coroutines.launch
 
-class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
+class SignInViewModel(
+    private val repository: AuthRepository,
+    private val authPreferenceHelper: AuthPreferenceHelper
+) : ViewModel() {
 
     private val _accessToken: MutableLiveData<String> = MutableLiveData<String>()
     val accessToken: LiveData<String>
@@ -24,10 +24,12 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
     val statusMsg: LiveData<String>
         get() = _statusMsg
 
-    private val _result:MutableLiveData<Boolean>  = MutableLiveData<Boolean>()
+    private val _result: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+
     val result: LiveData<Boolean>
         get() = _result
-    fun getLoginCode(idToken: String){
+
+    fun getLoginCode(idToken: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getLoginToken(
@@ -38,12 +40,15 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
                 Log.d("Google", "7: ${response.message} 서버 통신완료")
                 _accessToken.value = response.result.accessToken
                 //save preference
-                prefs.putSharedPreference(JWT_TOKEN,response.result.accessToken)
-                prefs.putSharedPreference(REFRESH_TOKEN,response.result.refreshToken)
-                prefs.putSharedPreference(MEMBER_ID,response.result.memberId)
-                Log.d("Google", "8: ${prefs.getSharedPreference(MEMBER_ID,-1)} SharePreference 저장완료")
+                authPreferenceHelper.saveMemberId(response.result.memberId)
+                authPreferenceHelper.saveToken(
+                    response.result.accessToken,
+                    response.result.refreshToken
+                )
+
+                Log.d("Google", "8: ${authPreferenceHelper.getMemberId()} SharePreference 저장완료")
                 _statusMsg.value = response.message
-                _result.value= true
+                _result.value = true
                 Log.d("Google", "9: api 호출 완료 _result.value = ${_result.value}")
 
             } catch (e: Throwable) {
@@ -55,7 +60,8 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
         Log.d("Google", "10: coroutine 끝")
 
     }
-    fun signout(memberId:Int) {
+
+    fun withdrawal(memberId: Int) {
         viewModelScope.launch {
             try {
                 val response = repository.signOut(memberId)
@@ -64,25 +70,7 @@ class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
                 _statusMsg.value = e.toString()
-                getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN,""))
-//                signout(memberId)
             }
         }
     }
-
-    fun getAcessToken(refreshToken:String) {
-        viewModelScope.launch {
-            try {
-                val response = repository.getAccessToken(
-                    com.dev.briefing.data.model.TokenRequest(
-                        refreshToken = refreshToken
-                    )
-                )
-                Log.d(SERVER_TAG, response.code)
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-            }
-        }
-    }
-
 }

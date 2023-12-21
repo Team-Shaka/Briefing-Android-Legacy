@@ -17,7 +17,7 @@ interface AuthApi {
     ): CommonResponse<GoogleSocialResponse>
 
     @DELETE("/members/{memberId}")
-    suspend fun signOut(
+    suspend fun withdrawal(
         @Path("memberId") memberId : Int,
     ): CommonResponse<SingoutResponse>
 

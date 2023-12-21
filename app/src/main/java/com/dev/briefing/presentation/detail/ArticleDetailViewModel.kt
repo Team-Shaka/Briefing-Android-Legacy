@@ -1,59 +1,47 @@
 package com.dev.briefing.presentation.detail
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.briefing.data.datasource.BriefingDataSource
-import com.dev.briefing.data.model.SetScrapRequest
 import com.dev.briefing.data.respository.AuthRepository
 import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.data.respository.ScrapRepository
-import com.dev.briefing.model.BriefingArticle
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.REFRESH_TOKEN
-import com.dev.briefing.util.SERVER_TAG
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ArticleDetailViewModel(private val repository: BriefingRepository, private val scrapRepository: ScrapRepository, private val authRepository : AuthRepository, private val id: Int) :
-    ViewModel() {
-    private val _detailPage: MutableLiveData<BriefingArticle> =
-        MutableLiveData<BriefingArticle>()
-    val detailPage: MutableLiveData<BriefingArticle>
-        get() = _detailPage
-    val memberId: Int = prefs.getSharedPreference(MEMBER_ID, 0)
+class ArticleDetailViewModel(
+    private val briefingRepository: BriefingRepository,
+    private val scrapRepository: ScrapRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
-    private val _authError: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
-    val authError: LiveData<Boolean>
-        get() = _authError
+    private val _briefingArticleState =
+        MutableStateFlow<ArticleDetailUiState>(ArticleDetailUiState.Loading)
 
-    private val _statusMsg: MutableLiveData<String> = MutableLiveData<String>("")
-    val statusMsg: LiveData<String>
-        get() = _statusMsg
+    val briefingArticleState: StateFlow<ArticleDetailUiState> =
+        _briefingArticleState.asStateFlow()
 
-    init {
-        getBrieingId(id)
-    }
-
-    private fun getBrieingId(id: Int) {
+    fun loadBriefingArticle(id: Long) {
         viewModelScope.launch {
-            try {
-                val response = repository.getBriefingDetail(
-                    id = id
-                )
-                if (response != null) {
-                    _detailPage.value = response
-                } else {
-                    Log.d(SERVER_TAG, "response null")
+            runCatching {
+                briefingRepository.getBriefingDetail(id)
+            }.onSuccess { article ->
+                _briefingArticleState.update {
+                    ArticleDetailUiState.Success(article)
                 }
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
+            }.onFailure {
+                Log.e("ArticleDetailViewModel", it.message.toString())
+                _briefingArticleState.update {
+                    ArticleDetailUiState.Error
+                }
             }
         }
     }
+
+
 //
 //    //TODO: 스크랩한 api 결과에 따른 분기처리 혹은 return 값 수정 필요
 //    fun setScrap(): () -> Boolean = {
@@ -112,24 +100,4 @@ class ArticleDetailViewModel(private val repository: BriefingRepository, private
 //        true
 //    }
 
-    fun getAcessToken(refreshToken: String) {
-        viewModelScope.launch {
-            try {
-                val response = authRepository.getAccessToken(
-                    com.dev.briefing.data.model.TokenRequest(
-                        refreshToken = refreshToken
-                    )
-                )
-                if (response.result.accessToken != null) {
-                    prefs.putSharedPreference(JWT_TOKEN, response.result.accessToken)
-                    prefs.putSharedPreference(REFRESH_TOKEN, response.result.refreshToken)
-                    Log.d(SERVER_TAG, "토큰 재발급 성공")
-                }
-                Log.d(SERVER_TAG, response.code)
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-                _authError.value = true
-            }
-        }
-    }
 }

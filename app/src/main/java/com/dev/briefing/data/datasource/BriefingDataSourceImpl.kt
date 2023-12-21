@@ -24,7 +24,7 @@ class BriefingDataSourceImpl(private val briefingApi: BriefingApi) : BriefingDat
         ).result
     }
 
-    override suspend fun getBriefingArticle(id: Int): BriefingArticleResponse {
+    override suspend fun getBriefingArticle(id: Long): BriefingArticleResponse {
         return briefingApi.getBriefingArticle(id).result
     }
 

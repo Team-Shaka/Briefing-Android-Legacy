@@ -10,19 +10,19 @@ import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.respository.ScrapRepository
 import com.dev.briefing.model.Scrap
 import com.dev.briefing.model.toScrap
-import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import kotlinx.coroutines.launch
 
-class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
+class ScrapViewModel(private val repository: ScrapRepository, private val authPreferenceHelper: AuthPreferenceHelper) : ViewModel() {
 
     private val _scrap: MutableLiveData<List<Scrap>> =
         MutableLiveData<List<Scrap>>(listOf())
     val scrap: LiveData<List<Scrap>>
         get() = _scrap
 
-    val memberId: Int = MainApplication.prefs.getSharedPreference(MEMBER_ID, 0)
+    val memberId: Int = authPreferenceHelper.getMemberId()
 
     init {
         getScrapData()

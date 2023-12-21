@@ -28,7 +28,6 @@ class HomeViewModel(
     private val briefingArticles: SnapshotStateMap<BriefingArticleCategory, List<BriefingCompactArticle>> =
         mutableStateMapOf()
 
-
     private val _briefingArticlesState =
         MutableStateFlow(HomeBriefingArticleUiState())
 
@@ -46,13 +45,7 @@ class HomeViewModel(
 
         viewModelScope.launch {
             currentLoadingCategories.add(briefingArticleCategory)
-            _briefingArticlesState.update {
-                it.copy(
-                    currentLoadingCategories = currentLoadingCategories.toMutableSet(),
-                    errorOccurCategories = errorOccurCategories.toMutableMap(),
-                    briefingArticles = briefingArticles.toMutableMap()
-                )
-            }
+            updateUiState()
 
             runCatching {
                 briefingRepository.getBriefings(
@@ -60,28 +53,14 @@ class HomeViewModel(
                     LocalDate.of(2023, 11, 30),
                     TimeOfDay.MORNING
                 )
-            }.onSuccess { it ->
+            }.onSuccess {
                 currentLoadingCategories.remove(briefingArticleCategory)
                 briefingArticles[briefingArticleCategory] = it.briefingCompactArticles
-
-                _briefingArticlesState.update {
-                    it.copy(
-                        currentLoadingCategories = currentLoadingCategories.toMutableSet(),
-                        errorOccurCategories = errorOccurCategories.toMutableMap(),
-                        briefingArticles = briefingArticles.toMutableMap()
-                    )
-                }
-            }.onFailure { it ->
+                updateUiState()
+            }.onFailure {
                 currentLoadingCategories.remove(briefingArticleCategory)
                 errorOccurCategories[briefingArticleCategory] = it.message ?: "unknown error"
-
-                _briefingArticlesState.update {
-                    it.copy(
-                        currentLoadingCategories = currentLoadingCategories.toMutableSet(),
-                        errorOccurCategories = errorOccurCategories.toMutableMap(),
-                        briefingArticles = briefingArticles.toMutableMap()
-                    )
-                }
+                updateUiState()
             }
         }
     }
@@ -89,6 +68,16 @@ class HomeViewModel(
     fun setAlarm() {
         dailyAlertTimePreferenceHelper.getAlarmTime().also {
             dailyAlertManager.setDailyAlarm(it.hour, it.minute)
+        }
+    }
+
+    private fun updateUiState() {
+        _briefingArticlesState.update {
+            it.copy(
+                currentLoadingCategories = currentLoadingCategories.toMutableSet(),
+                errorOccurCategories = errorOccurCategories.toMutableMap(),
+                briefingArticles = briefingArticles.toMutableMap()
+            )
         }
     }
 }

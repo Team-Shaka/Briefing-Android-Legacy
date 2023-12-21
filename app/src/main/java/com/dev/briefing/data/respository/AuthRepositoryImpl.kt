@@ -13,7 +13,7 @@ class AuthRepositoryImpl(private val authDataSource: AuthDataSource): AuthReposi
     }
 
     override suspend fun signOut(memberId: Int): CommonResponse<SingoutResponse> {
-        return authDataSource.signOut(memberId)
+        return authDataSource.withdrawal(memberId)
     }
 
     override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse> {

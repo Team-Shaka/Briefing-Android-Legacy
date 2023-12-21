@@ -18,5 +18,5 @@ interface BriefingApi {
     ): CommonResponse<BriefingCategoryArticlesResponse>
 
     @GET("/v2/briefings/{id}")
-    suspend fun getBriefingArticle(@Path("id") id: Int): CommonResponse<BriefingArticleResponse>
+    suspend fun getBriefingArticle(@Path("id") id: Long): CommonResponse<BriefingArticleResponse>
 }

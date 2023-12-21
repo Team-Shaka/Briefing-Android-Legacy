@@ -1,8 +1,11 @@
 package com.dev.briefing.presentation.detail
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -17,54 +20,90 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
+import com.dev.briefing.model.RelatedArticle
 import com.dev.briefing.presentation.theme.BriefingTheme
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ArticleDetailScreen(
+    articleDetailViewModel: ArticleDetailViewModel = getViewModel(),
+    articleId: Long,
     onBackClick: () -> Unit = {},
     navController: NavController
 ) {
+    LaunchedEffect(articleId) {
+        articleDetailViewModel.loadBriefingArticle(articleId)
+    }
+
+    val _uiState =
+        articleDetailViewModel.briefingArticleState.collectAsStateWithLifecycle(ArticleDetailUiState.Loading)
+
     Column(
         Modifier
             .fillMaxSize()
-            .background(color = BriefingTheme.color.BackgroundWhite)) {
-        TopBar(onBackPressed = onBackClick)
+            .background(color = BriefingTheme.color.BackgroundWhite)
+    ) {
 
-        ArticleDetailHeader(
-            modifier = Modifier.padding(30.dp, 18.dp),
-            title = LoremIpsum(3).values.joinToString(),
-            date = "1970.01.01 아침",
-            section = "사회 #1",
-            generatedEngine = "GPT-3로 생성됨",
-            bookmarkCount = 149
-        )
+        when (val uiState = _uiState.value) {
+            is ArticleDetailUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
 
-        Spacer(
-            modifier = Modifier
-                .padding(20.dp, 0.dp)
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(color = Color(0xFFDADADA))
-        )
+            is ArticleDetailUiState.Error -> {
+            }
 
-        ArticleSummary(
-            modifier = Modifier.padding(30.dp, 20.dp),
-            summaryTitle = LoremIpsum(3).values.joinToString(),
-            summaryContent = LoremIpsum(30).values.joinToString()
-        )
+            is ArticleDetailUiState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    val article = uiState.article
+                    TopBar(onBackPressed = onBackClick)
 
-        Spacer(
-            modifier = Modifier
-                .padding(20.dp, 0.dp)
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(color = Color(0xFFDADADA))
-        )
+                    ArticleDetailHeader(
+                        modifier = Modifier.padding(30.dp, 18.dp),
+                        title = article.title,
+                        date = article.createdDate.toString(),
+                        section = article.category.typeName,
+                        generatedEngine = article.gptModel,
+                        bookmarkCount = 149
+                    )
 
-        RelatedArticles(Modifier.padding(32.dp, 16.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .padding(20.dp, 0.dp)
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(color = Color(0xFFDADADA))
+                    )
+
+                    ArticleSummary(
+                        modifier = Modifier.padding(30.dp, 20.dp),
+                        summaryTitle = article.subtitle,
+                        summaryContent = article.content
+                    )
+
+                    Spacer(
+                        modifier = Modifier
+                            .padding(20.dp, 0.dp)
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(color = Color(0xFFDADADA))
+                    )
+
+                    RelatedArticles(Modifier.padding(32.dp, 16.dp), article.relatedArticles)
+                }
+            }
+        }
     }
 }
 
@@ -73,12 +112,12 @@ fun ArticleDetailScreen(
 @Preview
 fun ArticleDetailScreenPreview() {
     BriefingTheme {
-        ArticleDetailScreen(navController = rememberNavController())
+        ArticleDetailScreen(navController = rememberNavController(), articleId = 0)
     }
 }
 
 @Composable
-fun RelatedArticles(modifier: Modifier = Modifier) {
+fun RelatedArticles(modifier: Modifier = Modifier, relatedArticles: List<RelatedArticle>) {
     Column(modifier) {
         Text(
             text = "관련 기사",
@@ -91,14 +130,26 @@ fun RelatedArticles(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        LazyColumn(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(2) {
-                RelatedArticle(
-                    LoremIpsum(3).values.joinToString(),
-                    LoremIpsum(4).values.joinToString()
-                )
+        relatedArticles.forEachIndexed { index, article ->
+            RelatedArticle(
+                article.press,
+                article.title
+            )
+
+            if (index < relatedArticles.size - 1) {
+                Spacer(modifier = Modifier.height(10.dp))
             }
         }
+
+//
+//        LazyColumn(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+//            items(relatedArticles) {
+//                RelatedArticle(
+//                    it.press,
+//                    it.title
+//                )
+//            }
+//        }
     }
 }
 

@@ -12,8 +12,8 @@ class AuthDataSourceImpl(private val authApi: AuthApi) : AuthDataSource {
         return authApi.getLoginToken(identityToken)
     }
 
-    override suspend fun signOut(memberId: Int): CommonResponse<SingoutResponse> {
-        return authApi.signOut(memberId)
+    override suspend fun withdrawal(memberId: Int): CommonResponse<SingoutResponse> {
+        return authApi.withdrawal(memberId)
     }
 
     override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse> {

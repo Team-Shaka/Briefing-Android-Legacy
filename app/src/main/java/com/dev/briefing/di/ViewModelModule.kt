@@ -14,8 +14,8 @@ val viewModelModule = module {
         dailyAlertManager = get(),
         dailyAlertTimePreferenceHelper = get()
     ) }
-    viewModel { (id: Int) -> ArticleDetailViewModel(repository = get(), authRepository = get(), scrapRepository = get(),  id = id) }
-    viewModel { SignInViewModel(repository = get()) }
+    viewModel { ArticleDetailViewModel(briefingRepository = get(), authRepository = get(), scrapRepository = get()) }
+    viewModel { SignInViewModel(repository = get(), authPreferenceHelper = get()) }
     viewModel { SettingViewModel(dailyAlertTimePreferenceHelper = get(), dailyAlertManager = get()) }
-    viewModel { ScrapViewModel(repository = get())}
+    viewModel { ScrapViewModel(repository = get(), authPreferenceHelper = get())}
 }

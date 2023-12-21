@@ -1,4 +1,5 @@
 import android.app.Activity
+import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -39,14 +40,11 @@ import com.dev.briefing.R
 import com.dev.briefing.model.BriefingCompactArticle
 import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.common.BriefingTabRow
-import com.dev.briefing.presentation.home.HomeBriefingArticleUiState
 import com.dev.briefing.presentation.home.HomeCategory
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import kotlinx.coroutines.delay
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -60,23 +58,20 @@ fun BriefingHomeScreenPreview() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BriefingHomeScreen(
     onSettingClick: () -> Unit,
     navController: NavController,
     homeViewModel: HomeViewModel = getViewModel()
 ) {
+    val authPreferenceHelper = AuthPreferenceHelper(LocalContext.current)
     val uiState = homeViewModel.briefingArticleUiState.collectAsStateWithLifecycle()
 
-
-    val memberId = prefs.getSharedPreference(MEMBER_ID, -1)
+    val memberId = authPreferenceHelper.getMemberId()
     val isMember = remember { mutableStateOf(memberId != -1) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
-
-    val isRefreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     if (!isMember.value && openAlertDialog.value) {
         CommonDialog(
@@ -93,11 +88,8 @@ fun BriefingHomeScreen(
         )
     }
 
-
     val composeCoroutine = rememberCoroutineScope()
-    var selectedTabIdx by remember {
-        mutableIntStateOf(0)
-    }
+
     val state = uiState.value
 
     Column(
@@ -120,6 +112,8 @@ fun BriefingHomeScreen(
         )
 
         val pagerState = rememberPagerState(pageCount = { HomeCategory.values().size })
+        var selectedTabIdx by remember { mutableIntStateOf(0) }
+
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.currentPage }.collect { page ->
                 selectedTabIdx = page
@@ -142,51 +136,44 @@ fun BriefingHomeScreen(
             homeViewModel.loadBriefings(HomeCategory.values()[page].category)
 
             HomeScreenArticleList(
-                isRefresh = state.currentLoadingCategories.contains(
+                isFetchRefreshing = state.currentLoadingCategories.contains(
                     briefingArticleCategory
                 ), onRefreshRequest = {
                     homeViewModel.loadBriefings(HomeCategory.values()[page].category, true)
                 },
-                articles = state.briefingArticles.getOrDefault(briefingArticleCategory, listOf())
+                articles = state.briefingArticles.getOrDefault(briefingArticleCategory, listOf()),
+                onArticleSelect = {
+                    navController.navigate("${HomeScreen.Detail.route}/${it.id.toLong()}")
+                }
             )
         }
-
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .nestedScroll(pullRefreshState.nestedScrollConnection)
-//        ) {
-//            HorizontalPager(state = pagerState) { page ->
-//                val briefingArticleCategory = HomeCategory.values()[page].category
-//                homeViewModel.loadBriefings(HomeCategory.values()[page].category)
-//
-//            }
-//        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenArticleList(
-    isRefresh: Boolean,
+    isFetchRefreshing: Boolean,
     onRefreshRequest: () -> Unit,
-    articles: List<BriefingCompactArticle>
+    articles: List<BriefingCompactArticle>,
+    onArticleSelect: (briefingCompactArticle: BriefingCompactArticle) -> Unit
 ) {
     val pullRefreshState = rememberPullToRefreshState()
     val scaleFraction = if (pullRefreshState.isRefreshing) 1f else
         LinearOutSlowInEasing.transform(pullRefreshState.progress).coerceIn(0f, 1f)
 
+    // Pull To Refresh 영역 진입 시 onRefereshRequest invoke.
     LaunchedEffect(pullRefreshState.isRefreshing) {
-        if (pullRefreshState.isRefreshing && !isRefresh) {
+        if (pullRefreshState.isRefreshing && !isFetchRefreshing) {
             onRefreshRequest.invoke()
         }
     }
 
-    LaunchedEffect(key1 = isRefresh) {
-        if (pullRefreshState.isRefreshing && !isRefresh) {
+    LaunchedEffect(key1 = isFetchRefreshing) {
+        if (!isFetchRefreshing && pullRefreshState.isRefreshing) {
             pullRefreshState.endRefresh()
         }
-        if (isRefresh && !pullRefreshState.isRefreshing) {
+        if (isFetchRefreshing && !pullRefreshState.isRefreshing) {
             pullRefreshState.startRefresh()
         }
     }
@@ -199,8 +186,7 @@ fun HomeScreenArticleList(
         CategoryArticleList(
             createdAt = "2023.11.02 (목) 아침브리핑",
             articles = articles,
-            onArticleSelect = {
-            },
+            onArticleSelect = onArticleSelect,
             onRefresh = {
                 onRefreshRequest.invoke()
             })

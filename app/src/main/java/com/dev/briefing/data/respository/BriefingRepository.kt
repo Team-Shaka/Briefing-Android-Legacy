@@ -22,5 +22,5 @@ interface BriefingRepository {
         timeOfDay: TimeOfDay? = null
     ): BriefingCategoryArticles
 
-    suspend fun getBriefingDetail(id: Int): BriefingArticle
+    suspend fun getBriefingDetail(id: Long): BriefingArticle
 }

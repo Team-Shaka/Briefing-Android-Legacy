@@ -7,8 +7,8 @@ import com.dev.briefing.data.model.SingoutResponse
 import com.dev.briefing.data.model.TokenRequest
 
 interface AuthDataSource {
-    suspend fun getLoginCode(identityToken:GoogleRequest): CommonResponse<GoogleSocialResponse>
-    suspend fun signOut(memberId:Int): CommonResponse<SingoutResponse>
-    suspend fun getAccessToken(refreshToken:TokenRequest): CommonResponse<GoogleSocialResponse>
+    suspend fun getLoginCode(identityToken: GoogleRequest): CommonResponse<GoogleSocialResponse>
+    suspend fun withdrawal(memberId: Int): CommonResponse<SingoutResponse>
+    suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse>
 
 }

@@ -6,7 +6,6 @@ import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.model.TokenRequest
 
 interface ScrapRepository {
-
     suspend fun getScrap(memberId: Int): CommonResponse<List<ScrapResponse>>
     suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse>
 

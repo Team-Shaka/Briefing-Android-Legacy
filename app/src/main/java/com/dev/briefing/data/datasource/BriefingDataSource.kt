@@ -14,5 +14,5 @@ interface BriefingDataSource {
         timeOfDay: TimeOfDay? = null
     ): BriefingCategoryArticlesResponse
 
-    suspend fun getBriefingArticle(id: Int): BriefingArticleResponse
+    suspend fun getBriefingArticle(id: Long): BriefingArticleResponse
 }

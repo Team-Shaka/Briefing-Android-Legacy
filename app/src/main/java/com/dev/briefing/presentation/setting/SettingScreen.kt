@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ComponentActivity
 import androidx.core.content.ContextCompat.startActivity
@@ -29,12 +28,9 @@ import com.dev.briefing.presentation.setting.component.SettingSection
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_TAG
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.util.extension.convert.formatTime
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -45,6 +41,8 @@ fun SettingScreen(
     onBackClick: () -> Unit,
     settingViewModel: SettingViewModel = koinViewModel()
 ) {
+    val authPreferenceHelper: AuthPreferenceHelper = AuthPreferenceHelper(LocalContext.current)
+
     val authViewModel: SignInViewModel = getViewModel()
     val context = LocalContext.current
     val openLogOutDialog = remember { mutableStateOf(false) }
@@ -72,12 +70,11 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openExitDialog.value = false },
             onConfirmation = {
-                authViewModel.signout(prefs.getSharedPreference(MEMBER_ID, -1))
+                authViewModel.withdrawal(authPreferenceHelper.getMemberId())
                 openExitDialog.value = false
 
-                prefs.removeSharedPreference(MEMBER_ID)
-                prefs.removeSharedPreference(JWT_TOKEN)
-                prefs.removeSharedPreference(REFRESH_TOKEN)
+                authPreferenceHelper.clearToken()
+                authPreferenceHelper.clearMemberId()
                 openLogOutDialog.value = false
 
                 val intent = Intent(context, SignInActivity::class.java)
@@ -95,9 +92,8 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openLogOutDialog.value = false },
             onConfirmation = {
-                prefs.removeSharedPreference(MEMBER_ID)
-                prefs.removeSharedPreference(JWT_TOKEN)
-                prefs.removeSharedPreference(REFRESH_TOKEN)
+                authPreferenceHelper.clearToken()
+                authPreferenceHelper.clearMemberId()
                 openLogOutDialog.value = false
 
                 val intent = Intent(context, SignInActivity::class.java)
@@ -119,7 +115,11 @@ fun SettingScreen(
         horizontalAlignment = Alignment.Start,
     ) {
         item {
-            CommonHeader(onBackClick = onBackClick, header = "설정", color = BriefingTheme.color.BackgroundWhite)
+            CommonHeader(
+                onBackClick = onBackClick,
+                header = "설정",
+                color = BriefingTheme.color.BackgroundWhite
+            )
             //알림
             SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(

@@ -29,7 +29,7 @@ class BriefingRepositoryImpl(private val briefingDataSource: BriefingDataSource)
         ).toDomain()
     }
 
-    override suspend fun getBriefingDetail(id: Int): BriefingArticle {
+    override suspend fun getBriefingDetail(id: Long): BriefingArticle {
         return briefingDataSource.getBriefingArticle(id).toDomain()
     }
 }
