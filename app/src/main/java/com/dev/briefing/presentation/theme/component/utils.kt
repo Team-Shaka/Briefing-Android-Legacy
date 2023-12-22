@@ -124,8 +124,8 @@ fun CommonDialog(
                         .background(color = BriefingTheme.color.BackgrundGray, shape = RoundedCornerShape(size = 10.dp))
                         .weight(1f)
                         .align(alignment = Alignment.CenterVertically)
-                        .padding(vertical = 15.dp)
-                        .clickable(onClick = onDismissRequest),
+                        .clickable(onClick = onDismissRequest)
+                        .padding(vertical = 15.dp),
                     text = stringResource(
                         dismissText,
                     ),
@@ -140,8 +140,8 @@ fun CommonDialog(
                             shape = RoundedCornerShape(size = 10.dp)
                         )
                         .weight(1f)
-                        .padding(vertical = 15.dp)
-                        .clickable(onClick = onConfirmation),
+                        .clickable(onClick = onConfirmation)
+                        .padding(vertical = 15.dp),
                     text = stringResource(
                         dialogId
                     ),

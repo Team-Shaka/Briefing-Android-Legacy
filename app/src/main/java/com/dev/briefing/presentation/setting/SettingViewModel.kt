@@ -12,7 +12,8 @@ class SettingViewModel(
     private val dailyAlertTimePreferenceHelper: DailyAlertTimePreferenceHelper,
     private val dailyAlertManager: DailyAlertManager
 ) : ViewModel() {
-    private val _notifyTimeStateFlow = MutableStateFlow(dailyAlertTimePreferenceHelper.getAlarmTime())
+    private val _notifyTimeStateFlow =
+        MutableStateFlow(dailyAlertTimePreferenceHelper.getAlarmTime())
     val notifyTimeStateFlow = _notifyTimeStateFlow.asStateFlow()
 
     fun changeDailyAlarmTime(hourOfDay: Int, minute: Int) {
@@ -23,5 +24,9 @@ class SettingViewModel(
         }
 
         dailyAlertManager.setDailyAlarm(hourOfDay, minute)
+    }
+
+    fun withdrawal() {
+
     }
 }
