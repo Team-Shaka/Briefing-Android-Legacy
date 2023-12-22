@@ -1,5 +1,8 @@
 package com.dev.briefing.presentation.detail
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
@@ -11,12 +14,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -124,6 +129,7 @@ fun ArticleDetailScreenPreview() {
 
 @Composable
 fun RelatedArticles(modifier: Modifier = Modifier, relatedArticles: List<RelatedArticle>) {
+    val context = LocalContext.current
     Column(modifier) {
         Text(
             text = "관련 기사",
@@ -140,7 +146,11 @@ fun RelatedArticles(modifier: Modifier = Modifier, relatedArticles: List<Related
             RelatedArticle(
                 article.press,
                 article.title
-            )
+            ) {
+                val webPage: Uri = Uri.parse(article.url)
+                val intent = Intent(Intent.ACTION_VIEW, webPage)
+                startActivity(context, intent, null)
+            }
 
             if (index < relatedArticles.size - 1) {
                 Spacer(modifier = Modifier.height(10.dp))
@@ -163,16 +173,21 @@ fun RelatedArticles(modifier: Modifier = Modifier, relatedArticles: List<Related
 @Composable
 fun RelatedArticlePreview() {
     BriefingTheme {
-        RelatedArticle(LoremIpsum(3).values.joinToString(), LoremIpsum(4).values.joinToString())
+        RelatedArticle(LoremIpsum(3).values.joinToString(), LoremIpsum(4).values.joinToString()) {
+
+        }
     }
 }
 
 @Composable
-fun RelatedArticle(title: String, description: String) {
+fun RelatedArticle(title: String, description: String, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
             .border(1.dp, Color.Black)
+            .clickable {
+                onClick.invoke()
+            }
             .padding(16.dp, 10.dp)
     ) {
         Column(
@@ -315,23 +330,22 @@ fun ArticleDetailHeader(
                 )
             )
 
-            if (isScrapingInProgress) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(24.dp, 24.dp)
+            val iconColor = animateColorAsState(
+                targetValue = when {
+                    isScrapingInProgress -> BriefingTheme.color.TextGray
+                    isScrapped -> BriefingTheme.color.PrimaryBlue
+                    else -> BriefingTheme.color.TextGray
+                }, label = ""
+            )
+
+            IconButton(onClick = { if (!isScrapingInProgress) onScrapClick.invoke() }) {
+                Icon(
+                    painter = if (isScrapped || isScrapingInProgress) painterResource(id = R.drawable.bookmark_enable) else painterResource(
+                        id = R.drawable.bookmark_breifingcard
+                    ),
+                    tint = iconColor.value,
+                    contentDescription = null
                 )
-            } else {
-
-
-                IconButton(onClick = onScrapClick) {
-                    Icon(
-                        painter = if (isScrapped) painterResource(id = R.drawable.bookmark_enable) else painterResource(
-                            id = R.drawable.bookmark_breifingcard
-                        ),
-                        tint = if (isScrapped) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.TextGray,
-                        contentDescription = null
-                    )
-                }
             }
         }
     }
