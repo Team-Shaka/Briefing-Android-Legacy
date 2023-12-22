@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,9 @@ import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.preference.AuthPreferenceHelper
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Preview
 @Composable
@@ -141,13 +145,32 @@ fun BriefingHomeScreen(
                 ), onRefreshRequest = {
                     homeViewModel.loadBriefings(HomeCategory.values()[page].category, true)
                 },
-                articles = state.briefingArticles.getOrDefault(briefingArticleCategory, listOf()),
+                articles = state.briefingArticles.getOrDefault(
+                    briefingArticleCategory,
+                    null
+                )?.briefingCompactArticles ?: listOf(),
                 onArticleSelect = {
                     navController.navigate("${HomeScreen.Detail.route}/${it.id.toLong()}")
-                }
+                },
+                updatedAt = state.briefingArticles.getOrDefault(
+                    briefingArticleCategory,
+                    null
+                )?.createdAt
             )
         }
     }
+}
+
+fun formatBriefingDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("yyyy.MM.dd (E)", Locale.KOREAN)
+    val timeFormat = SimpleDateFormat("HH", Locale.KOREAN)
+
+    val datePart = dateFormat.format(date)
+    val hourPart = timeFormat.format(date).toInt()
+
+    val briefingPart = if (hourPart < 12) "아침 브리핑" else "저녁 브리핑"
+
+    return "$datePart $briefingPart"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,6 +178,7 @@ fun BriefingHomeScreen(
 fun HomeScreenArticleList(
     isFetchRefreshing: Boolean,
     onRefreshRequest: () -> Unit,
+    updatedAt: Date?,
     articles: List<BriefingCompactArticle>,
     onArticleSelect: (briefingCompactArticle: BriefingCompactArticle) -> Unit
 ) {
@@ -184,7 +208,7 @@ fun HomeScreenArticleList(
             .nestedScroll(pullRefreshState.nestedScrollConnection)
     ) {
         CategoryArticleList(
-            createdAt = "2023.11.02 (목) 아침브리핑",
+            createdAt = updatedAt?.let { formatBriefingDate(it) } ?: "",
             articles = articles,
             onArticleSelect = onArticleSelect,
             onRefresh = {
@@ -323,7 +347,7 @@ fun CategoryArticleList(
 
 @Preview
 @Composable
-fun CategoryArticleListItemPreview() {
+fun ArticleListItemPreview() {
     BriefingTheme {
         ArticleListItem(
             article = BriefingCompactArticle(
@@ -350,7 +374,7 @@ fun ArticleListItem(
             .clickable {
                 onItemClick(article)
             }
-            .padding(14.dp)
+            .padding(14.dp, 14.dp, 24.dp, 14.dp)
     ) {
         Text(
             modifier = Modifier.width(54.dp),
@@ -375,7 +399,8 @@ fun ArticleListItem(
                     color = BriefingTheme.color.TextGray
                 ),
                 minLines = 2,
-                maxLines = 2
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Box(modifier = Modifier.fillMaxWidth()) {
                 Row(

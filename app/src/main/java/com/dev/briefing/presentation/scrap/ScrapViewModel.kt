@@ -54,19 +54,4 @@ class ScrapViewModel(private val repository: ScrapRepository, private val authPr
             }
         }
     }
-    fun getAcessToken(refreshToken:String) {
-        viewModelScope.launch {
-            try {
-                val response = repository.getAccessToken(
-                    com.dev.briefing.data.model.TokenRequest(
-                        refreshToken = refreshToken
-                    )
-                )
-                Log.d(SERVER_TAG, response.code)
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-            }
-        }
-    }
-
 }

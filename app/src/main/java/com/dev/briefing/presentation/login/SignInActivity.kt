@@ -48,8 +48,10 @@ class SignInActivity : ComponentActivity() {
                 SignInScreen(
                     requestGoogleSignIn = {
                         CoroutineScope(Dispatchers.Main).launch {
-                            val getCredentialResponse = getCredentialWithGoogleSignIn()
-                            signInViewModel.handleCredentialSignIn(getCredentialResponse)
+                            runCatching {
+                                val getCredentialResponse = getCredentialWithGoogleSignIn()
+                                signInViewModel.handleCredentialSignIn(getCredentialResponse)
+                            }
                         }
                     }
                 )
@@ -76,7 +78,7 @@ class SignInActivity : ComponentActivity() {
 
     }
 
-    suspend fun getCredentialWithGoogleSignIn(): GetCredentialResponse {
+    private suspend fun getCredentialWithGoogleSignIn(): GetCredentialResponse {
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(BuildConfig.GOOGLE_CLIENT_ID)

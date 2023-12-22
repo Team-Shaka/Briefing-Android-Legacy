@@ -1,10 +1,7 @@
 package com.dev.briefing.presentation.detail
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +30,7 @@ fun ArticleDetailScreen(
     articleDetailViewModel: ArticleDetailViewModel = getViewModel(),
     articleId: Long,
     onBackClick: () -> Unit = {},
-    navController: NavController
+    navController: NavController = rememberNavController()
 ) {
     LaunchedEffect(articleId) {
         articleDetailViewModel.loadBriefingArticle(articleId)
@@ -75,7 +72,16 @@ fun ArticleDetailScreen(
                         date = article.createdDate.toString(),
                         section = article.category.typeName,
                         generatedEngine = article.gptModel,
-                        bookmarkCount = 149
+                        scrapCount = article.scrapCount,
+                        isScrapingInProgress = uiState.isScrapingInProgress,
+                        isScrapped = article.isScrap,
+                        onScrapClick = {
+                            if (article.isScrap) {
+                                articleDetailViewModel.unScrap(article.id)
+                            } else {
+                                articleDetailViewModel.setScrap(article.id)
+                            }
+                        }
                     )
 
                     Spacer(
@@ -112,7 +118,7 @@ fun ArticleDetailScreen(
 @Preview
 fun ArticleDetailScreenPreview() {
     BriefingTheme {
-        ArticleDetailScreen(navController = rememberNavController(), articleId = 0)
+        ArticleDetailScreen(articleId = 0)
     }
 }
 
@@ -257,7 +263,9 @@ fun ArticleHeaderPreview() {
             date = "1970.01.01 아침",
             section = "사회 #1",
             generatedEngine = "GPT-3로 생성됨",
-            bookmarkCount = 763
+            scrapCount = 763,
+            isScrapped = true,
+            onScrapClick = {}
         )
     }
 }
@@ -269,7 +277,10 @@ fun ArticleDetailHeader(
     date: String,
     section: String,
     generatedEngine: String,
-    bookmarkCount: Int
+    scrapCount: Int,
+    isScrapped: Boolean = false,
+    isScrapingInProgress: Boolean = false,
+    onScrapClick: () -> Unit
 ) {
     Row(modifier) {
         Column(
@@ -278,7 +289,7 @@ fun ArticleDetailHeader(
                 .weight(1f)
         ) {
             Text(
-                style = MaterialTheme.typography.titleLarge.copy(
+                style = BriefingTheme.typography.TitleStyleBold.copy(
                     color = Color.Black
                 ), text = title
             )
@@ -296,7 +307,7 @@ fun ArticleDetailHeader(
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = bookmarkCount.toString(),
+                text = scrapCount.toString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 13.sp,
                     fontWeight = FontWeight(400),
@@ -304,11 +315,22 @@ fun ArticleDetailHeader(
                 )
             )
 
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(id = R.drawable.bookmark_breifingcard),
-                    contentDescription = null
+            if (isScrapingInProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(24.dp, 24.dp)
                 )
+            } else {
+
+                IconButton(onClick = onScrapClick) {
+                    Icon(
+                        painter = if (isScrapped) painterResource(id = R.drawable.bookmark_enable) else painterResource(
+                            id = R.drawable.bookmark_breifingcard
+                        ),
+                        tint = if (isScrapped) BriefingTheme.color.PrimaryBlue else BriefingTheme.color.TextGray,
+                        contentDescription = null
+                    )
+                }
             }
         }
     }

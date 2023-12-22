@@ -28,12 +28,18 @@ class AuthInterceptor(
                 .header("User-Agent", "Android")
                 .header("content-type", "application/json")
                 .apply {
-                    if (token != null)
+                    if (token != null) {
                         header("Authorization", "Bearer $token")
+                        Logger.d("request token : $token")
+                    }
                 }.build()
         )
 
-        Logger.d("response code : ${response.code} ${response.message}")
+        if (response.code == 200 || response.code == 201) {
+            Logger.d("response code : ${response.code} ${response.message}")
+        } else {
+            Logger.e("response code : ${response.code} ${response.peekBody(2048).string()}")
+        }
 
         if (response.code == 401 && token != null) {
             Logger.d("refresh token")

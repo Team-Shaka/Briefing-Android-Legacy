@@ -72,15 +72,12 @@ fun SettingScreen(
             onConfirmation = {
                 authViewModel.withdrawal(authPreferenceHelper.getMemberId())
                 openExitDialog.value = false
-
-                authPreferenceHelper.clearToken()
-                authPreferenceHelper.clearMemberId()
                 openLogOutDialog.value = false
-
-                val intent = Intent(context, SignInActivity::class.java)
-                startActivity(context, intent, null)
-                val activity = context as? ComponentActivity
-                activity?.finish()
+//
+//                val intent = Intent(context, SignInActivity::class.java)
+//                startActivity(context, intent, null)
+//                val activity = context as? ComponentActivity
+//                activity?.finish()
 
             },
             dialogTitle = R.string.dialog_exit_title,
@@ -221,29 +218,32 @@ fun SettingScreen(
                     startActivity(context, intent, null)
                 }
             )
-            //로그 아웃 및 회원 탈퇴
-            SettingSection(R.string.setting_section_auth)
-            SettingMenuItem(
-                type = SettingMenu(
-                    isArrow = true,
-                ),
-                title = R.string.setting_logout,
-                onClick = {
-                    Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
-                    openLogOutDialog.value = true
-                }
-            )
-            SettingMenuItem(
-                type = SettingMenu(
-                    isArrow = true,
-                ),
-                title = R.string.setting_signout,
-                titleColor = BriefingTheme.color.TextRed,
-                onClick = {
-                    Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
-                    openExitDialog.value = true
-                }
-            )
+
+            if (authPreferenceHelper.getMemberId() != -1) {
+                //로그 아웃 및 회원 탈퇴
+                SettingSection(R.string.setting_section_auth)
+                SettingMenuItem(
+                    type = SettingMenu(
+                        isArrow = true,
+                    ),
+                    title = R.string.setting_logout,
+                    onClick = {
+                        Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
+                        openLogOutDialog.value = true
+                    }
+                )
+                SettingMenuItem(
+                    type = SettingMenu(
+                        isArrow = true,
+                    ),
+                    title = R.string.setting_signout,
+                    titleColor = BriefingTheme.color.TextRed,
+                    onClick = {
+                        Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
+                        openExitDialog.value = true
+                    }
+                )
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class BriefingArticleResponse(
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Long,
     @SerializedName("ranks") val ranks: Int,
     @SerializedName("title") val title: String,
     @SerializedName("subtitle") val subtitle: String,

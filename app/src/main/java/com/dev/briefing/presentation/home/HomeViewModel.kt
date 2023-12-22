@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.respository.BriefingRepository
+import com.dev.briefing.model.BriefingCategoryArticles
 import com.dev.briefing.model.BriefingCompactArticle
 import com.dev.briefing.model.enum.BriefingArticleCategory
 import com.dev.briefing.model.enum.TimeOfDay
@@ -25,7 +26,7 @@ class HomeViewModel(
     private val errorOccurCategories: SnapshotStateMap<BriefingArticleCategory, String> =
         mutableStateMapOf()
     private val currentLoadingCategories: MutableSet<BriefingArticleCategory> = mutableSetOf()
-    private val briefingArticles: SnapshotStateMap<BriefingArticleCategory, List<BriefingCompactArticle>> =
+    private val briefingArticles: SnapshotStateMap<BriefingArticleCategory, BriefingCategoryArticles> =
         mutableStateMapOf()
 
     private val _briefingArticlesState =
@@ -55,7 +56,7 @@ class HomeViewModel(
                 )
             }.onSuccess {
                 currentLoadingCategories.remove(briefingArticleCategory)
-                briefingArticles[briefingArticleCategory] = it.briefingCompactArticles
+                briefingArticles[briefingArticleCategory] = it
                 updateUiState()
             }.onFailure {
                 currentLoadingCategories.remove(briefingArticleCategory)

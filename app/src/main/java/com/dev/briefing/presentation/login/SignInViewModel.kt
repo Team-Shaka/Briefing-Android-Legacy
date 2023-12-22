@@ -92,6 +92,8 @@ class SignInViewModel(
                 val response = authRepository.signOut(memberId)
                 Log.d(SERVER_TAG, response.code)
 //                _statusMsg.value = response.message
+                authPreferenceHelper.clearToken()
+                authPreferenceHelper.clearMemberId()
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
 //                _statusMsg.value = e.toString()

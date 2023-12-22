@@ -34,9 +34,11 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
         { backStackEntry ->
             val id: Long = backStackEntry.arguments?.getLong("id") ?: 0
             ArticleDetailScreen(
+                articleId = id,
                 onBackClick = {
                     navController.popBackStack()
-                }, navController = navController, articleId = id
+                },
+                navController = navController
             )
         }
         composable(route = HomeScreen.Scrap.route) {

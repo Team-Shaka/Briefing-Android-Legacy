@@ -6,7 +6,7 @@ import com.dev.briefing.model.enum.TimeOfDay
 import java.time.LocalDate
 
 data class BriefingArticle(
-    val id: Int,
+    val id: Long,
     val ranks: Int,
     val title: String,
     val subtitle: String,
