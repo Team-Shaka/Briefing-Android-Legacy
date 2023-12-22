@@ -10,13 +10,13 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface BriefingApi {
-    @GET("/v2/briefings")
+    @GET("briefings")
     suspend fun getBriefingCategoryArticles(
         @Query("type") type: String,
         @Query("date") date: String?,
         @Query("timeOfDay") timeOfDay: String?
     ): CommonResponse<BriefingCategoryArticlesResponse>
 
-    @GET("/v2/briefings/{id}")
+    @GET("briefings/{id}")
     suspend fun getBriefingArticle(@Path("id") id: Long): CommonResponse<BriefingArticleResponse>
 }

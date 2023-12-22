@@ -11,18 +11,18 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface AuthApi {
-    @POST("/members/auth/{provider}")
+    @POST("members/auth/{provider}")
     suspend fun signInWithSocialProvider(
         @Path("provider") provider : String,
         @Body identityToken : SocialLoginRequest,
     ): CommonResponse<SocialLoginResponse>
 
-    @DELETE("/members/{memberId}")
+    @DELETE("members/{memberId}")
     suspend fun withdrawal(
         @Path("memberId") memberId : Int,
     ): CommonResponse<SingoutResponse>
 
-    @POST("/members/auth/token")
+    @POST("members/auth/token")
     suspend fun getAccessToken(
         @Body refreshToken : TokenRequest,
     ): CommonResponse<SocialLoginResponse>

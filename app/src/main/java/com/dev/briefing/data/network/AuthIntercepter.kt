@@ -36,7 +36,7 @@ class AuthInterceptor(
         )
 
         if (response.code == 200 || response.code == 201) {
-            Logger.d("response code : ${response.code} ${response.message}")
+            Logger.d("url : ${response.request.url} response code : ${response.code} ${response.peekBody(2048).string()}")
         } else {
             Logger.e("response code : ${response.code} ${response.peekBody(2048).string()}")
         }

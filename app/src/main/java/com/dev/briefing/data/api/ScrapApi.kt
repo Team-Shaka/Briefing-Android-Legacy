@@ -16,7 +16,7 @@ interface ScrapApi {
      * 스크랩 리스트 반환하기
      * @Path memberId
      */
-    @GET("/v2/scraps/briefings/members/{memberId}")
+    @GET("scraps/briefings/members/{memberId}")
     suspend fun getScrap(
         @Path("memberId") memberId: Int,
     ): CommonResponse<List<ScrapResponse>>
@@ -26,7 +26,7 @@ interface ScrapApi {
      * @Body memberId
      * @Body briefingId
      */
-    @POST("/scraps/briefings")
+    @POST("scraps/briefings")
     suspend fun setScrap(
         @Body memberInfo: SetScrapRequest,
     ): CommonResponse<SetScrapResponse>
@@ -35,7 +35,7 @@ interface ScrapApi {
      * 스크랩 해제하기
      * @@Path scrapId
      */
-    @DELETE("/scraps/briefings/{briefingId}/members/{memberId}")
+    @DELETE("scraps/briefings/{briefingId}/members/{memberId}")
     suspend fun setUnScrap(
         @Path("briefingId") briefingId: Long,
         @Path("memberId") memberId: Int,

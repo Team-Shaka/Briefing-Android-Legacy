@@ -322,6 +322,7 @@ fun ArticleDetailHeader(
                 )
             } else {
 
+
                 IconButton(onClick = onScrapClick) {
                     Icon(
                         painter = if (isScrapped) painterResource(id = R.drawable.bookmark_enable) else painterResource(
