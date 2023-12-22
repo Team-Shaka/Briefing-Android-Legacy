@@ -2,7 +2,7 @@ package com.dev.briefing.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class GoogleSocialResponse(
+data class SocialLoginResponse(
     @SerializedName("memberId")
     val memberId: Int,
     @SerializedName("accessToken")
@@ -11,7 +11,7 @@ data class GoogleSocialResponse(
     val refreshToken: String,
 )
 
-data class GoogleRequest(
+data class SocialLoginRequest(
     @SerializedName("identityToken")
     val identityToken: String,
 )
