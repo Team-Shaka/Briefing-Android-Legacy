@@ -41,6 +41,20 @@ fun SettingScreen(
     onBackClick: () -> Unit,
     settingViewModel: SettingViewModel = koinViewModel()
 ) {
+    val _uiState =
+        settingViewModel.settingUiState.collectAsStateWithLifecycle(SettingUiState.Default)
+    when (val uiState = _uiState.value) {
+        is SettingUiState.AccountDeletionCompleted -> {
+            Toast.makeText(LocalContext.current, "회원 탈퇴가 완료되었습니다", Toast.LENGTH_LONG).show()
+            val intent = Intent(LocalContext.current, SignInActivity::class.java)
+            startActivity(LocalContext.current, intent, null)
+            val activity = LocalContext.current as? Activity
+            activity?.finish()
+        }
+
+        else -> {}
+    }
+
     val authPreferenceHelper: AuthPreferenceHelper = AuthPreferenceHelper(LocalContext.current)
 
     val authViewModel: SignInViewModel = getViewModel()
@@ -70,15 +84,7 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openExitDialog.value = false },
             onConfirmation = {
-                authViewModel.withdrawal(authPreferenceHelper.getMemberId())
-                openExitDialog.value = false
-                openLogOutDialog.value = false
-//
-//                val intent = Intent(context, SignInActivity::class.java)
-//                startActivity(context, intent, null)
-//                val activity = context as? ComponentActivity
-//                activity?.finish()
-
+                settingViewModel.deleteUser()
             },
             dialogTitle = R.string.dialog_exit_title,
             dialogText = R.string.dialog_exit_text,

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.respository.AuthRepository
-import com.dev.briefing.presentation.detail.ArticleDetailUiState
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.preference.AuthPreferenceHelper
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -82,21 +81,6 @@ class SignInViewModel(
 
             else -> {
                 // Catch any unrecognized credential type here.
-            }
-        }
-    }
-
-    fun withdrawal(memberId: Int) {
-        viewModelScope.launch {
-            try {
-                val response = authRepository.signOut(memberId)
-                Log.d(SERVER_TAG, response.code)
-//                _statusMsg.value = response.message
-                authPreferenceHelper.clearToken()
-                authPreferenceHelper.clearMemberId()
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-//                _statusMsg.value = e.toString()
             }
         }
     }

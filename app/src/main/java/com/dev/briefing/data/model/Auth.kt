@@ -20,7 +20,7 @@ data class TokenRequest(
     val refreshToken: String,
 )
 
-data class SingoutResponse(
+data class MemberDeleteResponse(
     @SerializedName("quitAt")
     val quitAt: String,
 )

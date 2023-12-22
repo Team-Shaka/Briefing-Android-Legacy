@@ -4,7 +4,7 @@ import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.model.response.common.CommonResponse
 import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.model.SocialLoginResponse
-import com.dev.briefing.data.model.SingoutResponse
+import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.TokenRequest
 
 class AuthDataSourceImpl(private val authApi: AuthApi) : AuthDataSource {
@@ -12,8 +12,8 @@ class AuthDataSourceImpl(private val authApi: AuthApi) : AuthDataSource {
         return authApi.signInWithSocialProvider(provider, identityToken)
     }
 
-    override suspend fun withdrawal(memberId: Int): CommonResponse<SingoutResponse> {
-        return authApi.withdrawal(memberId)
+    override suspend fun deleteMember(memberId: Int): CommonResponse<MemberDeleteResponse> {
+        return authApi.deleteMember(memberId)
     }
 
     override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<SocialLoginResponse> {

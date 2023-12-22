@@ -3,7 +3,7 @@ package com.dev.briefing.data.api
 import com.dev.briefing.data.model.response.common.CommonResponse
 import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.model.SocialLoginResponse
-import com.dev.briefing.data.model.SingoutResponse
+import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.TokenRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -18,9 +18,9 @@ interface AuthApi {
     ): CommonResponse<SocialLoginResponse>
 
     @DELETE("members/{memberId}")
-    suspend fun withdrawal(
+    suspend fun deleteMember(
         @Path("memberId") memberId : Int,
-    ): CommonResponse<SingoutResponse>
+    ): CommonResponse<MemberDeleteResponse>
 
     @POST("members/auth/token")
     suspend fun getAccessToken(
