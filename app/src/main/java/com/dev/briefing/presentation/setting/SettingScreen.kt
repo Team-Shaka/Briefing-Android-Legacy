@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import com.dev.briefing.navigation.HomeScreen
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ComponentActivity
 import androidx.core.content.ContextCompat.startActivity
@@ -20,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.R
-import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.setting.component.SettingMenu
@@ -29,12 +28,9 @@ import com.dev.briefing.presentation.setting.component.SettingSection
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_TAG
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.util.extension.convert.formatTime
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -45,6 +41,22 @@ fun SettingScreen(
     onBackClick: () -> Unit,
     settingViewModel: SettingViewModel = koinViewModel()
 ) {
+    val _uiState =
+        settingViewModel.settingUiState.collectAsStateWithLifecycle(SettingUiState.Default)
+    when (val uiState = _uiState.value) {
+        is SettingUiState.AccountDeletionCompleted -> {
+            Toast.makeText(LocalContext.current, "회원 탈퇴가 완료되었습니다", Toast.LENGTH_LONG).show()
+            val intent = Intent(LocalContext.current, SignInActivity::class.java)
+            startActivity(LocalContext.current, intent, null)
+            val activity = LocalContext.current as? Activity
+            activity?.finish()
+        }
+
+        else -> {}
+    }
+
+    val authPreferenceHelper: AuthPreferenceHelper = AuthPreferenceHelper(LocalContext.current)
+
     val authViewModel: SignInViewModel = getViewModel()
     val context = LocalContext.current
     val openLogOutDialog = remember { mutableStateOf(false) }
@@ -72,19 +84,7 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openExitDialog.value = false },
             onConfirmation = {
-                authViewModel.signout(prefs.getSharedPreference(MEMBER_ID, -1))
-                openExitDialog.value = false
-
-                prefs.removeSharedPreference(MEMBER_ID)
-                prefs.removeSharedPreference(JWT_TOKEN)
-                prefs.removeSharedPreference(REFRESH_TOKEN)
-                openLogOutDialog.value = false
-
-                val intent = Intent(context, SignInActivity::class.java)
-                startActivity(context, intent, null)
-                val activity = context as? ComponentActivity
-                activity?.finish()
-
+                settingViewModel.deleteUser()
             },
             dialogTitle = R.string.dialog_exit_title,
             dialogText = R.string.dialog_exit_text,
@@ -95,9 +95,8 @@ fun SettingScreen(
         CommonDialog(
             onDismissRequest = { openLogOutDialog.value = false },
             onConfirmation = {
-                prefs.removeSharedPreference(MEMBER_ID)
-                prefs.removeSharedPreference(JWT_TOKEN)
-                prefs.removeSharedPreference(REFRESH_TOKEN)
+                authPreferenceHelper.clearToken()
+                authPreferenceHelper.clearMemberId()
                 openLogOutDialog.value = false
 
                 val intent = Intent(context, SignInActivity::class.java)
@@ -119,7 +118,11 @@ fun SettingScreen(
         horizontalAlignment = Alignment.Start,
     ) {
         item {
-            CommonHeader(onBackClick = onBackClick, header = "설정", color = BriefingTheme.color.BackgroundWhite, isPadding = true)
+            CommonHeader(
+                onBackClick = onBackClick,
+                header = "설정",
+                color = BriefingTheme.color.BackgroundWhite
+            )
             //알림
             SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(
@@ -221,29 +224,32 @@ fun SettingScreen(
                     startActivity(context, intent, null)
                 }
             )
-            //로그 아웃 및 회원 탈퇴
-            SettingSection(R.string.setting_section_auth)
-            SettingMenuItem(
-                type = SettingMenu(
-                    isArrow = true,
-                ),
-                title = R.string.setting_logout,
-                onClick = {
-                    Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
-                    openLogOutDialog.value = true
-                }
-            )
-            SettingMenuItem(
-                type = SettingMenu(
-                    isArrow = true,
-                ),
-                title = R.string.setting_signout,
-                titleColor = BriefingTheme.color.TextRed,
-                onClick = {
-                    Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
-                    openExitDialog.value = true
-                }
-            )
+
+            if (authPreferenceHelper.getMemberId() != -1) {
+                //로그 아웃 및 회원 탈퇴
+                SettingSection(R.string.setting_section_auth)
+                SettingMenuItem(
+                    type = SettingMenu(
+                        isArrow = true,
+                    ),
+                    title = R.string.setting_logout,
+                    onClick = {
+                        Log.d(ALARM_TAG, openLogOutDialog.value.toString() + "최초 클릭")
+                        openLogOutDialog.value = true
+                    }
+                )
+                SettingMenuItem(
+                    type = SettingMenu(
+                        isArrow = true,
+                    ),
+                    title = R.string.setting_signout,
+                    titleColor = BriefingTheme.color.TextRed,
+                    onClick = {
+                        Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
+                        openExitDialog.value = true
+                    }
+                )
+            }
         }
     }
 }

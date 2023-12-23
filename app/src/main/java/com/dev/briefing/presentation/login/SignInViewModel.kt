@@ -1,94 +1,87 @@
 package com.dev.briefing.presentation.login
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialResponse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleRequest
+import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.respository.AuthRepository
-import com.dev.briefing.data.respository.BriefingRepository
-import com.dev.briefing.data.respository.BriefingRepositoryImpl
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.REFRESH_TOKEN
 import com.dev.briefing.util.SERVER_TAG
+import com.dev.briefing.util.preference.AuthPreferenceHelper
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.orhanobut.logger.Logger
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-class SignInViewModel(private val repository: AuthRepository) : ViewModel() {
+class SignInViewModel(
+    private val authRepository: AuthRepository,
+    private val authPreferenceHelper: AuthPreferenceHelper,
+) : ViewModel() {
 
-    private val _accessToken: MutableLiveData<String> = MutableLiveData<String>()
-    val accessToken: LiveData<String>
-        get() = _accessToken
+    private val _signInState =
+        MutableStateFlow<SignInUiState>(SignInUiState.Default)
 
-    private val _statusMsg: MutableLiveData<String> = MutableLiveData<String>("")
-    val statusMsg: LiveData<String>
-        get() = _statusMsg
+    val signInUiState: StateFlow<SignInUiState> =
+        _signInState.asStateFlow()
 
-    private val _result:MutableLiveData<Boolean>  = MutableLiveData<Boolean>()
-    val result: LiveData<Boolean>
-        get() = _result
-    fun getLoginCode(idToken: String){
+    private fun handleGoogleIdToken(idToken: String) {
+        _signInState.update { SignInUiState.Loading }
+
         viewModelScope.launch {
-            try {
-                val response = repository.getLoginToken(
-                    GoogleRequest(
+            runCatching {
+                authRepository.signInWithSocialProvider(
+                    "google",
+                    SocialLoginRequest(
                         identityToken = idToken
                     )
                 )
-                Log.d("Google", "7: ${response.message} 서버 통신완료")
-                _accessToken.value = response.result.accessToken
-                //save preference
-                prefs.putSharedPreference(JWT_TOKEN,response.result.accessToken)
-                prefs.putSharedPreference(REFRESH_TOKEN,response.result.refreshToken)
-                prefs.putSharedPreference(MEMBER_ID,response.result.memberId)
-                Log.d("Google", "8: ${prefs.getSharedPreference(MEMBER_ID,-1)} SharePreference 저장완료")
-                _statusMsg.value = response.message
-                _result.value= true
-                Log.d("Google", "9: api 호출 완료 _result.value = ${_result.value}")
-
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-                _statusMsg.value = e.toString()
-                _result.value = false
-            }
-        }
-        Log.d("Google", "10: coroutine 끝")
-
-    }
-    fun signout(memberId:Int) {
-        viewModelScope.launch {
-            try {
-                val response = repository.signOut(memberId)
-                Log.d(SERVER_TAG, response.code)
-                _statusMsg.value = response.message
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-                _statusMsg.value = e.toString()
-                getAcessToken(prefs.getSharedPreference(REFRESH_TOKEN,""))
-//                signout(memberId)
-            }
-        }
-    }
-
-    fun getAcessToken(refreshToken:String) {
-        viewModelScope.launch {
-            try {
-                val response = repository.getAccessToken(
-                    com.dev.briefing.data.model.TokenRequest(
-                        refreshToken = refreshToken
+            }.onSuccess {
+                it.result.let { socialLoginResponse ->
+                    authPreferenceHelper.saveToken(
+                        socialLoginResponse.accessToken,
+                        socialLoginResponse.refreshToken
                     )
-                )
-                Log.d(SERVER_TAG, response.code)
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
+                    authPreferenceHelper.saveMemberId(socialLoginResponse.memberId)
+
+                    Logger.d(socialLoginResponse)
+
+                    _signInState.update { SignInUiState.Success }
+                }
+            }.onFailure {
+                _signInState.update { SignInUiState.Error }
+                Logger.e(it.message ?: "error in handleGoogleIdToken")
             }
         }
     }
 
+    fun handleCredentialSignIn(result: GetCredentialResponse) {
+        _signInState.update { SignInUiState.Loading }
+        when (val credential = result.credential) {
+            is CustomCredential -> {
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    try {
+                        val googleIdTokenCredential = GoogleIdTokenCredential
+                            .createFrom(credential.data)
+
+                        handleGoogleIdToken(googleIdTokenCredential.idToken)
+                    } catch (e: GoogleIdTokenParsingException) {
+                        _signInState.update { SignInUiState.Error }
+                        Logger.e(e.localizedMessage ?: "GoogleIdTokenParsingException")
+                    }
+                } else {
+                    // Catch any unrecognized custom credential type here.
+                    _signInState.update { SignInUiState.Error }
+                }
+            }
+
+            else -> {
+                // Catch any unrecognized credential type here.
+            }
+        }
+    }
 }

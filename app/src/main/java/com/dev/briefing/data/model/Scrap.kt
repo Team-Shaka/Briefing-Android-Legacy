@@ -24,7 +24,7 @@ data class SetScrapRequest(
     @SerializedName("memberId")
     val memberId: Int,
     @SerializedName("briefingId")
-    val briefingId: Int,
+    val briefingId: Long,
 )
 
 data class ScrapResponse(

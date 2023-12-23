@@ -5,10 +5,8 @@ import com.dev.briefing.BuildConfig
 import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.api.BriefingApi
 import com.dev.briefing.data.api.ScrapApi
-import com.dev.briefing.data.network.AddCookiesInterceptor
-import com.dev.briefing.data.network.NetworkInterceptor
+import com.dev.briefing.data.network.AuthInterceptor
 import com.google.gson.GsonBuilder
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
@@ -19,8 +17,7 @@ val networkModule = module {
     single {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addNetworkInterceptor(NetworkInterceptor())
-            .addInterceptor(AddCookiesInterceptor())
+            .addInterceptor(AuthInterceptor(get()))
             .build()
     }
 
@@ -41,6 +38,5 @@ val networkModule = module {
     single<ScrapApi> {
         get<Retrofit>().create(ScrapApi::class.java)
     }
-
 
 }

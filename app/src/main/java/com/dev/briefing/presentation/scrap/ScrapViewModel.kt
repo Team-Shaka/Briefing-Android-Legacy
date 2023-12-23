@@ -10,22 +10,21 @@ import com.dev.briefing.data.model.ScrapResponse
 import com.dev.briefing.data.respository.ScrapRepository
 import com.dev.briefing.model.Scrap
 import com.dev.briefing.model.toScrap
-import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
+class ScrapViewModel(private val repository: ScrapRepository, private val authPreferenceHelper: AuthPreferenceHelper) : ViewModel() {
 
     private val _scrap: MutableStateFlow<List<Scrap>> =
         MutableStateFlow(listOf())
     val scrap: StateFlow<List<Scrap>>
         get() = _scrap
 
-    val memberId: Int = MainApplication.prefs.getSharedPreference(MEMBER_ID, 0)
+    val memberId: Int = authPreferenceHelper.getMemberId()
 
     init {
         getScrapData()
@@ -48,7 +47,6 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
                     }
                     _scrap.value = tmpScrapList
                 }
-                _scrap.collect()
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
             }

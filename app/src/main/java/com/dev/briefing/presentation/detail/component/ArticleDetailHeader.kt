@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import com.dev.briefing.R
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.utils.CommonDialog
-import com.dev.briefing.util.MEMBER_ID
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SCRAP_TAG
+/*
 
 @Composable
 fun DetailHeader(
@@ -51,10 +51,12 @@ fun DetailHeader(
             confirmColor = BriefingTheme.color.PrimaryBlue
         )
     }
-    /**  스크랩 관련 변수
+    */
+/**  스크랩 관련 변수
      * 1. scrap img
      * 2.
-     */
+     *//*
+
 
     //1. scrapImg resource 정의
     val unScrapImg = painterResource(id = R.drawable.scrap_normal)
@@ -135,4 +137,4 @@ fun DetailHeader(
         )
 
     }
-}
+}*/
