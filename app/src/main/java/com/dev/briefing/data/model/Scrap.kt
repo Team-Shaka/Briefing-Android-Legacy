@@ -38,14 +38,8 @@ data class ScrapResponse(
     val subtitle: String,
     @SerializedName("date")
     val date: String,
-)
-data class ScrapViewData(
-    @SerializedName("briefingId")
-    val briefingId: Int,
-    @SerializedName("ranks")
-    val ranks: Int,
-    @SerializedName("title")
-    val title: String,
-    @SerializedName("subtitle")
-    val subtitle: String,
+    @SerializedName("gptModel")
+    val gptModel: String,
+    @SerializedName("timeOfDay")
+    val timeOfDay: String,
 )

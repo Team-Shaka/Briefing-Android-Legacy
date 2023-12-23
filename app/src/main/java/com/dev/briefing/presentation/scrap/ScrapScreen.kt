@@ -5,10 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,7 +42,7 @@ fun ScrapScreen(
 ) {
     val context = LocalContext.current
     val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
-    val scrap = viewModel.scrap.observeAsState()
+    val scrap = viewModel.scrap.collectAsState()
 
     Column(
         modifier = modifier
@@ -57,17 +57,17 @@ fun ScrapScreen(
             onBackClick = onBackClick,
             color = BriefingTheme.color.BackgroundWhite
         )
-        if (scrap.value.isNullOrEmpty()) {
+        if (scrap.value.isEmpty()) {
             ScrapDefaultScreen()
         } else {
             LazyColumn(
                 modifier = Modifier.padding(vertical = 20.dp),
             ) {
-                items(scrap.value!!.size){idx->
-                    ScrapItem(scrap = scrap.value!![idx], onItemClick = { id ->
+                items(scrap.value.size){idx->
+                    ScrapItem(scrap = scrap.value[idx], onItemClick = { id ->
                         navController.navigate("${HomeScreen.Detail.route}/$id")
                     })
-                    Divider(color = BriefingTheme.color.SeperatorGray)
+                    HorizontalDivider(color = BriefingTheme.color.SeperatorGray)
                 }
 
             }
@@ -106,13 +106,7 @@ fun ScrapDefaultScreen() {
 @Composable
 fun PreviewScrapItem() {
     ScrapItem(
-        scrap = Scrap(
-            briefingId = 1,
-            title = "title",
-            subtitle = "subtitle",
-            ranks = 1,
-            date = "2023-1-1"
-        ),
+        scrap = tmpScrap,
         onItemClick = {}
     )
 }
@@ -139,8 +133,7 @@ fun ScrapItem(
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            //TODO: GPT 모델 번호 field 추가
-            text = "${scrap.date} | 이슈 #${scrap.ranks} | GPT-3로 생성됨",
+            text = "${scrap.date} ${scrap.timeOfDay}| 이슈 #${scrap.ranks} | ${scrap.gptModel}로 생성됨",
             style = BriefingTheme.typography.DetailStyleRegular.copy(
                 color = BriefingTheme.color.TextGray
             )

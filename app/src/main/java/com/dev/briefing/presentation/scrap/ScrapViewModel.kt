@@ -13,13 +13,15 @@ import com.dev.briefing.model.toScrap
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
 import com.dev.briefing.util.preference.AuthPreferenceHelper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ScrapViewModel(private val repository: ScrapRepository, private val authPreferenceHelper: AuthPreferenceHelper) : ViewModel() {
 
-    private val _scrap: MutableLiveData<List<Scrap>> =
-        MutableLiveData<List<Scrap>>(listOf())
-    val scrap: LiveData<List<Scrap>>
+    private val _scrap: MutableStateFlow<List<Scrap>> =
+        MutableStateFlow(listOf())
+    val scrap: StateFlow<List<Scrap>>
         get() = _scrap
 
     val memberId: Int = authPreferenceHelper.getMemberId()
@@ -38,20 +40,18 @@ class ScrapViewModel(private val repository: ScrapRepository, private val authPr
                 val response = repository.getScrap(
                     memberId = memberId
                 )
-                response.result.let {scrapList ->
-                    scrapList.forEach {scrap->
-                        if(_scrap.value == null || _scrap.value!!.isEmpty()){
-                            _scrap.value = listOf(scrap.toScrap())
-                        }else{
-                            _scrap.value = _scrap.value!! + listOf(scrap.toScrap())
-                        }
-                        Log.d(SERVER_TAG, _scrap.value.toString())
-
+                response.let { scrapList ->
+                    val tmpScrapList: MutableList<Scrap> = mutableListOf()
+                    scrapList.forEach { scrap ->
+                        tmpScrapList.add(scrap)
                     }
+                    _scrap.value = tmpScrapList
                 }
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
             }
         }
     }
+
+
 }

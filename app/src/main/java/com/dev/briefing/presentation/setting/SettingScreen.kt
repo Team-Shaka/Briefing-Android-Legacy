@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import com.dev.briefing.navigation.HomeScreen
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -19,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.R
-import com.dev.briefing.navigation.HomeScreen
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.setting.component.SettingMenu
