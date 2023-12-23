@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -67,7 +68,7 @@ fun ScrapScreen(
                     ScrapItem(scrap = scrap.value!![idx], onItemClick = { id ->
                         navController.navigate("${HomeScreen.Detail.route}/$id")
                     })
-                    Divider(color = BriefingTheme.color.SeperatorGray)
+                    HorizontalDivider(color = BriefingTheme.color.SeperatorGray)
                 }
 
             }

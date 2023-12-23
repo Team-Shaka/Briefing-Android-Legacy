@@ -1,20 +1,15 @@
 package com.dev.briefing.data.respository
 
 import com.dev.briefing.data.datasource.ScrapDataSource
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleSocialResponse
-import com.dev.briefing.data.model.ScrapResponse
-import com.dev.briefing.data.model.SetScrapRequest
-import com.dev.briefing.data.model.SetScrapResponse
-import com.dev.briefing.data.model.TokenRequest
-import com.dev.briefing.data.model.UnScrapResponse
+import com.dev.briefing.model.Scrap
+import com.dev.briefing.model.toScrap
 
-class ScrapRepositoryImpl(private val scrapDataSource: ScrapDataSource): ScrapRepository {
-    override suspend fun getScrap(memberId: Int): CommonResponse<List<ScrapResponse>> {
-        return scrapDataSource.getScrap(memberId)
-    }
-
-    override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse> {
-        return scrapDataSource.getAccessToken(refreshToken)
+class ScrapRepositoryImpl(private val scrapDataSource: ScrapDataSource) : ScrapRepository {
+    override suspend fun getScrap(memberId: Int): List<Scrap> {
+        val tmpList = mutableListOf<Scrap>()
+        scrapDataSource.getScrap(memberId).result.forEach {
+            tmpList.add(it.toScrap())
+        }
+        return tmpList
     }
 }
