@@ -26,12 +26,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dev.briefing.R
-import com.dev.briefing.data.model.Article
+import com.dev.briefing.model.RelatedArticle
 import com.dev.briefing.presentation.theme.BriefingTheme
 
 @Composable
 fun ArticleLink(
-    newsLink: Article,
+    newsLink: RelatedArticle,
     modifier: Modifier = Modifier,
     context: Context
 ) {

@@ -1,15 +1,14 @@
 package com.dev.briefing.data.datasource
 
-import com.dev.briefing.data.model.BriefingResponse
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleRequest
-import com.dev.briefing.data.model.GoogleSocialResponse
-import com.dev.briefing.data.model.SingoutResponse
+import com.dev.briefing.data.model.response.common.CommonResponse
+import com.dev.briefing.data.model.SocialLoginRequest
+import com.dev.briefing.data.model.SocialLoginResponse
+import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.TokenRequest
 
 interface AuthDataSource {
-    suspend fun getLoginCode(identityToken:GoogleRequest): CommonResponse<GoogleSocialResponse>
-    suspend fun signOut(memberId:Int): CommonResponse<SingoutResponse>
-    suspend fun getAccessToken(refreshToken:TokenRequest): CommonResponse<GoogleSocialResponse>
+    suspend fun signInWithSocialProvider(provider : String, identityToken: SocialLoginRequest): CommonResponse<SocialLoginResponse>
+    suspend fun deleteMember(memberId: Int): CommonResponse<MemberDeleteResponse>
+    suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<SocialLoginResponse>
 
 }

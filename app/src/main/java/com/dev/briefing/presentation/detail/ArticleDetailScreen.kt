@@ -1,8 +1,11 @@
 package com.dev.briefing.presentation.detail
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -11,60 +14,107 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
+import com.dev.briefing.model.RelatedArticle
 import com.dev.briefing.presentation.theme.BriefingTheme
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ArticleDetailScreen(
+    articleDetailViewModel: ArticleDetailViewModel = getViewModel(),
+    articleId: Long,
     onBackClick: () -> Unit = {},
-    navController: NavController
+    navController: NavController = rememberNavController()
 ) {
+    LaunchedEffect(articleId) {
+        articleDetailViewModel.loadBriefingArticle(articleId)
+    }
+
+    val _uiState =
+        articleDetailViewModel.briefingArticleState.collectAsStateWithLifecycle(ArticleDetailUiState.Loading)
+
     Column(
         Modifier
             .fillMaxSize()
-            .background(color = BriefingTheme.color.BackgroundWhite)) {
-        TopBar(onBackPressed = onBackClick)
+            .background(color = BriefingTheme.color.BackgroundWhite)
+    ) {
 
-        ArticleDetailHeader(
-            modifier = Modifier.padding(30.dp, 18.dp),
-            title = LoremIpsum(3).values.joinToString(),
-            date = "1970.01.01 아침",
-            section = "사회 #1",
-            generatedEngine = "GPT-3로 생성됨",
-            bookmarkCount = 149
-        )
+        when (val uiState = _uiState.value) {
+            is ArticleDetailUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
 
-        Spacer(
-            modifier = Modifier
-                .padding(20.dp, 0.dp)
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(color = Color(0xFFDADADA))
-        )
+            is ArticleDetailUiState.Error -> {
+            }
 
-        ArticleSummary(
-            modifier = Modifier.padding(30.dp, 20.dp),
-            summaryTitle = LoremIpsum(3).values.joinToString(),
-            summaryContent = LoremIpsum(30).values.joinToString()
-        )
+            is ArticleDetailUiState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    val article = uiState.article
+                    TopBar(onBackPressed = onBackClick)
 
-        Spacer(
-            modifier = Modifier
-                .padding(20.dp, 0.dp)
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(color = Color(0xFFDADADA))
-        )
+                    ArticleDetailHeader(
+                        modifier = Modifier.padding(30.dp, 18.dp),
+                        title = article.title,
+                        date = article.createdDate.toString(),
+                        section = article.category.typeName,
+                        generatedEngine = article.gptModel,
+                        scrapCount = article.scrapCount,
+                        isScrapingInProgress = uiState.isScrapingInProgress,
+                        isScrapped = article.isScrap,
+                        onScrapClick = {
+                            if (article.isScrap) {
+                                articleDetailViewModel.unScrap(article.id)
+                            } else {
+                                articleDetailViewModel.setScrap(article.id)
+                            }
+                        }
+                    )
 
-        RelatedArticles(Modifier.padding(32.dp, 16.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .padding(20.dp, 0.dp)
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(color = Color(0xFFDADADA))
+                    )
+
+                    ArticleSummary(
+                        modifier = Modifier.padding(30.dp, 20.dp),
+                        summaryTitle = article.subtitle,
+                        summaryContent = article.content
+                    )
+
+                    Spacer(
+                        modifier = Modifier
+                            .padding(20.dp, 0.dp)
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(color = Color(0xFFDADADA))
+                    )
+
+                    RelatedArticles(Modifier.padding(32.dp, 16.dp), article.relatedArticles)
+                }
+            }
+        }
     }
 }
 
@@ -73,12 +123,13 @@ fun ArticleDetailScreen(
 @Preview
 fun ArticleDetailScreenPreview() {
     BriefingTheme {
-        ArticleDetailScreen(navController = rememberNavController())
+        ArticleDetailScreen(articleId = 0)
     }
 }
 
 @Composable
-fun RelatedArticles(modifier: Modifier = Modifier) {
+fun RelatedArticles(modifier: Modifier = Modifier, relatedArticles: List<RelatedArticle>) {
+    val context = LocalContext.current
     Column(modifier) {
         Text(
             text = "관련 기사",
@@ -91,14 +142,30 @@ fun RelatedArticles(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        LazyColumn(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(2) {
-                RelatedArticle(
-                    LoremIpsum(3).values.joinToString(),
-                    LoremIpsum(4).values.joinToString()
-                )
+        relatedArticles.forEachIndexed { index, article ->
+            RelatedArticle(
+                article.press,
+                article.title
+            ) {
+                val webPage: Uri = Uri.parse(article.url)
+                val intent = Intent(Intent.ACTION_VIEW, webPage)
+                startActivity(context, intent, null)
+            }
+
+            if (index < relatedArticles.size - 1) {
+                Spacer(modifier = Modifier.height(10.dp))
             }
         }
+
+//
+//        LazyColumn(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+//            items(relatedArticles) {
+//                RelatedArticle(
+//                    it.press,
+//                    it.title
+//                )
+//            }
+//        }
     }
 }
 
@@ -106,16 +173,21 @@ fun RelatedArticles(modifier: Modifier = Modifier) {
 @Composable
 fun RelatedArticlePreview() {
     BriefingTheme {
-        RelatedArticle(LoremIpsum(3).values.joinToString(), LoremIpsum(4).values.joinToString())
+        RelatedArticle(LoremIpsum(3).values.joinToString(), LoremIpsum(4).values.joinToString()) {
+
+        }
     }
 }
 
 @Composable
-fun RelatedArticle(title: String, description: String) {
+fun RelatedArticle(title: String, description: String, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
             .border(1.dp, Color.Black)
+            .clickable {
+                onClick.invoke()
+            }
             .padding(16.dp, 10.dp)
     ) {
         Column(
@@ -206,7 +278,9 @@ fun ArticleHeaderPreview() {
             date = "1970.01.01 아침",
             section = "사회 #1",
             generatedEngine = "GPT-3로 생성됨",
-            bookmarkCount = 763
+            scrapCount = 763,
+            isScrapped = true,
+            onScrapClick = {}
         )
     }
 }
@@ -218,7 +292,10 @@ fun ArticleDetailHeader(
     date: String,
     section: String,
     generatedEngine: String,
-    bookmarkCount: Int
+    scrapCount: Int,
+    isScrapped: Boolean = false,
+    isScrapingInProgress: Boolean = false,
+    onScrapClick: () -> Unit
 ) {
     Row(modifier) {
         Column(
@@ -227,7 +304,7 @@ fun ArticleDetailHeader(
                 .weight(1f)
         ) {
             Text(
-                style = MaterialTheme.typography.titleLarge.copy(
+                style = BriefingTheme.typography.TitleStyleBold.copy(
                     color = Color.Black
                 ), text = title
             )
@@ -245,7 +322,7 @@ fun ArticleDetailHeader(
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = bookmarkCount.toString(),
+                text = scrapCount.toString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 13.sp,
                     fontWeight = FontWeight(400),
@@ -253,9 +330,20 @@ fun ArticleDetailHeader(
                 )
             )
 
-            IconButton(onClick = {}) {
+            val iconColor = animateColorAsState(
+                targetValue = when {
+                    isScrapingInProgress -> BriefingTheme.color.TextGray
+                    isScrapped -> BriefingTheme.color.PrimaryBlue
+                    else -> BriefingTheme.color.TextGray
+                }, label = ""
+            )
+
+            IconButton(onClick = { if (!isScrapingInProgress) onScrapClick.invoke() }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.bookmark_breifingcard),
+                    painter = if (isScrapped || isScrapingInProgress) painterResource(id = R.drawable.bookmark_enable) else painterResource(
+                        id = R.drawable.bookmark_breifingcard
+                    ),
+                    tint = iconColor.value,
                     contentDescription = null
                 )
             }

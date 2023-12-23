@@ -1,8 +1,6 @@
 package com.dev.briefing.util
 
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.di.androidSystemModule
 import com.dev.briefing.di.dataSourceModule
@@ -11,16 +9,21 @@ import com.dev.briefing.di.networkModule
 import com.dev.briefing.di.preferenceModule
 import com.dev.briefing.di.repositoryModule
 import com.dev.briefing.di.viewModelModule
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.Logger
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class MainApplication : Application() {
-    companion object {
-        lateinit var prefs: SharedPreferenceHelper
-    }
+
     override fun onCreate() {
         super.onCreate()
-        prefs = SharedPreferenceHelper(applicationContext)
+        // initialize log library
+        Logger.addLogAdapter(object : AndroidLogAdapter() {
+            override fun isLoggable(priority: Int, tag: String?): Boolean {
+                return BuildConfig.DEBUG
+            }
+        })
 
         startKoin {
             androidContext(this@MainApplication)
@@ -34,7 +37,5 @@ class MainApplication : Application() {
                 androidSystemModule,
             )
         }
-
-
     }
 }

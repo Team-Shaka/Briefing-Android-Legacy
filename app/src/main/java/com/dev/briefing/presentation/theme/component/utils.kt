@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -90,7 +91,7 @@ fun CommonDialog(
     dialogText: Int,
     dialogId: Int,
     confirmColor: Color = BriefingTheme.color.TextRed,
-    dismissText:Int = R.string.dialog_basic_dismiss,
+    dismissText: Int = R.string.dialog_basic_dismiss,
     modifier: Modifier = Modifier
 ) {
     Dialog(
@@ -98,14 +99,20 @@ fun CommonDialog(
     ) {
         Column(
             modifier = Modifier
-                .background(color = BriefingTheme.color.BackgroundWhite, shape = RoundedCornerShape(10.dp))
+                .background(
+                    color = BriefingTheme.color.BackgroundWhite,
+                    shape = RoundedCornerShape(10.dp)
+                )
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
                 text = stringResource(dialogTitle),
-                style = BriefingTheme.typography.TitleStyleBold.copy(fontSize = 20.sp, color = BriefingTheme.color.TextBlack)
+                style = BriefingTheme.typography.TitleStyleBold.copy(
+                    fontSize = 20.sp,
+                    color = BriefingTheme.color.TextBlack
+                )
             )
             Text(
                 text = stringResource(dialogText),
@@ -121,11 +128,15 @@ fun CommonDialog(
             ) {
                 Text(
                     modifier = Modifier
-                        .background(color = BriefingTheme.color.BackgrundGray, shape = RoundedCornerShape(size = 10.dp))
+                        .background(
+                            color = BriefingTheme.color.BackgrundGray,
+                            shape = RoundedCornerShape(size = 10.dp)
+                        )
                         .weight(1f)
                         .align(alignment = Alignment.CenterVertically)
-                        .padding(vertical = 15.dp)
-                        .clickable(onClick = onDismissRequest),
+                        .clip(RoundedCornerShape(size = 10.dp))
+                        .clickable(onClick = onDismissRequest)
+                        .padding(vertical = 15.dp),
                     text = stringResource(
                         dismissText,
                     ),
@@ -140,8 +151,9 @@ fun CommonDialog(
                             shape = RoundedCornerShape(size = 10.dp)
                         )
                         .weight(1f)
-                        .padding(vertical = 15.dp)
-                        .clickable(onClick = onConfirmation),
+                        .clip(RoundedCornerShape(size = 10.dp))
+                        .clickable(onClick = onConfirmation)
+                        .padding(vertical = 15.dp),
                     text = stringResource(
                         dialogId
                     ),

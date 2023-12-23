@@ -1,6 +1,7 @@
 package com.dev.briefing.navigation
 
 import BriefingHomeScreen
+import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -23,22 +24,21 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
                 onSettingClick = {
                     navController.navigate(HomeScreen.Setting.route)
                 },
-                navController = navController,
-                onBackClick = {
-                    navController.popBackStack()
-                }
+                navController = navController
             )
         }
         composable(
-            arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            arguments = listOf(navArgument("id") { type = NavType.LongType }),
             route = HomeScreen.Detail.route + "/{id}"
         )
         { backStackEntry ->
-            var id: Int = backStackEntry.arguments?.getInt("id") ?: 0
+            val id: Long = backStackEntry.arguments?.getLong("id") ?: 0
             ArticleDetailScreen(
+                articleId = id,
                 onBackClick = {
                     navController.popBackStack()
-                }, navController
+                },
+                navController = navController
             )
         }
         composable(route = HomeScreen.Scrap.route) {
