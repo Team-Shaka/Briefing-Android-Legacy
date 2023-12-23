@@ -367,11 +367,12 @@ fun TopBar(onBackPressed: () -> Unit) {
             )
         }
 
-        IconButton(onClick = onBackPressed, modifier = Modifier.align(Alignment.CenterEnd)) {
+        // TODO : enable when function developed
+        /*IconButton(onClick = onBackPressed, modifier = Modifier.align(Alignment.CenterEnd)) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_more_horiz_24),
                 contentDescription = null
             )
-        }
+        }*/
     }
 }
