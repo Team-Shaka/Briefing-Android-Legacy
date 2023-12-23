@@ -50,9 +50,7 @@ class HomeViewModel(
 
             runCatching {
                 briefingRepository.getBriefings(
-                    briefingArticleCategory,
-                    LocalDate.of(2023, 11, 30),
-                    TimeOfDay.MORNING
+                    briefingArticleCategory
                 )
             }.onSuccess {
                 currentLoadingCategories.remove(briefingArticleCategory)

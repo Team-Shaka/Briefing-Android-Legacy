@@ -1,5 +1,6 @@
 package com.dev.briefing.presentation.detail
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.animateColorAsState
@@ -27,7 +28,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
 import com.dev.briefing.model.RelatedArticle
+import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.theme.BriefingTheme
+import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -37,6 +41,25 @@ fun ArticleDetailScreen(
     onBackClick: () -> Unit = {},
     navController: NavController = rememberNavController()
 ) {
+    val context = LocalContext.current
+    val authPreferenceHelper = AuthPreferenceHelper(context)
+
+    val openSignInDialog = remember { mutableStateOf(false) }
+    if (openSignInDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openSignInDialog.value = false },
+            onConfirmation = {
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                openSignInDialog.value = false
+            },
+            dialogTitle = R.string.dialog_login_title,
+            dialogText = R.string.dialog_login_text,
+            dialogId = R.string.dialog_login_confirm,
+            confirmColor = BriefingTheme.color.PrimaryBlue
+        )
+    }
+
     LaunchedEffect(articleId) {
         articleDetailViewModel.loadBriefingArticle(articleId)
     }
@@ -81,6 +104,10 @@ fun ArticleDetailScreen(
                         isScrapingInProgress = uiState.isScrapingInProgress,
                         isScrapped = article.isScrap,
                         onScrapClick = {
+                            if (authPreferenceHelper.getMemberId() == -1){
+                                openSignInDialog.value = true
+                                return@ArticleDetailHeader
+                            }
                             if (article.isScrap) {
                                 articleDetailViewModel.unScrap(article.id)
                             } else {
