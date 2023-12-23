@@ -9,6 +9,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ fun ScrapScreen(
 ) {
     val context = LocalContext.current
     val viewModel: ScrapViewModel = getViewModel<ScrapViewModel>()
-    val scrap = viewModel.scrap.observeAsState()
+    val scrap = viewModel.scrap.collectAsState()
 
     Column(
         modifier = modifier

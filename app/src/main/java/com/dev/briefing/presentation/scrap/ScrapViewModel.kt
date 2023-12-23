@@ -15,6 +15,7 @@ import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
@@ -36,8 +37,23 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
      */
     fun getScrapData() {
         viewModelScope.launch {
-
+            try {
+                val response = repository.getScrap(
+                    memberId = memberId
+                )
+                response.let { scrapList ->
+                    val tmpScrapList: MutableList<Scrap> = mutableListOf()
+                    scrapList.forEach { scrap ->
+                        tmpScrapList.add(scrap)
+                    }
+                    _scrap.value = tmpScrapList
+                }
+                _scrap.collect()
+            } catch (e: Throwable) {
+                Log.d(SERVER_TAG, e.toString())
+            }
         }
     }
+
 
 }
