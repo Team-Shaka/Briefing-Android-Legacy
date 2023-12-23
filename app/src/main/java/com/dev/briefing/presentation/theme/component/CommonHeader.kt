@@ -3,21 +3,27 @@ package com.dev.briefing.presentation.theme.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.briefing.R
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dev.briefing.presentation.theme.BriefingTheme
+import java.time.format.TextStyle
 
 @Preview
 @Composable
@@ -36,50 +42,32 @@ fun CommonHeader(
     onBackClick: () -> Unit = {},
     header: String = "",
     color: Color = BriefingTheme.color.BackgroundWhite,
-    isPadding: Boolean = false
 ) {
-    ConstraintLayout(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = color)
-            .padding(
-                top = 24.dp, bottom = 15.dp, start = if (isPadding) {
-                    20.dp
-                } else {
-                    0.dp
-                }, end = if (isPadding) {
-                    20.dp
-                } else {
-                    0.dp
-                }
-            ),
-    )
-    {
-        val (backKey, title) = createRefs()
-        Image(
-            modifier = Modifier
-                .height(20.dp)
-                .clickable(onClick = onBackClick)
-                .constrainAs(backKey) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                },
-            painter = painterResource(
-                id = R.drawable.vector
-            ),
-            contentDescription = "뒤로가기"
-        )
+    Box(modifier.fillMaxWidth().background(color).padding(20.dp, 16.dp)) {
+        Box(modifier = Modifier
+            .size(33.dp)
+            .clickable(onClick = onBackClick)
+            .align(Alignment.CenterStart)) {
+            Image(
+                modifier = Modifier
+                    .size(8.dp, 16.dp)
+                    .align(Alignment.Center),
+                painter = painterResource(
+                    id = R.drawable.vector
+                ),
+                contentDescription = "뒤로가기"
+            )
+        }
+
         Text(
-            modifier = Modifier.constrainAs(title) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
             text = header,
-            style = BriefingTheme.typography.SubtitleStyleBold.copy(
-                color = BriefingTheme.color.TextBlack,
+            modifier = Modifier
+                .align(Alignment.Center),
+            style = BriefingTheme.typography.TitleStyleRegular.copy(
                 fontSize = 20.sp,
-                fontWeight = FontWeight(400)
+                fontWeight = FontWeight(400),
+                color = Color(0xFF000000),
+                textAlign = TextAlign.Center,
             )
         )
     }

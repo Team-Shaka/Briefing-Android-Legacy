@@ -101,7 +101,7 @@ fun SettingScreen(
 
                 val intent = Intent(context, SignInActivity::class.java)
                 startActivity(context, intent, null)
-                val activity = context as? ComponentActivity
+                val activity = context as? Activity
                 activity?.finish()
             },
             dialogTitle = R.string.dialog_logout_title,
@@ -138,8 +138,8 @@ fun SettingScreen(
                     timePickerDialog.show()
                 },
             )
-            //구독 정보
-            SettingSection(R.string.setting_section_premium)
+            // TODO : enable when starting premium service
+            /*SettingSection(R.string.setting_section_premium)
             SettingMenuItem(
                 type = SettingMenu(
                     isArrow = true,
@@ -148,7 +148,7 @@ fun SettingScreen(
                 onClick = {
                     navController.navigate(HomeScreen.Premium.route)
                 },
-            )
+            )*/
             //앱 정보
             SettingSection(R.string.setting_section_info)
             SettingMenuItem(
