@@ -1,6 +1,5 @@
 package com.dev.briefing.presentation.detail
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.animateColorAsState
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
@@ -98,13 +98,13 @@ fun ArticleDetailScreen(
                         modifier = Modifier.padding(30.dp, 18.dp),
                         title = article.title,
                         date = article.createdDate.toString(),
-                        section = article.category.typeName,
+                        section = "${stringResource(id = article.category.typeName)} #${article.ranks}",
                         generatedEngine = article.gptModel,
                         scrapCount = article.scrapCount,
                         isScrapingInProgress = uiState.isScrapingInProgress,
                         isScrapped = article.isScrap,
                         onScrapClick = {
-                            if (authPreferenceHelper.getMemberId() == -1){
+                            if (authPreferenceHelper.getMemberId() == -1) {
                                 openSignInDialog.value = true
                                 return@ArticleDetailHeader
                             }

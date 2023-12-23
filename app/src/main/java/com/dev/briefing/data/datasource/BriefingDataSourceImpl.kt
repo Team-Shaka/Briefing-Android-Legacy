@@ -3,8 +3,6 @@ package com.dev.briefing.data.datasource
 import com.dev.briefing.data.api.BriefingApi
 import com.dev.briefing.data.model.response.BriefingArticleResponse
 import com.dev.briefing.data.model.response.BriefingCategoryArticlesResponse
-import com.dev.briefing.data.model.response.BriefingCompactArticleResponse
-import com.dev.briefing.model.BriefingCategoryArticles
 import com.dev.briefing.model.enum.BriefingArticleCategory
 import com.dev.briefing.model.enum.TimeOfDay
 import java.time.LocalDate
@@ -18,7 +16,7 @@ class BriefingDataSourceImpl(private val briefingApi: BriefingApi) : BriefingDat
         timeOfDay: TimeOfDay?
     ): BriefingCategoryArticlesResponse {
         return briefingApi.getBriefingCategoryArticles(
-            type = type.typeName,
+            type = type.typeId,
             date = date?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
             timeOfDay = timeOfDay?.value
         ).result
