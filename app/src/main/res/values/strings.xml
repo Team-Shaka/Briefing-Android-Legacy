@@ -67,4 +67,9 @@
     <string name="title_tab_home_science">과학</string>
     <string name="title_tab_home_global">글로벌</string>
     <string name="title_tab_home_economy">경제</string>
+    <string name="name_category_korea">한국</string>
+    <string name="name_category_global">세계</string>
+    <string name="name_category_society">사회</string>
+    <string name="name_category_science">과학</string>
+    <string name="name_category_economy">경제</string>
 </resources>

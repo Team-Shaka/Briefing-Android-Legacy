@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
@@ -27,7 +28,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
 import com.dev.briefing.model.RelatedArticle
+import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.theme.BriefingTheme
+import com.dev.briefing.presentation.theme.utils.CommonDialog
+import com.dev.briefing.util.preference.AuthPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -37,6 +41,25 @@ fun ArticleDetailScreen(
     onBackClick: () -> Unit = {},
     navController: NavController = rememberNavController()
 ) {
+    val context = LocalContext.current
+    val authPreferenceHelper = AuthPreferenceHelper(context)
+
+    val openSignInDialog = remember { mutableStateOf(false) }
+    if (openSignInDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openSignInDialog.value = false },
+            onConfirmation = {
+                val intent = Intent(context, SignInActivity::class.java)
+                startActivity(context, intent, null)
+                openSignInDialog.value = false
+            },
+            dialogTitle = R.string.dialog_login_title,
+            dialogText = R.string.dialog_login_text,
+            dialogId = R.string.dialog_login_confirm,
+            confirmColor = BriefingTheme.color.PrimaryBlue
+        )
+    }
+
     LaunchedEffect(articleId) {
         articleDetailViewModel.loadBriefingArticle(articleId)
     }
@@ -75,12 +98,16 @@ fun ArticleDetailScreen(
                         modifier = Modifier.padding(30.dp, 18.dp),
                         title = article.title,
                         date = article.createdDate.toString(),
-                        section = article.category.typeName,
+                        section = "${stringResource(id = article.category.typeName)} #${article.ranks}",
                         generatedEngine = article.gptModel,
                         scrapCount = article.scrapCount,
                         isScrapingInProgress = uiState.isScrapingInProgress,
                         isScrapped = article.isScrap,
                         onScrapClick = {
+                            if (authPreferenceHelper.getMemberId() == -1) {
+                                openSignInDialog.value = true
+                                return@ArticleDetailHeader
+                            }
                             if (article.isScrap) {
                                 articleDetailViewModel.unScrap(article.id)
                             } else {
@@ -367,11 +394,12 @@ fun TopBar(onBackPressed: () -> Unit) {
             )
         }
 
-        IconButton(onClick = onBackPressed, modifier = Modifier.align(Alignment.CenterEnd)) {
+        // TODO : enable when function developed
+        /*IconButton(onClick = onBackPressed, modifier = Modifier.align(Alignment.CenterEnd)) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_more_horiz_24),
                 contentDescription = null
             )
-        }
+        }*/
     }
 }

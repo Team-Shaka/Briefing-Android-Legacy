@@ -168,7 +168,7 @@ fun formatBriefingDate(date: Date): String {
     val datePart = dateFormat.format(date)
     val hourPart = timeFormat.format(date).toInt()
 
-    val briefingPart = if (hourPart < 12) "아침 브리핑" else "저녁 브리핑"
+    val briefingPart = if (hourPart < 16) "아침 브리핑" else "저녁 브리핑"
 
     return "$datePart $briefingPart"
 }
