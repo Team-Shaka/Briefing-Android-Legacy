@@ -10,12 +10,12 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { HomeViewModel(
-        repository = get(),
+        briefingRepository = get(),
         dailyAlertManager = get(),
         dailyAlertTimePreferenceHelper = get()
     ) }
-    viewModel { (id: Int) -> ArticleDetailViewModel(repository = get(), id = id) }
-    viewModel { SignInViewModel(repository = get()) }
-    viewModel { SettingViewModel(dailyAlertTimePreferenceHelper = get(), dailyAlertManager = get()) }
-    viewModel { ScrapViewModel(repository = get())}
+    viewModel { ArticleDetailViewModel(briefingRepository = get(), scrapRepository = get(), authPreferenceHelper = get()) }
+    viewModel { SignInViewModel(authRepository = get(), authPreferenceHelper = get()) }
+    viewModel { SettingViewModel(dailyAlertTimePreferenceHelper = get(), dailyAlertManager = get(), authPreferenceHelper = get(), authRepository = get()) }
+    viewModel { ScrapViewModel(repository = get(), authPreferenceHelper = get())}
 }

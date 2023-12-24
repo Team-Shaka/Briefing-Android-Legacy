@@ -14,8 +14,8 @@ android {
         applicationId "com.dev.briefing"
         minSdk 28
         targetSdk 34
-        versionCode 3
-        versionName "1.1.1"
+        versionCode 4
+        versionName "2.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -57,7 +57,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.2'
+        kotlinCompilerExtensionVersion '1.4.3'
     }
     packagingOptions {
         resources {
@@ -75,12 +75,16 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01"
     //Compose UI Library
     implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation platform('androidx.compose:compose-bom:2023.10.01')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
-    
+    implementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.material3:material3:1.2.0-alpha12'
+    implementation 'androidx.compose.material3:material3-android:1.2.0-alpha12'
+
+
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation 'androidx.compose.ui:ui-tooling-android:1.5.4'
     //Test Library
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -123,4 +127,11 @@ dependencies {
     implementation "com.google.firebase:firebase-analytics"
 
     implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    implementation 'com.orhanobut:logger:2.2.0'
+
+    implementation "com.google.android.libraries.identity.googleid:googleid:1.1.0"
+
+    implementation("androidx.credentials:credentials:1.2.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
 }

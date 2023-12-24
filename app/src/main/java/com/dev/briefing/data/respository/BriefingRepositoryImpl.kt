@@ -1,35 +1,28 @@
 package com.dev.briefing.data.respository
 
-import com.dev.briefing.data.api.BriefingApi
 import com.dev.briefing.data.datasource.BriefingDataSource
-import com.dev.briefing.data.model.BriefingDetailResponse
-import com.dev.briefing.data.model.BriefingPreview
-import com.dev.briefing.data.model.BriefingResponse
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleSocialResponse
-import com.dev.briefing.data.model.SetScrapRequest
-import com.dev.briefing.data.model.SetScrapResponse
-import com.dev.briefing.data.model.TokenRequest
-import com.dev.briefing.data.model.UnScrapResponse
+import com.dev.briefing.data.model.response.toDomain
+import com.dev.briefing.model.BriefingArticle
+import com.dev.briefing.model.BriefingCategoryArticles
+import com.dev.briefing.model.enum.BriefingArticleCategory
+import com.dev.briefing.model.enum.TimeOfDay
+import java.time.LocalDate
 
-class BriefingRepositoryImpl(private val briefDataSource: BriefingDataSource) : BriefingRepository {
-    override suspend fun getBriefingKeyword(briefingDate: String, type: String): CommonResponse<BriefingResponse> {
-        return briefDataSource.getBriefingKeyword(briefingDate, type)
+class BriefingRepositoryImpl(private val briefingDataSource: BriefingDataSource) :
+    BriefingRepository {
+    override suspend fun getBriefings(
+        briefingArticleCategory: BriefingArticleCategory,
+        dateLocalDate: LocalDate?,
+        timeOfDay: TimeOfDay?
+    ): BriefingCategoryArticles {
+        return briefingDataSource.getBriefingCompactArticles(
+            briefingArticleCategory,
+            dateLocalDate,
+            timeOfDay
+        ).toDomain()
     }
 
-    override suspend fun getBriefingDetail(id: Int): CommonResponse<BriefingDetailResponse> {
-        return briefDataSource.getBriefingDetail(id)
-    }
-
-    override suspend fun setScrap(memberInfo: SetScrapRequest): CommonResponse<SetScrapResponse> {
-        return briefDataSource.setScrap(memberInfo)
-    }
-
-    override suspend fun unScrap(memberId: Int, briefingId: Int): CommonResponse<UnScrapResponse> {
-        return briefDataSource.setUnScrap(memberId = memberId, briefingId = briefingId)
-    }
-
-    override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse> {
-        return briefDataSource.getAccessToken(refreshToken)
+    override suspend fun getBriefingDetail(id: Long): BriefingArticle {
+        return briefingDataSource.getBriefingArticle(id).toDomain()
     }
 }

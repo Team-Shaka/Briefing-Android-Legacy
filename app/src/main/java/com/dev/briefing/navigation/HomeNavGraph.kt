@@ -1,6 +1,7 @@
 package com.dev.briefing.navigation
 
-import BriefingHome
+import BriefingHomeScreen
+import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -9,8 +10,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.dev.briefing.presentation.detail.ArticleDetailScreen
 import com.dev.briefing.presentation.scrap.ScrapScreen
+import com.dev.briefing.presentation.setting.PremiumScreen
 import com.dev.briefing.presentation.setting.SettingScreen
-
 
 
 fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
@@ -19,7 +20,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
         startDestination = HomeScreen.Home.route,
     ) {
         composable(route = HomeScreen.Home.route) {
-            BriefingHome(
+            BriefingHomeScreen(
                 onSettingClick = {
                     navController.navigate(HomeScreen.Setting.route)
                 },
@@ -27,15 +28,17 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
             )
         }
         composable(
-            arguments = listOf( navArgument("id") { type = NavType.IntType }),
-            route = HomeScreen.Detail.route+"/{id}")
-            {backStackEntry ->
-            var id: Int = backStackEntry.arguments?.getInt("id")?: 0
+            arguments = listOf(navArgument("id") { type = NavType.LongType }),
+            route = HomeScreen.Detail.route + "/{id}"
+        )
+        { backStackEntry ->
+            val id: Long = backStackEntry.arguments?.getLong("id") ?: 0
             ArticleDetailScreen(
+                articleId = id,
                 onBackClick = {
                     navController.popBackStack()
                 },
-                id = id
+                navController = navController
             )
         }
         composable(route = HomeScreen.Scrap.route) {
@@ -48,9 +51,17 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
         }
         composable(route = HomeScreen.Setting.route) {
             SettingScreen(
+                navController = navController,
                 onBackClick = {
                     navController.popBackStack()
                 },
+            )
+        }
+        composable(route = HomeScreen.Premium.route) {
+            PremiumScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
             )
         }
     }
@@ -59,7 +70,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
 sealed class HomeScreen(val route: String) {
     object Home : HomeScreen(route = "HOME")
     object Setting : HomeScreen(route = "SETTING")
+    object Premium : HomeScreen(route = "PREMIUM")
     object Scrap : HomeScreen(route = "SCRAP")
     object Detail : HomeScreen(route = "DETAIL")
-
 }

@@ -1,27 +1,18 @@
 package com.dev.briefing.data.datasource
 
-import com.dev.briefing.data.model.BriefingDetailResponse
-import com.dev.briefing.data.model.BriefingPreview
-import com.dev.briefing.data.model.BriefingResponse
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleSocialResponse
-import com.dev.briefing.data.model.SetScrapRequest
-import com.dev.briefing.data.model.SetScrapResponse
-import com.dev.briefing.data.model.TokenRequest
-import com.dev.briefing.data.model.UnScrapResponse
+import com.dev.briefing.data.model.response.BriefingArticleResponse
+import com.dev.briefing.data.model.response.BriefingCategoryArticlesResponse
+import com.dev.briefing.model.enum.BriefingArticleCategory
+import com.dev.briefing.model.enum.TimeOfDay
+import java.time.LocalDate
 
 
 interface BriefingDataSource {
+    suspend fun getBriefingCompactArticles(
+        type: BriefingArticleCategory,
+        date: LocalDate? = null,
+        timeOfDay: TimeOfDay? = null
+    ): BriefingCategoryArticlesResponse
 
-    suspend fun getBriefingKeyword(
-        briefingDate: String,
-        type: String
-    ): CommonResponse<BriefingResponse>
-
-    suspend fun getBriefingDetail(id: Int): CommonResponse<BriefingDetailResponse>
-    suspend fun setScrap(memberInfo: SetScrapRequest): CommonResponse<SetScrapResponse>
-    suspend fun setUnScrap(memberId: Int, briefingId: Int): CommonResponse<UnScrapResponse>
-
-    suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<GoogleSocialResponse>
-
+    suspend fun getBriefingArticle(id: Long): BriefingArticleResponse
 }

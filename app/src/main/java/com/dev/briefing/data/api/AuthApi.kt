@@ -1,29 +1,29 @@
 package com.dev.briefing.data.api
 
-import com.dev.briefing.data.model.CommonResponse
-import com.dev.briefing.data.model.GoogleRequest
-import com.dev.briefing.data.model.GoogleSocialResponse
-import com.dev.briefing.data.model.SingoutResponse
+import com.dev.briefing.data.model.response.common.CommonResponse
+import com.dev.briefing.data.model.SocialLoginRequest
+import com.dev.briefing.data.model.SocialLoginResponse
+import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.TokenRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface AuthApi {
-    @POST("/members/auth/google")
-    suspend fun getLoginToken(
-        @Body identityToken : GoogleRequest,
-    ): CommonResponse<GoogleSocialResponse>
+    @POST("members/auth/{provider}")
+    suspend fun signInWithSocialProvider(
+        @Path("provider") provider : String,
+        @Body identityToken : SocialLoginRequest,
+    ): CommonResponse<SocialLoginResponse>
 
-    @DELETE("/members/{memberId}")
-    suspend fun signOut(
+    @DELETE("members/{memberId}")
+    suspend fun deleteMember(
         @Path("memberId") memberId : Int,
-    ): CommonResponse<SingoutResponse>
+    ): CommonResponse<MemberDeleteResponse>
 
-    @POST("/members/auth/token")
+    @POST("members/auth/token")
     suspend fun getAccessToken(
         @Body refreshToken : TokenRequest,
-    ): CommonResponse<GoogleSocialResponse>
+    ): CommonResponse<SocialLoginResponse>
 }

@@ -1,4 +1,4 @@
-package com.dev.briefing.data.model
+package com.dev.briefing.data.model.response.common
 
 import com.google.gson.annotations.SerializedName
 

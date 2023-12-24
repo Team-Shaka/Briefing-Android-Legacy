@@ -1,40 +1,29 @@
 package com.dev.briefing.presentation.theme.utils
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.dev.briefing.R
-import com.dev.briefing.presentation.theme.DialogButtonExit
-import com.dev.briefing.presentation.theme.DisableButton
-import com.dev.briefing.presentation.theme.ErrorColor
-import com.dev.briefing.presentation.theme.Typography
-import com.dev.briefing.presentation.theme.White
+import com.dev.briefing.presentation.theme.BriefingTheme
 
 fun Modifier.drawColoredShadow(
     color: Color,
@@ -86,8 +75,8 @@ fun alertWidget() {
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = "인터넷이 연결되지 않았습니다.\n" +
                     "연결 상태를 확인해 주세요.",
-            style = Typography.titleSmall.copy(
-                color = ErrorColor
+            style = BriefingTheme.typography.SubtitleStyleBold.copy(
+                color = BriefingTheme.color.TextRed
             ),
             textAlign = TextAlign.Center
         )
@@ -101,8 +90,8 @@ fun CommonDialog(
     dialogTitle: Int,
     dialogText: Int,
     dialogId: Int,
-    confirmColor: Color = DialogButtonExit,
-    dismissText:Int = R.string.dialog_basic_dismiss,
+    confirmColor: Color = BriefingTheme.color.TextRed,
+    dismissText: Int = R.string.dialog_basic_dismiss,
     modifier: Modifier = Modifier
 ) {
     Dialog(
@@ -110,19 +99,25 @@ fun CommonDialog(
     ) {
         Column(
             modifier = Modifier
-                .background(color = White, shape = RoundedCornerShape(10.dp))
+                .background(
+                    color = BriefingTheme.color.BackgroundWhite,
+                    shape = RoundedCornerShape(10.dp)
+                )
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
                 text = stringResource(dialogTitle),
-                style = Typography.titleMedium.copy(fontSize = 20.sp, color = Black)
+                style = BriefingTheme.typography.TitleStyleBold.copy(
+                    fontSize = 20.sp,
+                    color = BriefingTheme.color.TextBlack
+                )
             )
             Text(
                 text = stringResource(dialogText),
-                style = Typography.headlineLarge.copy(
-                    color = Black,
+                style = BriefingTheme.typography.ContextStyleBold.copy(
+                    color = BriefingTheme.color.TextBlack,
                     fontWeight = FontWeight.Normal
                 ), textAlign = TextAlign.Center
             )
@@ -133,15 +128,19 @@ fun CommonDialog(
             ) {
                 Text(
                     modifier = Modifier
-                        .background(color = DisableButton, shape = RoundedCornerShape(size = 10.dp))
+                        .background(
+                            color = BriefingTheme.color.BackgrundGray,
+                            shape = RoundedCornerShape(size = 10.dp)
+                        )
                         .weight(1f)
                         .align(alignment = Alignment.CenterVertically)
-                        .padding(vertical = 15.dp)
-                        .clickable(onClick = onDismissRequest),
+                        .clip(RoundedCornerShape(size = 10.dp))
+                        .clickable(onClick = onDismissRequest)
+                        .padding(vertical = 15.dp),
                     text = stringResource(
                         dismissText,
                     ),
-                    style = Typography.headlineLarge.copy(color = Black),
+                    style = BriefingTheme.typography.ContextStyleBold.copy(color = BriefingTheme.color.TextBlack),
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.width(10.dp))
@@ -152,12 +151,13 @@ fun CommonDialog(
                             shape = RoundedCornerShape(size = 10.dp)
                         )
                         .weight(1f)
-                        .padding(vertical = 15.dp)
-                        .clickable(onClick = onConfirmation),
+                        .clip(RoundedCornerShape(size = 10.dp))
+                        .clickable(onClick = onConfirmation)
+                        .padding(vertical = 15.dp),
                     text = stringResource(
                         dialogId
                     ),
-                    style = Typography.headlineLarge.copy(color = White),
+                    style = BriefingTheme.typography.ContextStyleBold.copy(color = BriefingTheme.color.BackgroundWhite),
                     textAlign = TextAlign.Center
                 )
             }

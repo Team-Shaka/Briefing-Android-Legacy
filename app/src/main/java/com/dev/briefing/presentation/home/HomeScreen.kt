@@ -1,108 +1,108 @@
 import android.app.Activity
 import android.util.Log
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.GenericShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
-import com.dev.briefing.data.model.BriefingPreview
-import com.dev.briefing.data.model.BriefingResponse
+import com.dev.briefing.model.BriefingCompactArticle
 import com.dev.briefing.navigation.HomeScreen
+import com.dev.briefing.presentation.common.BriefingTabRow
+import com.dev.briefing.presentation.home.HomeCategory
 import com.dev.briefing.presentation.home.HomeViewModel
 import com.dev.briefing.presentation.theme.*
 import com.dev.briefing.presentation.theme.utils.CommonDialog
-import com.dev.briefing.presentation.theme.utils.alertWidget
-import com.dev.briefing.util.JWT_TOKEN
-import com.dev.briefing.util.MEMBER_ID
-import com.dev.briefing.util.MainApplication.Companion.prefs
-import com.dev.briefing.util.SERVER_TAG
-import java.time.format.DateTimeFormatter
+import com.dev.briefing.util.preference.AuthPreferenceHelper
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
-import java.time.LocalDate
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@Preview
 @Composable
-fun BriefingHome(
-    modifier: Modifier = Modifier,
+fun BriefingHomeScreenPreview() {
+    val navController = rememberNavController()
+
+    BriefingTheme {
+        BriefingHomeScreen(onSettingClick = { }, navController = navController)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun BriefingHomeScreen(
     onSettingClick: () -> Unit,
     navController: NavController,
-//    onDetailClick:(Int) -> Unit
+    homeViewModel: HomeViewModel = getViewModel()
 ) {
-    val context = LocalContext.current
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(GradientStart, GradientEnd),
-        startY = 0.0f,
-        endY = LocalConfiguration.current.screenHeightDp.toFloat()
-    )
-    val memberId = prefs.getSharedPreference(MEMBER_ID, -1)
+    val authPreferenceHelper = AuthPreferenceHelper(LocalContext.current)
+    val uiState = homeViewModel.briefingArticleUiState.collectAsStateWithLifecycle()
+
+    val memberId = authPreferenceHelper.getMemberId()
     val isMember = remember { mutableStateOf(memberId != -1) }
     val openAlertDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
-    val briefingResponseState = homeViewModel.serverTestResponse.observeAsState(
-        initial = BriefingResponse(
-            created_at = LocalDate.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd")),
-            briefings = listOf()
+    if (!isMember.value && openAlertDialog.value) {
+        CommonDialog(
+            onDismissRequest = { openAlertDialog.value = false },
+            onConfirmation = {
+                openAlertDialog.value = false
+
+                (context as Activity).finish()
+            },
+            dialogTitle = R.string.dialog_login_title,
+            dialogText = R.string.dialog_login_text,
+            dialogId = R.string.dialog_login_confirm,
+            confirmColor = BriefingTheme.color.PrimaryBlue
         )
-    )
-    val briefDate = homeViewModel.briefDate.observeAsState(
-        initial = homeViewModel.today
-    )
+    }
+
+    val composeCoroutine = rememberCoroutineScope()
+
+    val state = uiState.value
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(brush = gradientBrush),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        Modifier
+            .fillMaxSize()
+            .background(color = BriefingTheme.color.BackgroundWhite)
     ) {
-
-        //scroll
-        var horizontalscrollState = rememberScrollState()
-
-        if (!isMember.value && openAlertDialog.value) {
-            CommonDialog(
-                onDismissRequest = { openAlertDialog.value = false },
-                onConfirmation = {
-                    openAlertDialog.value = false
-
-                    (context as Activity).finish()
-                },
-                dialogTitle = R.string.dialog_login_title,
-                dialogText = R.string.dialog_login_text,
-                dialogId = R.string.dialog_login_confirm,
-                confirmColor = MainPrimary4
-            )
-        }
-
         HomeHeader(
             onScrapClick = {
-                Log.d(SERVER_TAG, "스크랩 클릭 멤버여부: ${isMember.value} 오픈여부: $openAlertDialog.value")
                 if (!openAlertDialog.value) {
                     if (!isMember.value) {
                         openAlertDialog.value = true
@@ -112,75 +112,170 @@ fun BriefingHome(
                 } else {
                     openAlertDialog.value = false
                 }
-            },
-            onSettingClick = onSettingClick
+            }, onSettingClick = onSettingClick
         )
 
-        LazyRow(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .scrollable(horizontalscrollState, Orientation.Horizontal)
-                .align(Alignment.CenterHorizontally),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Log.d(SERVER_TAG, briefDate.value.toString())
-            items(homeViewModel.timeList) { time ->
-                Column(
-                    modifier = Modifier
-                        .background(
-                            color = if (briefDate.value == time) White else Color.Transparent,
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                        .clickable {
-                            homeViewModel.changeBriefDate(time)
-                        }
-                        .padding(vertical = 6.dp, horizontal = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    //TODO: 요일 앞문자만 대문자로 수정하기
-                    // TODO:
-                    Text(
-                        text = time.dayOfWeek.name.substring(0, 3),
-                        style = Typography.bodyMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
-                    )
-                    Text(
-                        text = time.dayOfMonth.toString(),
-                        style = Typography.titleMedium.copy(color = if (briefDate.value == time) MainPrimary else White)
-                    )
-                }
+        val pagerState = rememberPagerState(pageCount = { HomeCategory.values().size })
+        var selectedTabIdx by remember { mutableIntStateOf(0) }
+
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                selectedTabIdx = page
             }
         }
-        Spacer(modifier = Modifier.height(13.dp))
 
-        homeViewModel.briefDate.value?.let {
-            ArticleList(
-                navController = navController,
-                briefingResponse = briefingResponseState.value,
-                briefDate = it
-            )
-        } ?: run {
-            ArticleList(
-                navController = navController,
-                briefingResponse = briefingResponseState.value,
-                briefDate = LocalDate.now()
+        BriefingTabRow(
+            tabs = HomeCategory.values().map {
+                stringResource(id = it.tabTitle)
+            },
+            selectedTabIndex = selectedTabIdx,
+            onTabSelected = {
+                composeCoroutine.launch {
+                    pagerState.animateScrollToPage(it)
+                }
+            })
+
+        HorizontalPager(state = pagerState) { page ->
+            val briefingArticleCategory = HomeCategory.values()[page].category
+            homeViewModel.loadBriefings(HomeCategory.values()[page].category)
+
+            HomeScreenArticleList(
+                isFetchRefreshing = state.currentLoadingCategories.contains(
+                    briefingArticleCategory
+                ), onRefreshRequest = {
+                    homeViewModel.loadBriefings(HomeCategory.values()[page].category, true)
+                },
+                articles = state.briefingArticles.getOrDefault(
+                    briefingArticleCategory,
+                    null
+                )?.briefingCompactArticles ?: listOf(),
+                onArticleSelect = {
+                    navController.navigate("${HomeScreen.Detail.route}/${it.id.toLong()}")
+                },
+                updatedAt = state.briefingArticles.getOrDefault(
+                    briefingArticleCategory,
+                    null
+                )?.createdAt
             )
         }
     }
-
 }
 
-private fun getBottomLineShape(bottomLineThickness: Int): Shape {
-    return GenericShape { size, _ ->
-        // 1) Bottom-left corner
-        moveTo(0f, size.height)
-        // 2) Bottom-right corner
-        lineTo(size.width, size.height)
-        // 3) Top-right corner
-        lineTo(size.width, size.height - bottomLineThickness)
-        // 4) Top-left corner
-        lineTo(0f, size.height - bottomLineThickness)
+fun formatBriefingDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("yyyy.MM.dd (E)", Locale.KOREAN)
+    val timeFormat = SimpleDateFormat("HH", Locale.KOREAN)
+
+    val datePart = dateFormat.format(date)
+    val hourPart = timeFormat.format(date).toInt()
+
+    val briefingPart = if (hourPart < 16) "아침 브리핑" else "저녁 브리핑"
+
+    return "$datePart $briefingPart"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenArticleList(
+    isFetchRefreshing: Boolean,
+    onRefreshRequest: () -> Unit,
+    updatedAt: Date?,
+    articles: List<BriefingCompactArticle>,
+    onArticleSelect: (briefingCompactArticle: BriefingCompactArticle) -> Unit
+) {
+    val pullRefreshState = rememberPullToRefreshState()
+    val scaleFraction = if (pullRefreshState.isRefreshing) 1f else
+        LinearOutSlowInEasing.transform(pullRefreshState.progress).coerceIn(0f, 1f)
+
+    // Pull To Refresh 영역 진입 시 onRefereshRequest invoke.
+    LaunchedEffect(pullRefreshState.isRefreshing) {
+        if (pullRefreshState.isRefreshing && !isFetchRefreshing) {
+            onRefreshRequest.invoke()
+        }
+    }
+
+    LaunchedEffect(key1 = isFetchRefreshing) {
+        if (!isFetchRefreshing && pullRefreshState.isRefreshing) {
+            pullRefreshState.endRefresh()
+        }
+        if (isFetchRefreshing && !pullRefreshState.isRefreshing) {
+            pullRefreshState.startRefresh()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(pullRefreshState.nestedScrollConnection)
+    ) {
+        CategoryArticleList(
+            createdAt = updatedAt?.let { formatBriefingDate(it) } ?: "",
+            articles = articles,
+            onArticleSelect = onArticleSelect,
+            onRefresh = {
+                onRefreshRequest.invoke()
+            })
+
+        PullToRefreshContainer(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
+            state = pullRefreshState
+        )
+    }
+}
+
+@Composable
+@Preview
+fun ArticleListDatePreview() {
+    BriefingTheme {
+        ArticleListDate(createdAt = "2023.11.02 (목) 아침브리핑") {
+
+        }
+    }
+}
+
+@Composable
+fun ArticleListDate(createdAt: String, onRefresh: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp, 8.dp)
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = createdAt,
+            style = BriefingTheme.typography.ContextStyleRegular25.copy(
+                color = BriefingTheme.color.TextGray,
+                textAlign = TextAlign.Center
+            )
+        )
+
+        Box(modifier = Modifier
+            .align(Alignment.CenterEnd)
+            .border(width = 1.dp, shape = CircleShape, color = BriefingTheme.color.TextGray)
+            .size(27.dp)
+            .clip(CircleShape)
+            .clickable {
+                onRefresh.invoke()
+            }) {
+            Icon(
+                modifier = Modifier
+                    .size(16.dp)
+                    .align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_refresh),
+                contentDescription = null,
+                tint = BriefingTheme.color.TextGray
+            )
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun HomeHeaderPreview() {
+    BriefingTheme {
+        HomeHeader(onScrapClick = { }, onSettingClick = {})
     }
 }
 
@@ -193,33 +288,37 @@ fun HomeHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 27.dp, vertical = 32.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-
-        ) {
+            .padding(horizontal = 27.dp, vertical = 27.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             text = stringResource(R.string.home_title),
-            style = MaterialTheme.typography.titleMedium.copy(
+            style = TextStyle(
                 fontSize = 24.sp,
-                fontWeight = FontWeight(400)
+                fontFamily = ProductSans,
+                fontWeight = FontWeight(700),
+                color = BriefingTheme.color.PrimaryBlue,
             )
         )
 
-        Row {
-            Image(
-                painter = painterResource(
+        IconButton(modifier = Modifier.size(24.dp), onClick = onScrapClick) {
+            Icon(
+                modifier = Modifier.size(width = 23.dp, height = 19.dp), painter = painterResource(
                     id = R.drawable.storage
-                ),
-                contentDescription = "저장 공간", modifier = Modifier
-                    .clickable { onScrapClick() }
+                ), tint = BriefingTheme.color.TextBlack, contentDescription = null
             )
-            Spacer(modifier = Modifier.width(22.dp))
-            Image(
-                painter = painterResource(
+        }
+
+        Spacer(Modifier.width(20.dp))
+
+        IconButton(modifier = Modifier.size(24.dp), onClick = onSettingClick) {
+            Icon(
+                modifier = Modifier.size(24.dp, 24.dp), painter = painterResource(
                     id = R.drawable.setting
-                ),
-                contentDescription = "설정", modifier = Modifier
-                    .clickable(onClick = onSettingClick)
+                ), tint = BriefingTheme.color.TextBlack, contentDescription = null
             )
         }
 
@@ -227,125 +326,99 @@ fun HomeHeader(
 }
 
 @Composable
-fun ArticleList(
-    modifier: Modifier = Modifier,
-    briefingResponse: BriefingResponse,
-    briefDate: LocalDate,
-    navController: NavController
+fun CategoryArticleList(
+    createdAt: String,
+    articles: List<BriefingCompactArticle>,
+    onArticleSelect: (BriefingCompactArticle) -> Unit,
+    onRefresh: () -> Unit
 ) {
-    Column(
-        modifier
-            .background(
-                SubBackGround,
-                shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
-            )
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .padding(horizontal = 17.dp, vertical = 19.dp)
-    ) {
-        if (briefingResponse.briefings?.isEmpty() == true) {
-            alertWidget()
-        } else {
-            Text(
-                text = "${briefDate.format(DateTimeFormatter.ofPattern("YYYY.MM.dd"))} 키워드 브리핑",
-                style = Typography.titleMedium.copy(color = MainPrimary)
-            )
-            Text(
-                text = "Updated: ${briefingResponse.created_at}",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Spacer(modifier = Modifier.height(13.dp))
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(13.dp)
-            ) {
-                items(
-                    briefingResponse.briefings ?: listOf(
-                        BriefingPreview(1, 1, "잼버리", "test1"),
-                    )
-                ) { it ->
-                    ArticleListTile(news = it, onItemClick = { id ->
-                        navController.navigate("${HomeScreen.Detail.route}/$id")
-                        Log.d("2", id.toString())
-                    })
-                }
-            }
+    LazyColumn {
+        item {
+            ArticleListDate(createdAt, onRefresh)
+            Divider(color = BriefingTheme.color.SeperatorGray)
         }
+        items(items = articles) {
+            ArticleListItem(it, onArticleSelect)
+            Divider(color = BriefingTheme.color.SeperatorGray)
+        }
+    }
+}
 
 
+@Preview
+@Composable
+fun ArticleListItemPreview() {
+    BriefingTheme {
+        ArticleListItem(
+            article = BriefingCompactArticle(
+                id = 0,
+                ranks = 0,
+                title = LoremIpsum(3).values.joinToString(),
+                subtitle = LoremIpsum(10).values.joinToString(),
+                scrapCount = 0
+            ),
+            onItemClick = {
+
+            })
     }
 }
 
 @Composable
-fun ArticleListTile(
-    news: BriefingPreview,
-    modifier: Modifier = Modifier,
-    onItemClick: (Int) -> Unit
+fun ArticleListItem(
+    article: BriefingCompactArticle,
+    onItemClick: (BriefingCompactArticle) -> Unit
 ) {
     Row(
         Modifier
-            .shadow(
-                elevation = 20.dp,
-                spotColor = Color(0x1A000000),
-                ambientColor = Color(0x1A000000)
-            )
             .fillMaxWidth()
             .clickable {
-                onItemClick(news.id)
+                onItemClick(article)
             }
-            .background(White, shape = RoundedCornerShape(40.dp))
-            .padding(vertical = 15.dp, horizontal = 13.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(14.dp, 14.dp, 24.dp, 14.dp)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            val backgroundColor = when (news.rank) {
-                1 -> MainPrimary
-                2 -> MainPrimary2
-                3 -> MainPrimary3
-                else -> White
-            }
-            Box(
-                modifier = Modifier
-                    .size(45.dp)
-                    .background(color = backgroundColor, shape = RoundedCornerShape(50.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = news.rank.toString(), style = MaterialTheme.typography.titleSmall.copy(
-                        color = if (backgroundColor == White) MainPrimary else White
-                    ), overflow = TextOverflow.Ellipsis, maxLines = 1
-                )
-
-            }
-            Column(
-                modifier = modifier
-                    .fillMaxHeight()
-                    .widthIn(max = 220.dp),
-                verticalArrangement = Arrangement.Center,
-
-                ) {
-                Text(text = news.title, style = MaterialTheme.typography.titleSmall)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = news.subtitle,
-                    style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-        }
-
-
-        Image(
-            modifier = Modifier
-                .width(27.dp)
-                .height(27.dp),
-            painter = painterResource(id = R.drawable.left_arrow), contentDescription = "fdfd"
+        Text(
+            modifier = Modifier.width(54.dp),
+            text = "${article.ranks}.",
+            style = TextStyle(
+                fontSize = 35.sp,
+                fontFamily = ProductSans,
+                fontWeight = FontWeight(700),
+                color = BriefingTheme.color.PrimaryBlue,
+                textAlign = TextAlign.Right,
+            )
         )
+
+        Spacer(Modifier.width(16.dp))
+
+        Column {
+            Text(text = article.title, style = BriefingTheme.typography.SubtitleStyleBold)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = article.subtitle,
+                style = BriefingTheme.typography.ContextStyleRegular25.copy(
+                    color = BriefingTheme.color.TextGray
+                ),
+                minLines = 2,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.align(Alignment.BottomEnd), verticalAlignment =
+                    Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(17.dp),
+                        painter = painterResource(id = R.drawable.bookmark),
+                        contentDescription = null,
+                        tint = BriefingTheme.color.TextGray
+                    )
+                    Text(
+                        text = article.scrapCount.toString(),
+                        style = BriefingTheme.typography.DetailStyleRegular.copy(color = BriefingTheme.color.TextGray)
+                    )
+                }
+            }
+        }
     }
 }
-
-

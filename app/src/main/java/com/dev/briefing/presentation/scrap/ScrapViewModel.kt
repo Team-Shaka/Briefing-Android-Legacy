@@ -1,6 +1,5 @@
 package com.dev.briefing.presentation.scrap
 
-import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -8,21 +7,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.ScrapResponse
-import com.dev.briefing.data.model.ScrapViewData
 import com.dev.briefing.data.respository.ScrapRepository
-import com.dev.briefing.util.MEMBER_ID
+import com.dev.briefing.model.Scrap
+import com.dev.briefing.model.toScrap
 import com.dev.briefing.util.MainApplication
 import com.dev.briefing.util.SERVER_TAG
+import com.dev.briefing.util.preference.AuthPreferenceHelper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
+class ScrapViewModel(private val repository: ScrapRepository, private val authPreferenceHelper: AuthPreferenceHelper) : ViewModel() {
 
-    private val _scrapMap: MutableLiveData<MutableMap<String, List<ScrapResponse>>> =
-        MutableLiveData<MutableMap<String, List<ScrapResponse>>>(mutableMapOf())
-    val scrapMap: LiveData<MutableMap<String, List<ScrapResponse>>>
-        get() = _scrapMap
+    private val _scrap: MutableStateFlow<List<Scrap>> =
+        MutableStateFlow(listOf())
+    val scrap: StateFlow<List<Scrap>>
+        get() = _scrap
 
-    val memberId: Int = MainApplication.prefs.getSharedPreference(MEMBER_ID, 0)
+    val memberId: Int = authPreferenceHelper.getMemberId()
 
     init {
         getScrapData()
@@ -38,42 +40,18 @@ class ScrapViewModel(private val repository: ScrapRepository) : ViewModel() {
                 val response = repository.getScrap(
                     memberId = memberId
                 )
-                Log.d(SERVER_TAG, "통신 끝")
-                var tmpMap : MutableMap<String, List<ScrapResponse>> = mutableMapOf()
-                response.result.forEach { scrap ->
-                    val currentList = tmpMap.get(scrap.date)
-                        ?: emptyList() // 해당 키의 리스트를 가져오고, null일 경우 빈 리스트로 초기화
-                    val updatedList = currentList + scrap
-                    tmpMap.set(scrap.date, updatedList)
+                response.let { scrapList ->
+                    val tmpScrapList: MutableList<Scrap> = mutableListOf()
+                    scrapList.forEach { scrap ->
+                        tmpScrapList.add(scrap)
+                    }
+                    _scrap.value = tmpScrapList
                 }
-                _scrapMap.value = tmpMap.toSortedMap(compareByDescending {
-                    SimpleDateFormat("yyyy-MM-dd").parse(it)
-                })
-                // TODO: Log상에서는 정렬이 되는데 
-                _scrapMap.value?.forEach { (key, value) ->
-                    Log.d(SERVER_TAG, "Key: $key, Value: $value")
-                }
-                Log.d(SERVER_TAG, response.toString())
-                Log.d(SERVER_TAG, "메소드 끝")
-            } catch (e: Throwable) {
-                Log.d(SERVER_TAG, e.toString())
-                // TODO: refresh Token
-            }
-        }
-    }
-    fun getAcessToken(refreshToken:String) {
-        viewModelScope.launch {
-            try {
-                val response = repository.getAccessToken(
-                    com.dev.briefing.data.model.TokenRequest(
-                        refreshToken = refreshToken
-                    )
-                )
-                Log.d(SERVER_TAG, response.code)
             } catch (e: Throwable) {
                 Log.d(SERVER_TAG, e.toString())
             }
         }
     }
+
 
 }
