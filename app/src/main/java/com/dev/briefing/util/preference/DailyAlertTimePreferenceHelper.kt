@@ -25,6 +25,7 @@ class DailyAlertTimePreferenceHelper(val context: Context) {
     fun saveAlarmTime(items: AlarmTime) {
         val json = Gson().toJson(items)
         editor.putString(KEY_DAILY_ALARM_TIME, json)
+        editor.apply()
     }
 
     companion object {

@@ -9,6 +9,7 @@ import com.dev.briefing.di.networkModule
 import com.dev.briefing.di.preferenceModule
 import com.dev.briefing.di.repositoryModule
 import com.dev.briefing.di.viewModelModule
+import com.google.android.gms.ads.RequestConfiguration
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import org.koin.android.ext.koin.androidContext
@@ -24,6 +25,8 @@ class MainApplication : Application() {
                 return BuildConfig.DEBUG
             }
         })
+
+        RequestConfiguration.Builder().setTestDeviceIds(listOf(BuildConfig.ADMOB_TEST_DEVICE_1))
 
         startKoin {
             androidContext(this@MainApplication)

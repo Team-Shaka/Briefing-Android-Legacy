@@ -113,8 +113,7 @@ fun SettingScreen(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = BriefingTheme.color.BackgrundGray)
-            .padding(bottom = 40.dp),
+            .background(color = BriefingTheme.color.BackgrundGray),
         horizontalAlignment = Alignment.Start,
     ) {
         item {
@@ -225,9 +224,10 @@ fun SettingScreen(
                 }
             )
 
+            SettingSection(R.string.setting_section_auth)
+
             if (authPreferenceHelper.getMemberId() != -1) {
                 //로그 아웃 및 회원 탈퇴
-                SettingSection(R.string.setting_section_auth)
                 SettingMenuItem(
                     type = SettingMenu(
                         isArrow = true,
@@ -249,7 +249,22 @@ fun SettingScreen(
                         openExitDialog.value = true
                     }
                 )
+            } else {
+                SettingMenuItem(
+                    type = SettingMenu(
+                        isArrow = true,
+                    ),
+                    title = R.string.setting_login,
+                    onClick = {
+                        val intent = Intent(context, SignInActivity::class.java)
+                        startActivity(context, intent, null)
+                        val activity = context as? Activity
+                        activity?.finish()
+                    }
+                )
             }
+
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
