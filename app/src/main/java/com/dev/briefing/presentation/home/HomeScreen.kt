@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
 import com.dev.briefing.model.BriefingCompactArticle
 import com.dev.briefing.navigation.HomeScreen
+import com.dev.briefing.presentation.ad.AdmobBanner
 import com.dev.briefing.presentation.common.BriefingTabRow
 import com.dev.briefing.presentation.home.HomeCategory
 import com.dev.briefing.presentation.home.HomeViewModel
@@ -202,25 +203,30 @@ fun HomeScreenArticleList(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(pullRefreshState.nestedScrollConnection)
-    ) {
-        CategoryArticleList(
-            createdAt = updatedAt?.let { formatBriefingDate(it) } ?: "",
-            articles = articles,
-            onArticleSelect = onArticleSelect,
-            onRefresh = {
-                onRefreshRequest.invoke()
-            })
-
-        PullToRefreshContainer(
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom) {
+        Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
-            state = pullRefreshState
-        )
+                .fillMaxSize()
+                .weight(1f)
+                .nestedScroll(pullRefreshState.nestedScrollConnection)
+        ) {
+            CategoryArticleList(
+                createdAt = updatedAt?.let { formatBriefingDate(it) } ?: "",
+                articles = articles,
+                onArticleSelect = onArticleSelect,
+                onRefresh = {
+                    onRefreshRequest.invoke()
+                })
+
+            PullToRefreshContainer(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .graphicsLayer(scaleX = scaleFraction, scaleY = scaleFraction),
+                state = pullRefreshState
+            )
+        }
+
+        AdmobBanner(Modifier.fillMaxWidth())
     }
 }
 

@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.R
 import com.dev.briefing.model.RelatedArticle
+import com.dev.briefing.presentation.ad.AdmobBanner
 import com.dev.briefing.presentation.login.SignInActivity
 import com.dev.briefing.presentation.theme.BriefingTheme
 import com.dev.briefing.presentation.theme.utils.CommonDialog
@@ -89,6 +90,7 @@ fun ArticleDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .weight(1f)
                         .verticalScroll(rememberScrollState())
                 ) {
                     val article = uiState.article
@@ -140,6 +142,7 @@ fun ArticleDetailScreen(
 
                     RelatedArticles(Modifier.padding(32.dp, 16.dp), article.relatedArticles)
                 }
+                AdmobBanner(Modifier.fillMaxWidth())
             }
         }
     }
