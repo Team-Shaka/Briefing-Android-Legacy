@@ -225,9 +225,10 @@ fun SettingScreen(
                 }
             )
 
+            SettingSection(R.string.setting_section_auth)
+
             if (authPreferenceHelper.getMemberId() != -1) {
                 //로그 아웃 및 회원 탈퇴
-                SettingSection(R.string.setting_section_auth)
                 SettingMenuItem(
                     type = SettingMenu(
                         isArrow = true,
@@ -247,6 +248,19 @@ fun SettingScreen(
                     onClick = {
                         Log.d(ALARM_TAG, openExitDialog.value.toString() + "최초 클릭")
                         openExitDialog.value = true
+                    }
+                )
+            } else {
+                SettingMenuItem(
+                    type = SettingMenu(
+                        isArrow = true,
+                    ),
+                    title = R.string.setting_login,
+                    onClick = {
+                        val intent = Intent(context, SignInActivity::class.java)
+                        startActivity(context, intent, null)
+                        val activity = context as? Activity
+                        activity?.finish()
                     }
                 )
             }
