@@ -113,8 +113,7 @@ fun SettingScreen(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = BriefingTheme.color.BackgrundGray)
-            .padding(bottom = 40.dp),
+            .background(color = BriefingTheme.color.BackgrundGray),
         horizontalAlignment = Alignment.Start,
     ) {
         item {
@@ -264,6 +263,8 @@ fun SettingScreen(
                     }
                 )
             }
+
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
