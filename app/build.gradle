@@ -18,6 +18,8 @@ android {
         versionCode 5
         versionName "2.0.1"
 
+        signingConfig signingConfigs.debug
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -34,9 +36,9 @@ android {
         manifestPlaceholders = [admobAppId: "${properties.getProperty('ADMOB_APP_ID')}"]
     }
     signingConfigs {
-        config {
+        debug {
             keyAlias keyProperties['keyAlias']
-            keyPassword keyProperties['keyAlias']
+            keyPassword keyProperties['keyPassword']
             storeFile file(keyProperties['storeFile'])
             storePassword keyProperties['storePassword']
         }
