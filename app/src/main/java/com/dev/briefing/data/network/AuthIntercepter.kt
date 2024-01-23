@@ -1,15 +1,14 @@
 package com.dev.briefing.data.network
 
+import com.dev.briefing.BuildConfig.BASE_URL
 import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.model.TokenRequest
-import com.dev.briefing.data.respository.AuthRepository
 import com.dev.briefing.util.preference.AuthPreferenceHelper
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
+import okhttp3.Request
 import okhttp3.Response
-import okio.IOException
-import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 
 
@@ -22,6 +21,11 @@ class AuthInterceptor(
         val originalRequest = chain.request()
 
         val token: String? = authPreferenceHelper.getAccessToken()
+
+        if (shouldSkipAuthentication(originalRequest)) {
+            // 특정 API 호출에 대해서는 토큰을 추가하지 않음
+            return chain.proceed(originalRequest)
+        }
 
         val response = chain.proceed(
             originalRequest.newBuilder()
@@ -52,6 +56,13 @@ class AuthInterceptor(
         }
 
         return response
+    }
+
+    private fun shouldSkipAuthentication(request: Request): Boolean {
+        val url = request.url.toString()
+        val briefingCardsUrl = "${BASE_URL}briefings/"
+
+        return url.startsWith(briefingCardsUrl)
     }
 
     private suspend fun callRefreshTokenAPI(): String {
