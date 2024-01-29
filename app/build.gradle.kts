@@ -1,10 +1,10 @@
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -77,75 +77,63 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.core:core-ktx:1.8.0")
-    implementation(platform(kotlin("bom", version = "1.8.0")))
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
-    //Compose UI Library
-    implementation ("androidx.activity:activity-compose:1.8.0")
-    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
-    implementation ("androidx.compose.ui:ui")
-    implementation ("androidx.compose.ui:ui-graphics")
-    implementation ("androidx.compose.ui:ui-tooling")
-    implementation ("androidx.compose.material3:material3:1.2.0-alpha12")
-    implementation ("androidx.compose.material3:material3-android:1.2.0-alpha12")
+    // Compose UI Library
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.ui.tooling.android)
 
+    // Jetpack Compose
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation ("androidx.compose.ui:ui-tooling-android:1.5.4")
-    //Test Library
-    testImplementation ("junit:junit:4.13.2")
-    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    // WebView
+    implementation(libs.accompanist.webview)
+    implementation(libs.accompanist.permissions)
 
-    //WebView
-    implementation ("com.google.accompanist:accompanist-webview:0.24.13-rc")
-    //Notification
-    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
-    //Glide
-    implementation ("com.github.bumptech.glide:glide:4.14.2")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
-    //Retrofit2
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
-    implementation ("com.squareup.okhttp3:okhttp-urlconnection:4.9.0")
+    // Glide
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
 
-    //Navigation Library
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.5.3")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.5.3")
+    // Retrofit2
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.okhttp.urlconnection)
 
-    // Jetpack Compose Integration
-    implementation ("androidx.navigation:navigation-compose:2.5.3")
-
-    //ViewModel with Compose
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-beta01")
+    // Navigation Library
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     // Dependency Injection
-    implementation ("io.insert-koin:koin-android:3.5.0")
-    implementation ("io.insert-koin:koin-core:3.5.0")
-    implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
-    implementation ("androidx.compose.runtime:runtime-livedata:1.3.2")
+    implementation(libs.koin.android)
+    implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.runtime.livedata)
 
-    //google social login
-    implementation ("com.google.android.gms:play-services-auth:20.7.0")
-    //analytics
-    implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
-    implementation ("com.google.firebase:firebase-analytics")
-    //crashlytics
-    implementation("com.google.firebase:firebase-crashlytics")
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
 
-    implementation ("androidx.work:work-runtime-ktx:2.8.0")
+    // Google Play Services
+    implementation(libs.play.services.ads)
+    implementation(libs.play.services.auth)
 
-    implementation ("com.orhanobut:logger:2.2.0")
+    implementation(libs.googleid)
 
-    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+    // Others
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.logger)
 
-    implementation("androidx.credentials:credentials:1.2.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
-
-    // Google Admob
-    implementation ("com.google.android.gms:play-services-ads:22.6.0")
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
 }
