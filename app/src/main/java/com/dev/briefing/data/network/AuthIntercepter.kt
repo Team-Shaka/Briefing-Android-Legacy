@@ -4,6 +4,8 @@ import com.dev.briefing.BuildConfig.BASE_URL
 import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.model.TokenRequest
 import com.dev.briefing.util.preference.AuthPreferenceHelper
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -17,6 +19,8 @@ class AuthInterceptor(
 ) : Interceptor {
 
     private val authApi: AuthApi by inject(AuthApi::class.java)
+    private val gson = Gson()
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
@@ -46,13 +50,20 @@ class AuthInterceptor(
         }
 
         if (response.code == 401 && token != null) {
-            Logger.d("refresh token")
+            val responseBodyString = response.peekBody(2048).string()
 
-            val newAccessToken = runBlocking { callRefreshTokenAPI() }
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer $newAccessToken")
-                .build()
-            return chain.proceed(newRequest)
+            val jsonObject = gson.fromJson(responseBodyString, JsonObject::class.java)
+            val code = jsonObject["code"].asString
+
+            if (code == "AUTH004") {
+                Logger.d("refresh token")
+
+                val newAccessToken = runBlocking { callRefreshTokenAPI() }
+                val newRequest = originalRequest.newBuilder()
+                    .header("Authorization", "Bearer $newAccessToken")
+                    .build()
+                return chain.proceed(newRequest)
+            }
         }
 
         return response
