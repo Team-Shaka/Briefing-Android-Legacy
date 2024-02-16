@@ -1,20 +1,24 @@
 package com.dev.briefing.presentation.setting
 
-import android.app.*
+import android.app.Activity
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import com.dev.briefing.navigation.HomeScreen
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ComponentActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -25,11 +29,10 @@ import com.dev.briefing.presentation.login.SignInViewModel
 import com.dev.briefing.presentation.setting.component.SettingMenu
 import com.dev.briefing.presentation.setting.component.SettingMenuItem
 import com.dev.briefing.presentation.setting.component.SettingSection
-import com.dev.briefing.presentation.theme.*
+import com.dev.briefing.presentation.theme.BriefingTheme
+import com.dev.briefing.presentation.theme.component.CommonHeader
 import com.dev.briefing.presentation.theme.utils.CommonDialog
 import com.dev.briefing.util.ALARM_TAG
-import com.dev.briefing.presentation.theme.component.CommonHeader
-import com.dev.briefing.util.extension.convert.formatTime
 import com.dev.briefing.util.preference.AuthPreferenceHelper
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -122,7 +125,7 @@ fun SettingScreen(
                 header = "설정",
                 color = BriefingTheme.color.BackgroundWhite
             )
-            //알림
+            /* TODO : FCM 알림 시간 변경 미구현에 따른 비활성화 추후 구현
             SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(
                 type = SettingMenu(
@@ -137,7 +140,7 @@ fun SettingScreen(
                     timePickerDialog.show()
                 },
             )
-            // TODO : enable when starting premium service
+            */
             /*SettingSection(R.string.setting_section_premium)
             SettingMenuItem(
                 type = SettingMenu(
