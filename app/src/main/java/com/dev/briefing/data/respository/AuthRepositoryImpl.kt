@@ -1,11 +1,10 @@
 package com.dev.briefing.data.respository
 
 import com.dev.briefing.data.datasource.AuthDataSource
-import com.dev.briefing.data.model.response.common.CommonResponse
+import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.model.SocialLoginResponse
-import com.dev.briefing.data.model.MemberDeleteResponse
-import com.dev.briefing.data.model.TokenRequest
+import com.dev.briefing.data.model.response.common.CommonResponse
 
 class AuthRepositoryImpl(private val authDataSource: AuthDataSource) : AuthRepository {
     override suspend fun signInWithSocialProvider(
@@ -19,7 +18,4 @@ class AuthRepositoryImpl(private val authDataSource: AuthDataSource) : AuthRepos
         return authDataSource.deleteMember(memberId)
     }
 
-    override suspend fun getAccessToken(refreshToken: TokenRequest): CommonResponse<SocialLoginResponse> {
-        return authDataSource.getAccessToken(refreshToken)
-    }
 }

@@ -1,10 +1,11 @@
 package com.dev.briefing.data.api
 
-import com.dev.briefing.data.model.response.common.CommonResponse
+import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.model.SocialLoginResponse
-import com.dev.briefing.data.model.MemberDeleteResponse
 import com.dev.briefing.data.model.TokenRequest
+import com.dev.briefing.data.model.response.common.CommonResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.POST
@@ -24,6 +25,6 @@ interface AuthApi {
 
     @POST("members/auth/token")
     suspend fun getAccessToken(
-        @Body refreshToken : TokenRequest,
-    ): CommonResponse<SocialLoginResponse>
+        @Body refreshToken : TokenRequest
+    ): Response<CommonResponse<SocialLoginResponse>>
 }
