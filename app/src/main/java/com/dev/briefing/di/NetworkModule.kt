@@ -4,6 +4,7 @@ package com.dev.briefing.di
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.data.api.AuthApi
 import com.dev.briefing.data.api.BriefingApi
+import com.dev.briefing.data.api.PushApi
 import com.dev.briefing.data.api.ScrapApi
 import com.dev.briefing.data.network.AuthInterceptor
 import com.google.gson.GsonBuilder
@@ -37,6 +38,9 @@ val networkModule = module {
     }
     single<ScrapApi> {
         get<Retrofit>().create(ScrapApi::class.java)
+    }
+    single<PushApi> {
+        get<Retrofit>().create(PushApi::class.java)
     }
 
 }

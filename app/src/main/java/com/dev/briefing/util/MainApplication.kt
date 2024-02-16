@@ -1,7 +1,6 @@
 package com.dev.briefing.util
 
 import android.app.Application
-import android.util.Log
 import com.dev.briefing.BuildConfig
 import com.dev.briefing.di.androidSystemModule
 import com.dev.briefing.di.dataSourceModule
@@ -11,7 +10,6 @@ import com.dev.briefing.di.preferenceModule
 import com.dev.briefing.di.repositoryModule
 import com.dev.briefing.di.viewModelModule
 import com.google.android.gms.ads.RequestConfiguration
-import com.google.firebase.messaging.FirebaseMessaging
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import org.koin.android.ext.koin.androidContext
@@ -30,14 +28,6 @@ class MainApplication : Application() {
         })
 
         RequestConfiguration.Builder().setTestDeviceIds(listOf(BuildConfig.ADMOB_TEST_DEVICE_1))
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                Logger.d("Fetching FCM registration token succeed : $token")
-            } else {
-                Logger.w("Fetching FCM registration token failed", task.exception)
-            }
-        }
 
         startKoin {
             androidContext(this@MainApplication)
