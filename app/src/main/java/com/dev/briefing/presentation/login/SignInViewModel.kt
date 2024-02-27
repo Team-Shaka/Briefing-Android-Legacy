@@ -6,11 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.model.SocialLoginRequest
 import com.dev.briefing.data.respository.AuthRepository
-import com.dev.briefing.data.respository.PushRepository
 import com.dev.briefing.util.preference.AuthPreferenceHelper
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.google.firebase.messaging.FirebaseMessaging
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +19,6 @@ import kotlinx.coroutines.runBlocking
 
 class SignInViewModel(
     private val authRepository: AuthRepository,
-    private val pushRepository: PushRepository,
     private val authPreferenceHelper: AuthPreferenceHelper,
 ) : ViewModel() {
 
@@ -31,26 +28,6 @@ class SignInViewModel(
     val signInUiState: StateFlow<SignInUiState> =
         _signInState.asStateFlow()
 
-    fun subscribePushAlarm() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                Logger.d("Fetching FCM registration token succeed : $token")
-
-                viewModelScope.launch {
-                    runCatching {
-                        pushRepository.subscribePushAlarm(token)
-                    }.onSuccess {
-                        Logger.d("subscribePushAlarm Success")
-                    }.onFailure {
-                        Logger.e(it.message ?: "error in subscribePushAlarm")
-                    }
-                }
-            } else {
-                Logger.w("Fetching FCM registration token failed", task.exception)
-            }
-        }
-    }
 
     private fun handleGoogleIdToken(idToken: String) {
         _signInState.update { SignInUiState.Loading }

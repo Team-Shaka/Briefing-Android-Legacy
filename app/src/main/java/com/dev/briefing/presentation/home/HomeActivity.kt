@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.dev.briefing.navigation.RootScreen
 import com.dev.briefing.presentation.theme.BriefingTheme
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeActivity : ComponentActivity() {
@@ -25,7 +24,6 @@ class HomeActivity : ComponentActivity() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
 
-    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +40,7 @@ class HomeActivity : ComponentActivity() {
             }
 
         //requestNotificationPermission()
+        homeViewModel.subscribePushAlarm()
 
         setContent {
             BriefingTheme {

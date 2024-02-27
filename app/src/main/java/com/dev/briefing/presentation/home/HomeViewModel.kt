@@ -5,21 +5,22 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.briefing.data.respository.BriefingRepository
+import com.dev.briefing.data.respository.PushRepository
 import com.dev.briefing.model.BriefingCategoryArticles
-import com.dev.briefing.model.BriefingCompactArticle
 import com.dev.briefing.model.enum.BriefingArticleCategory
-import com.dev.briefing.model.enum.TimeOfDay
 import com.dev.briefing.util.dailyalert.DailyAlertManager
 import com.dev.briefing.util.preference.DailyAlertTimePreferenceHelper
+import com.google.firebase.messaging.FirebaseMessaging
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class HomeViewModel(
     private val briefingRepository: BriefingRepository,
+    private val pushRepository: PushRepository,
     private val dailyAlertManager: DailyAlertManager,
     private val dailyAlertTimePreferenceHelper: DailyAlertTimePreferenceHelper
 ) : ViewModel() {
@@ -60,6 +61,27 @@ class HomeViewModel(
                 currentLoadingCategories.remove(briefingArticleCategory)
                 errorOccurCategories[briefingArticleCategory] = it.message ?: "unknown error"
                 updateUiState()
+            }
+        }
+    }
+
+    fun subscribePushAlarm() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Logger.d("Fetching FCM registration token succeed : $token")
+
+                viewModelScope.launch {
+                    runCatching {
+                        pushRepository.subscribePushAlarm(token)
+                    }.onSuccess {
+                        Logger.d("subscribePushAlarm Success")
+                    }.onFailure {
+                        Logger.e(it.message ?: "error in subscribePushAlarm")
+                    }
+                }
+            } else {
+                Logger.w("Fetching FCM registration token failed", task.exception)
             }
         }
     }
