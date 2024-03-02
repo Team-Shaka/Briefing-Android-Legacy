@@ -9,12 +9,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module {
-    viewModel { HomeViewModel(
-        briefingRepository = get(),
-        pushRepository = get(),
-        dailyAlertManager = get(),
-        dailyAlertTimePreferenceHelper = get()
-    ) }
+    viewModel { HomeViewModel(briefingRepository = get(), pushRepository = get()) }
     viewModel { ArticleDetailViewModel(briefingRepository = get(), scrapRepository = get(), authPreferenceHelper = get()) }
     viewModel { SignInViewModel(authRepository = get(), authPreferenceHelper = get()) }
     viewModel { SettingViewModel(dailyAlertTimePreferenceHelper = get(), dailyAlertManager = get(), authPreferenceHelper = get(), authRepository = get()) }

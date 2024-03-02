@@ -8,8 +8,6 @@ import com.dev.briefing.data.respository.BriefingRepository
 import com.dev.briefing.data.respository.PushRepository
 import com.dev.briefing.model.BriefingCategoryArticles
 import com.dev.briefing.model.enum.BriefingArticleCategory
-import com.dev.briefing.util.dailyalert.DailyAlertManager
-import com.dev.briefing.util.preference.DailyAlertTimePreferenceHelper
 import com.google.firebase.messaging.FirebaseMessaging
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +18,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val briefingRepository: BriefingRepository,
-    private val pushRepository: PushRepository,
-    private val dailyAlertManager: DailyAlertManager,
-    private val dailyAlertTimePreferenceHelper: DailyAlertTimePreferenceHelper
+    private val pushRepository: PushRepository
 ) : ViewModel() {
     private val errorOccurCategories: SnapshotStateMap<BriefingArticleCategory, String> =
         mutableStateMapOf()
@@ -83,12 +79,6 @@ class HomeViewModel(
             } else {
                 Logger.w("Fetching FCM registration token failed", task.exception)
             }
-        }
-    }
-
-    fun setAlarm() {
-        dailyAlertTimePreferenceHelper.getAlarmTime().also {
-            dailyAlertManager.setDailyAlarm(it.hour, it.minute)
         }
     }
 

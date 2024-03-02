@@ -34,13 +34,11 @@ class HomeActivity : ComponentActivity() {
                 if (deniedPermissions.isNotEmpty()) {
                     Log.d("HomeActivity", "Denied Permissions: $deniedPermissions")
                 } else {
-                    homeViewModel.setAlarm()
                     Log.d("HomeActivity", "All permissions are granted.")
                 }
             }
 
-        //requestNotificationPermission()
-        homeViewModel.subscribePushAlarm()
+        requestNotificationPermission()
 
         setContent {
             BriefingTheme {
@@ -65,7 +63,7 @@ class HomeActivity : ComponentActivity() {
         // All permissions that are needed are already granted
         if (permissions.isEmpty()) {
             Log.d("HomeActivity", "set alarm in permission check")
-            homeViewModel.setAlarm()
+            homeViewModel.subscribePushAlarm()
             return
         }
         val permissionsArray = permissions.toTypedArray()

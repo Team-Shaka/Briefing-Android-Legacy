@@ -125,7 +125,7 @@ fun SettingScreen(
                 header = "설정",
                 color = BriefingTheme.color.BackgroundWhite
             )
-            /* TODO : FCM 알림 시간 변경 미구현에 따른 비활성화 추후 구현
+            /*알림
             SettingSection(title = R.string.setting_section_alarm)
             SettingMenuItem(
                 type = SettingMenu(
@@ -139,8 +139,8 @@ fun SettingScreen(
                 onClick = {
                     timePickerDialog.show()
                 },
-            )
-            */
+            )*/
+            // TODO : enable when starting premium service
             /*SettingSection(R.string.setting_section_premium)
             SettingMenuItem(
                 type = SettingMenu(
